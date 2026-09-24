@@ -1,0 +1,385 @@
+diff --git a/apps/dvbs2-rx b/apps/dvbs2-rx
+index 61596ef..7403b73 100755
+--- a/apps/dvbs2-rx
++++ b/apps/dvbs2-rx
+@@ -919,6 +919,7 @@ class DVBS2RxTopBlock(gr.top_block, Qt.QWidget):
+         # PL Sync
+         plsync = dvbs2rx.plsync_cc(*self._plsync_params())
+         self.msg_connect((plsync, 'rotator_phase_inc'), (rotator, 'cmd'))
++        self.msg_connect((plsync, 'lock_lost'), (symbol_sync, 'reset'))
+ 
+         # XFECFRAME demapper
+         xfecframe_demapper = dvbs2rx.xfecframe_demapper_cb(
+diff --git a/include/gnuradio/dvbs2rx/symbol_sync_cc.h b/include/gnuradio/dvbs2rx/symbol_sync_cc.h
+index d51d0e0..f5aa362 100644
+--- a/include/gnuradio/dvbs2rx/symbol_sync_cc.h
++++ b/include/gnuradio/dvbs2rx/symbol_sync_cc.h
+@@ -75,6 +75,16 @@ public:
+                      int rrc_delay = 5,
+                      int n_subfilt = 128,
+                      int interp_method = 0);
++
++    /*!
++     * \brief Reset the symbol timing loop state.
++     *
++     * Clears the PI loop filter integrator, modulo-1 counter, and fractional
++     * timing offset estimate. Should be called after an external frame lock
++     * loss, so that timing re-acquisition does not start from a possibly
++     * stale/corrupted state left over from before the loss.
++     */
++    virtual void reset() = 0;
+ };
+ 
+ } // namespace dvbs2rx
+diff --git a/lib/bbdeheader_bb_impl.cc b/lib/bbdeheader_bb_impl.cc
+index 383f7f5..881a2ce 100644
+--- a/lib/bbdeheader_bb_impl.cc
++++ b/lib/bbdeheader_bb_impl.cc
+@@ -8,6 +8,7 @@
+  */
+ 
+ #ifdef HAVE_CONFIG_H
++#include <cstdio>
+ #include "config.h"
+ #endif
+ 
+@@ -76,10 +77,19 @@ void bbdeheader_bb_impl::forecast(int noutput_items, gr_vector_int& ninput_items
+ bool bbdeheader_bb_impl::parse_bbheader(u8_cptr_t in, BBHeader* h)
+ {
+     // Integrity check
++    static long s_crc_ok = 0, s_crc_fail = 0;
+     if (!check_crc8(in, BB_HEADER_LENGTH_BYTES)) {
++        s_crc_fail++;
++        if (s_crc_fail <= 8) {
++            fprintf(stderr, "[bbhdbg] crc_fail#%ld ok=%ld bytes=%02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
++                    s_crc_fail, s_crc_ok, in[0], in[1], in[2], in[3], in[4], in[5], in[6], in[7],
++                    in[8], in[9], in[10], in[11], in[12], in[13], in[14], in[15]);
++        }
+         GR_LOG_DEBUG_LEVEL(1, "Baseband header crc failed.");
+         return false;
+     }
++    s_crc_ok++;
++    fprintf(stderr, "[bbhdbg] crc_OK#%ld fail=%ld\n", s_crc_ok, s_crc_fail);
+ 
+     // MATYPE-1
+     h->ts_gs = (*in >> 6) & 0x3;
+diff --git a/lib/bbdescrambler_bb_impl.cc b/lib/bbdescrambler_bb_impl.cc
+index 66c6b02..7c579ff 100644
+--- a/lib/bbdescrambler_bb_impl.cc
++++ b/lib/bbdescrambler_bb_impl.cc
+@@ -14,6 +14,7 @@
+ #include "bbdescrambler_bb_impl.h"
+ #include "fec_params.h"
+ #include <gnuradio/io_signature.h>
++#include <cstdio>
+ 
+ namespace gr {
+ namespace dvbs2rx {
+@@ -71,6 +72,14 @@ int bbdescrambler_bb_impl::work(int noutput_items,
+     const unsigned char* in = (const unsigned char*)input_items[0];
+     unsigned char* out = (unsigned char*)output_items[0];
+ 
++    static long s_dump_cnt = 0;
++    if (s_dump_cnt >= 2 && s_dump_cnt < 6) {
++        fprintf(stderr, "[descdbg2] raw_in=");
++        for (int b = 0; b < 48; b++) fprintf(stderr, "%02x ", in[b]);
++        fprintf(stderr, "\n");
++    }
++    s_dump_cnt++;
++
+     for (int i = 0; i < noutput_items; i += kbch_bytes) {
+         for (int j = 0; j < (int)kbch_bytes; ++j) {
+             out[i + j] = in[i + j] ^ bb_derandomise[j];
+diff --git a/lib/pl_frame_sync.cc b/lib/pl_frame_sync.cc
+index df9047e..5468393 100644
+--- a/lib/pl_frame_sync.cc
++++ b/lib/pl_frame_sync.cc
+@@ -13,6 +13,7 @@
+ #include <boost/format.hpp>
+ #include <algorithm>
+ #include <cassert>
++#include <cstdio>
+ 
+ namespace gr {
+ namespace dvbs2rx {
+@@ -87,7 +88,8 @@ bool frame_sync::step(const gr_complex& in)
+      * computational cost and avoids false-positive SOF detections that could
+      * arise in the course of the frame. */
+     const bool locked = is_locked();
+-    if (locked && ((d_sym_cnt + 90) <= d_frame_len)) {
++    const int kFoundStateMargin = 3000;
++    if (locked_or_almost && ((d_sym_cnt + kFoundStateMargin) <= d_frame_len)) {
+         return false;
+     }
+ 
+@@ -96,9 +98,18 @@ bool frame_sync::step(const gr_complex& in)
+     d_plheader_buf.push_front(in);
+ 
+     /* Differential value */
+-    const gr_complex diff = conj(in) * d_last_in;
++    gr_complex diff = conj(in) * d_last_in;
+     d_last_in = in;
+ 
++    /* Normalize to unit magnitude: only the phase carries information for
++     * this constant-envelope matched filter, and the raw magnitude tracks
++     * input amplitude (AGC/gain scale), which otherwise skews the fixed
++     * absolute thresholds threshold_u/threshold_l. */
++    const float diff_mag = std::abs(diff);
++    if (diff_mag > 1e-12f) {
++        diff /= diff_mag;
++    }
++
+     /* Get the differential value 64 symbol intervals ago. We want to make sure
+      * that the SOF correlator and the PLSC correlator peak at the same time, so
+      * that their outputs can be summed together and yield an even stronger
+@@ -124,7 +135,7 @@ bool frame_sync::step(const gr_complex& in)
+      * are expected to peak. If a PLFRAME has been found already (i.e., we are
+      * locked or almost locked), proceed only if this is the expected timing for
+      * the next PLFRAME timing peak. */
+-    if (locked && (d_sym_cnt < d_frame_len))
++    if (locked_or_almost && (d_sym_cnt < d_frame_len))
+         return false;
+ 
+     /* SOF correlation */
+@@ -174,11 +185,15 @@ bool frame_sync::step(const gr_complex& in)
+      * is expected. Before locking, there are no peak expectations. */
+     const bool peak_expected = locked;
+ 
++    if (is_peak) fprintf(stderr, "[fsdbg] sym_cnt=%u metric=%.2f thr=%.2f state=%d frame_len=%u\n", d_sym_cnt, d_timing_metric, locked ? threshold_l : threshold_u, (int)d_state, d_frame_len);
++
+     /* Useful log separator */
+     GR_LOG_DEBUG_LEVEL_IF(2,
+                           (is_peak || peak_expected),
+                           "--------------------------------------------------");
+ 
++    GR_LOG_DEBUG_LEVEL(3, "metric={:f} thr_u={:f} thr_l={:f}", d_timing_metric, threshold_u, threshold_l);
++
+     /* State machine */
+     if (is_peak) {
+         if (d_state == frame_sync_state_t::searching) {
+@@ -203,6 +218,8 @@ bool frame_sync::step(const gr_complex& in)
+         // `d_unlock_thresh` consecutive frames. It's important to avoid
+         // unlocking prematurely when running under high noise.
+         d_unlock_cnt++;
++        fprintf(stderr, "[unlockdbg] metric=%.2f thr_l=%.2f unlock_cnt=%d/%d sym_cnt=%u\n",
++                d_timing_metric, threshold_l, d_unlock_cnt, d_unlock_thresh, d_sym_cnt);
+         GR_LOG_DEBUG_LEVEL(2,
+                            "Insufficient timing metric: {:f} (occurrence {:d}/{:d})",
+                            d_timing_metric,
+diff --git a/lib/pl_frame_sync.h b/lib/pl_frame_sync.h
+index 15bd190..04481ff 100644
+--- a/lib/pl_frame_sync.h
++++ b/lib/pl_frame_sync.h
+@@ -157,9 +157,9 @@ private:
+      * sufficiently strong where it is expected to be (at the start of
+      * the next frame). Since it is very important not to unlock
+      * unnecessarily, use a lower threshold for this task. */
+-    const float threshold_u = 30; /** unlocked threshold */
++    const float threshold_u = 42; /** unlocked threshold */
+                                   /* TODO: make this a top-level parameter */
+-    const float threshold_l = 25; /** locked threshold */
++    const float threshold_l = 36; /** locked threshold */
+ 
+     /**
+      * \brief Cross-correlation between a delay line buffer and a given vector.
+diff --git a/lib/pl_freq_sync.h b/lib/pl_freq_sync.h
+index e7de2ac..77f6753 100644
+--- a/lib/pl_freq_sync.h
++++ b/lib/pl_freq_sync.h
+@@ -14,6 +14,7 @@
+ #include <gnuradio/dvbs2rx/api.h>
+ #include <gnuradio/gr_complex.h>
+ #include <volk/volk_alloc.hh>
++#include <algorithm>
+ 
+ const double fine_foffset_corr_range = 3.3875e-4;
+ /* The pilot-mode fine frequency offset estimate is based on the phase difference
+@@ -333,6 +334,27 @@ public:
+      */
+     bool is_coarse_corrected() { return coarse_corrected; }
+ 
++    /**
++     * \brief Reset the frequency synchronizer state.
++     *
++     * Clears the coarse/fine frequency offset tracking state, including the
++     * cross-frame autocorrelation accumulator used for coarse estimation.
++     * Must be called whenever the physical layer frame lock is lost, so that
++     * re-acquisition does not mix stale pre-loss correlation data with
++     * samples from the new lock attempt.
++     */
++    void reset()
++    {
++        coarse_foffset = 0.0;
++        i_frame = 0;
++        coarse_corrected = false;
++        fine_foffset = 0.0;
++        w_angle_avg = 0.0;
++        fine_est_ready = false;
++        std::fill(pilot_corr.begin(), pilot_corr.end(), 0);
++    }
++
++
+     /**
+      * \brief Check whether a fine frequency offset estimate is available already.
+      *
+diff --git a/lib/plsync_cc_impl.cc b/lib/plsync_cc_impl.cc
+index c4acb6a..0f8abe1 100644
+--- a/lib/plsync_cc_impl.cc
++++ b/lib/plsync_cc_impl.cc
+@@ -161,6 +161,7 @@ plsync_cc_impl::plsync_cc_impl(int gold_code,
+ 
+     /* Message port */
+     message_port_register_out(d_port_id);
++    message_port_register_out(d_lock_lost_port_id);
+ 
+     /* This block only outputs data symbols, while pilot symbols are
+      * retained. So until we find the need, tags are not propagated */
+@@ -834,8 +835,17 @@ int plsync_cc_impl::general_work(int noutput_items,
+             for (int i = n_consumed; i < ninput_items[0]; i++) {
+                 // Step the frame synchronizer and keep refreshing the locked state. It
+                 // could change any time.
++                const bool was_locked = d_locked;
+                 bool is_sof = d_frame_sync->step(in[i]);
+                 d_locked = d_frame_sync->is_locked();
++                if (was_locked && !d_locked) {
++                    // Frame lock was just lost. Reset the frequency
++                    // synchronizer state so that re-acquisition does not mix
++                    // stale pre-loss correlation data with new samples.
++                    d_freq_sync->reset();
++                    GR_LOG_DEBUG_LEVEL(1, "Lock lost: frequency synchronizer state reset");
++                    message_port_pub(d_lock_lost_port_id, pmt::PMT_T);
++                }
+                 n_consumed++;
+                 if (!is_sof)
+                     continue;
+diff --git a/lib/plsync_cc_impl.h b/lib/plsync_cc_impl.h
+index f7108f4..cbfe715 100644
+--- a/lib/plsync_cc_impl.h
++++ b/lib/plsync_cc_impl.h
+@@ -119,6 +119,7 @@ private:
+     pls_info_t d_ccm_sis_pls;
+ 
+     const pmt::pmt_t d_port_id = pmt::mp("rotator_phase_inc");
++    const pmt::pmt_t d_lock_lost_port_id = pmt::mp("lock_lost");
+ 
+     /* Objects */
+     frame_sync* d_frame_sync;         /**< frame synchronizer */
+diff --git a/lib/symbol_sync_cc_impl.cc b/lib/symbol_sync_cc_impl.cc
+index f68bdef..d4aa77b 100644
+--- a/lib/symbol_sync_cc_impl.cc
++++ b/lib/symbol_sync_cc_impl.cc
+@@ -123,6 +123,11 @@ gr_complex
+ polyphase_interpolator::operator()(const gr_complex* in, int m_k, double mu) const
+ {
+     int idx_subfilt = (int)std::floor(d_n_subfilt * mu);
++    if (idx_subfilt < 0) {
++        idx_subfilt = 0;
++    } else if (idx_subfilt >= (int)d_n_subfilt) {
++        idx_subfilt = (int)d_n_subfilt - 1;
++    }
+     const volk::vector<float>& subfilt = d_rrc_subfilters[idx_subfilt];
+     assert((m_k + 2 - d_subfilt_len) >= 0);
+     gr_complex result;
+@@ -266,6 +271,13 @@ symbol_sync_cc_impl::symbol_sync_cc_impl(float sps,
+ 
+     // Approximate output rate / input rate
+     set_inverse_relative_rate(d_sps);
++
++    // Async message port used to reset the timing loop state from outside this
++    // block's own scheduler thread (e.g. from plsync_cc on lock loss) without a
++    // data race, since GNU Radio dispatches message handlers on this block's own
++    // thread instead of the poster's thread.
++    message_port_register_in(d_reset_port_id);
++    set_msg_handler(d_reset_port_id, [this](pmt::pmt_t msg) { this->handle_reset_msg(msg); });
+ }
+ 
+ /*
+@@ -273,6 +285,18 @@ symbol_sync_cc_impl::symbol_sync_cc_impl(float sps,
+  */
+ symbol_sync_cc_impl::~symbol_sync_cc_impl() {}
+ 
++void symbol_sync_cc_impl::reset()
++{
++    d_vi = 0.0;
++    d_cnt = 1.0 - d_nominal_step;
++    d_mu = 0;
++    d_jump = d_sps;
++    d_init = false;
++    d_last_xi = 0;
++}
++
++void symbol_sync_cc_impl::handle_reset_msg(pmt::pmt_t msg) { reset(); }
++
+ void symbol_sync_cc_impl::forecast(int noutput_items,
+                                    gr_vector_int& ninput_items_required)
+ {
+@@ -361,8 +385,9 @@ std::pair<int, int> symbol_sync_cc_impl::loop(const gr_complex* in,
+         // iterations until the counter underflows again.
+         double W1 = d_nominal_step + pi_out;
+         double W2 = d_nominal_step + d_vi;
+-        assert(W1 > 0);
+-        assert(W2 > 0);
++        const double kMinStep = 1e-6;
++        if (W1 <= 0) { W1 = kMinStep; }
++        if (W2 <= 0) { W2 = kMinStep; }
+         // NOTE: W1 and W2 can become negative when the loop bandwidth is too wide.
+ 
+         // Iterations to underflow the modulo-1 counter
+@@ -370,7 +395,11 @@ std::pair<int, int> symbol_sync_cc_impl::loop(const gr_complex* in,
+         // As noted above, the counter decrements by W1 on the strobe iteration and by W2
+         // on the remaining iterations.
+         d_jump = std::floor((d_cnt - W1) / W2) + 2;
+-        assert(d_jump > 0);
++        if (d_jump < 1) {
++            d_jump = 1;
++        } else if (d_jump > 4 * d_sps) {
++            d_jump = (int)(4 * d_sps);
++        }
+ 
+         if (d_jump > 1) {
+             // Counter value on the next basepoint index (before the next underflow)
+diff --git a/lib/symbol_sync_cc_impl.h b/lib/symbol_sync_cc_impl.h
+index fcdcbe7..e898f26 100644
+--- a/lib/symbol_sync_cc_impl.h
++++ b/lib/symbol_sync_cc_impl.h
+@@ -102,6 +102,9 @@ private:
+     gr_complex d_last_xi;  /**< Last output interpolant */
+     std::vector<int> d_strobe_idx;     /**< Indexes of the output interpolants */
+     std::vector<tag_t> d_pending_tags; /**< Pending tags from the previous work */
++    const pmt::pmt_t d_reset_port_id = pmt::mp("reset"); /**< Async reset message port */
++
++    void handle_reset_msg(pmt::pmt_t msg);
+ 
+     // Interpolators
+     //
+@@ -133,6 +136,8 @@ public:
+ 
+     void forecast(int noutput_items, gr_vector_int& ninput_items_required);
+ 
++    void reset() override;
++
+     int general_work(int noutput_items,
+                      gr_vector_int& ninput_items,
+                      gr_vector_const_void_star& input_items,
+diff --git a/python/dvbs2rx/bindings/symbol_sync_cc_python.cc b/python/dvbs2rx/bindings/symbol_sync_cc_python.cc
+index f2411d9..b77582b 100644
+--- a/python/dvbs2rx/bindings/symbol_sync_cc_python.cc
++++ b/python/dvbs2rx/bindings/symbol_sync_cc_python.cc
+@@ -14,7 +14,7 @@
+ /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
+ /* BINDTOOL_USE_PYGCCXML(0)                                                        */
+ /* BINDTOOL_HEADER_FILE(symbol_sync_cc.h)                                          */
+-/* BINDTOOL_HEADER_FILE_HASH(9a1af62e0d1bde87191c0a0ee46e1169)                     */
++/* BINDTOOL_HEADER_FILE_HASH(41db7858892f5dd681c455d254b26ef6)                     */
+ /***********************************************************************************/
+ 
+ #include <pybind11/complex.h>
+@@ -45,5 +45,7 @@ void bind_symbol_sync_cc(py::module& m)
+              py::arg("rrc_delay") = 5,
+              py::arg("n_subfilt") = 128,
+              py::arg("interp_method") = 0,
+-             D(symbol_sync_cc, make));
++             D(symbol_sync_cc, make))
++
++        .def("reset", &symbol_sync_cc::reset, "Reset the symbol timing loop state.");
+ }

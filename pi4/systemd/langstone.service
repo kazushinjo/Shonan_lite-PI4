@@ -1,0 +1,16 @@
+[Unit]
+Description=Langstone V2Modify SDR Transceiver
+After=multi-user.target shonan-boot-menu.service
+Conflicts=shonan-boot-menu.service shonan-gui.service
+ConditionPathExists=/home/pi/.pi4_boot_mode_langstone
+
+[Service]
+Type=simple
+User=pi
+Environment=HOME=/home/pi
+WorkingDirectory=/home/pi/Langstone
+ExecStart=/bin/bash /home/pi/Langstone/run_pluto
+Restart=no
+
+[Install]
+WantedBy=multi-user.target

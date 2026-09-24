@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -e
+LIBIIO_SO="${LIBIIO_SO:-/usr/lib/aarch64-linux-gnu/libiio.so.0.25}"
+cc -I/home/pi/Langstone -I/usr/include/iio -I/usr/include/freetype2 -I/home/pi/LimeSuite/src -I/home/pi/LimeSuite/src/lime /home/pi/Langstone/LangstoneGUI_Pluto.c -o /home/pi/Langstone/GUI_Pluto "$LIBIIO_SO" -L/home/pi/WiringPi/wiringPi -L/usr/lib/aarch64-linux-gnu -lLimeSuite -lwiringPi -lm -lfreetype
+cc /home/pi/Langstone/HW_Test.c -o /home/pi/Langstone/HW_Test -lwiringPi
+cc /home/pi/Langstone/Pluto_Test.c -o /home/pi/Langstone/Pluto_Test -liio

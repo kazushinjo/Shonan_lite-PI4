@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 760" font-family="'Helvetica Neue',Arial,sans-serif">
+  <style>
+    .box { fill:#ffffff; stroke:#333333; stroke-width:1.5; }
+    .box-esp { fill:#eef4ff; stroke:#2f5fa8; stroke-width:1.5; }
+    .box-w5500 { fill:#eefaf0; stroke:#2f8a4c; stroke-width:1.5; }
+    .box-drv { fill:#fff6e6; stroke:#a86a1f; stroke-width:1.2; }
+    .box-load { fill:#f5f5f5; stroke:#555555; stroke-width:1.2; }
+    .pin { font-size:12px; fill:#222222; }
+    .label { font-size:13px; fill:#111111; }
+    .title { font-size:16px; font-weight:bold; fill:#111111; }
+    .sub { font-size:11px; fill:#555555; }
+    .wire { stroke:#333333; stroke-width:1.5; fill:none; }
+    .wire-pwr { stroke:#b02a2a; stroke-width:1.5; fill:none; }
+    .wire-gnd { stroke:#444444; stroke-width:1.5; fill:none; }
+    .note { font-size:11px; fill:#777777; }
+  </style>
+
+  <rect x="0" y="0" width="1040" height="760" fill="#ffffff"/>
+  <text x="20" y="30" class="title">ESP32 + W5500 PA/PTT/LNA 制御回路（概略構成）</text>
+  <text x="20" y="48" class="sub">hardware/W5500_PA_PTT_Control — Rev.1.0 2026-08-07</text>
+
+  <!-- ESP32 box -->
+  <rect x="60" y="100" class="box-esp" width="200" height="300" rx="8"/>
+  <text x="160" y="125" class="label" text-anchor="middle" font-weight="bold">ESP32 (WROVER)</text>
+
+  <!-- ESP32 pins right side (to W5500) -->
+  <text x="70" y="160" class="pin">GPIO18 (SCK)</text>
+  <text x="70" y="182" class="pin">GPIO19 (MISO)</text>
+  <text x="70" y="204" class="pin">GPIO23 (MOSI)</text>
+  <text x="70" y="226" class="pin">GPIO5  (CS)</text>
+  <text x="70" y="248" class="pin">3.3V</text>
+  <text x="70" y="270" class="pin">GND</text>
+
+  <!-- ESP32 pins bottom (to driver stage) -->
+  <text x="70" y="320" class="pin" fill="#a86a1f">GPIO25 → LNA</text>
+  <text x="70" y="342" class="pin" fill="#a86a1f">GPIO26 → PTT</text>
+  <text x="70" y="364" class="pin" fill="#a86a1f">GPIO27 → PA</text>
+
+  <!-- W5500 box -->
+  <rect x="360" y="100" class="box-w5500" width="200" height="300" rx="8"/>
+  <text x="460" y="125" class="label" text-anchor="middle" font-weight="bold">W5500</text>
+  <text x="460" y="142" class="sub" text-anchor="middle">イーサネットモジュール</text>
+
+  <text x="370" y="160" class="pin">SCK</text>
+  <text x="370" y="182" class="pin">MISO</text>
+  <text x="370" y="204" class="pin">MOSI</text>
+  <text x="370" y="226" class="pin">CS(SS)</text>
+  <text x="370" y="248" class="pin">VCC (3.3V)</text>
+  <text x="370" y="270" class="pin">GND</text>
+  <text x="370" y="300" class="pin">RJ45 →</text>
+  <text x="370" y="318" class="sub">LANケーブルで</text>
+  <text x="370" y="332" class="sub">ネットワークへ</text>
+
+  <!-- wires ESP32<->W5500 -->
+  <path class="wire" d="M260,155 H360"/>
+  <path class="wire" d="M260,177 H360"/>
+  <path class="wire" d="M260,199 H360"/>
+  <path class="wire" d="M260,221 H360"/>
+  <path class="wire-pwr" d="M260,243 H360"/>
+  <path class="wire-gnd" d="M260,265 H360"/>
+
+  <!-- RJ45 jack -->
+  <rect x="560" y="285" width="60" height="30" class="box" rx="4"/>
+  <text x="590" y="304" class="pin" text-anchor="middle">RJ45</text>
+  <path class="wire" d="M560,300 H560"/>
+  <path class="wire" d="M470,300 H560" stroke-dasharray="0"/>
+
+  <!-- driver stage: 3 channels -->
+  <!-- LNA channel -->
+  <g>
+    <rect x="360" y="470" class="box-drv" width="150" height="70" rx="6"/>
+    <text x="435" y="495" class="label" text-anchor="middle" font-weight="bold">LNA駆動段</text>
+    <text x="435" y="512" class="sub" text-anchor="middle">Tr(2N2222等)+リレー/SSR</text>
+    <text x="435" y="528" class="sub" text-anchor="middle">＋フライホイールダイオード</text>
+
+    <rect x="600" y="470" class="box-load" width="150" height="70" rx="6"/>
+    <text x="675" y="500" class="label" text-anchor="middle" font-weight="bold">LNA 電源系統</text>
+    <text x="675" y="518" class="sub" text-anchor="middle">受信プリアンプ</text>
+
+    <path class="wire" d="M160,400 V505 H360" />
+    <path class="wire" d="M510,505 H600" />
+  </g>
+
+  <!-- PTT channel -->
+  <g>
+    <rect x="360" y="560" class="box-drv" width="150" height="70" rx="6"/>
+    <text x="435" y="585" class="label" text-anchor="middle" font-weight="bold">PTT駆動段</text>
+    <text x="435" y="602" class="sub" text-anchor="middle">Tr(2N2222等)+リレー/SSR</text>
+    <text x="435" y="618" class="sub" text-anchor="middle">＋フライホイールダイオード</text>
+
+    <rect x="600" y="560" class="box-load" width="150" height="70" rx="6"/>
+    <text x="675" y="590" class="label" text-anchor="middle" font-weight="bold">PTT 制御ライン</text>
+    <text x="675" y="608" class="sub" text-anchor="middle">送信機PTT入力</text>
+
+    <path class="wire" d="M165,400 V595 H360" />
+    <path class="wire" d="M510,595 H600" />
+  </g>
+
+  <!-- PA channel -->
+  <g>
+    <rect x="360" y="650" class="box-drv" width="150" height="70" rx="6"/>
+    <text x="435" y="675" class="label" text-anchor="middle" font-weight="bold">PA駆動段</text>
+    <text x="435" y="692" class="sub" text-anchor="middle">Tr(2N2222等)+リレー/SSR</text>
+    <text x="435" y="708" class="sub" text-anchor="middle">＋フライホイールダイオード</text>
+
+    <rect x="600" y="650" class="box-load" width="150" height="70" rx="6"/>
+    <text x="675" y="680" class="label" text-anchor="middle" font-weight="bold">PA 電源系統</text>
+    <text x="675" y="698" class="sub" text-anchor="middle">電力増幅器</text>
+
+    <path class="wire" d="M170,400 V685 H360" />
+    <path class="wire" d="M510,685 H600" />
+  </g>
+
+  <!-- gpio labels near vertical wires -->
+  <text x="165" y="415" class="pin" fill="#a86a1f">GPIO25</text>
+  <text x="170" y="435" class="pin" fill="#a86a1f">GPIO26</text>
+  <text x="175" y="455" class="pin" fill="#a86a1f">GPIO27</text>
+
+  <!-- legend / notes -->
+  <rect x="700" y="100" width="300" height="230" class="box" rx="8"/>
+  <text x="715" y="125" class="label" font-weight="bold">注記</text>
+  <text x="715" y="150" class="note">・GPIO出力は3.3Vロジックのため、</text>
+  <text x="725" y="166" class="note">  リレー/SSRを直接駆動できない場合は</text>
+  <text x="725" y="182" class="note">  駆動段にトランジスタ等を追加する。</text>
+  <text x="715" y="204" class="note">・駆動段の具体的な部品定数は</text>
+  <text x="725" y="220" class="note">  実機の電源系統(電圧/電流)に依存する</text>
+  <text x="725" y="236" class="note">  ため、本図では概略構成のみを示す。</text>
+  <text x="715" y="258" class="note">・LNA=GPIO25 / PTT=GPIO26 / PA=GPIO27</text>
+  <text x="715" y="274" class="note">  いずれもactive-HIGH(ソフト側で規定)。</text>
+  <text x="715" y="296" class="note">・W5500 CSはGPIO5固定(スケッチ内設定)。</text>
+  <text x="715" y="312" class="note">・詳細シーケンスは仕様書 3節を参照。</text>
+
+  <!-- color legend -->
+  <g transform="translate(700,345)">
+    <rect x="0" y="0" width="14" height="14" fill="none" stroke="#b02a2a" stroke-width="2"/>
+    <text x="20" y="12" class="note">電源ライン（3.3V）</text>
+    <rect x="0" y="24" width="14" height="14" fill="none" stroke="#444444" stroke-width="2"/>
+    <text x="20" y="36" class="note">GND</text>
+    <rect x="0" y="48" width="14" height="14" fill="none" stroke="#333333" stroke-width="2"/>
+    <text x="20" y="60" class="note">信号線（SPI / GPIO）</text>
+  </g>
+</svg>

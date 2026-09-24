@@ -1,0 +1,188 @@
+diff --git a/apps/dvbs2-rx b/apps/dvbs2-rx
+index 61596ef..7403b73 100755
+--- a/apps/dvbs2-rx
++++ b/apps/dvbs2-rx
+@@ -919,6 +919,7 @@ class DVBS2RxTopBlock(gr.top_block, Qt.QWidget):
+         # PL Sync
+         plsync = dvbs2rx.plsync_cc(*self._plsync_params())
+         self.msg_connect((plsync, 'rotator_phase_inc'), (rotator, 'cmd'))
++        self.msg_connect((plsync, 'lock_lost'), (symbol_sync, 'reset'))
+ 
+         # XFECFRAME demapper
+         xfecframe_demapper = dvbs2rx.xfecframe_demapper_cb(
+diff --git a/include/gnuradio/dvbs2rx/symbol_sync_cc.h b/include/gnuradio/dvbs2rx/symbol_sync_cc.h
+index d51d0e0..f5aa362 100644
+--- a/include/gnuradio/dvbs2rx/symbol_sync_cc.h
++++ b/include/gnuradio/dvbs2rx/symbol_sync_cc.h
+@@ -75,6 +75,16 @@ public:
+                      int rrc_delay = 5,
+                      int n_subfilt = 128,
+                      int interp_method = 0);
++
++    /*!
++     * \brief Reset the symbol timing loop state.
++     *
++     * Clears the PI loop filter integrator, modulo-1 counter, and fractional
++     * timing offset estimate. Should be called after an external frame lock
++     * loss, so that timing re-acquisition does not start from a possibly
++     * stale/corrupted state left over from before the loss.
++     */
++    virtual void reset() = 0;
+ };
+ 
+ } // namespace dvbs2rx
+diff --git a/lib/pl_freq_sync.h b/lib/pl_freq_sync.h
+index e7de2ac..77f6753 100644
+--- a/lib/pl_freq_sync.h
++++ b/lib/pl_freq_sync.h
+@@ -14,6 +14,7 @@
+ #include <gnuradio/dvbs2rx/api.h>
+ #include <gnuradio/gr_complex.h>
+ #include <volk/volk_alloc.hh>
++#include <algorithm>
+ 
+ const double fine_foffset_corr_range = 3.3875e-4;
+ /* The pilot-mode fine frequency offset estimate is based on the phase difference
+@@ -333,6 +334,27 @@ public:
+      */
+     bool is_coarse_corrected() { return coarse_corrected; }
+ 
++    /**
++     * \brief Reset the frequency synchronizer state.
++     *
++     * Clears the coarse/fine frequency offset tracking state, including the
++     * cross-frame autocorrelation accumulator used for coarse estimation.
++     * Must be called whenever the physical layer frame lock is lost, so that
++     * re-acquisition does not mix stale pre-loss correlation data with
++     * samples from the new lock attempt.
++     */
++    void reset()
++    {
++        coarse_foffset = 0.0;
++        i_frame = 0;
++        coarse_corrected = false;
++        fine_foffset = 0.0;
++        w_angle_avg = 0.0;
++        fine_est_ready = false;
++        std::fill(pilot_corr.begin(), pilot_corr.end(), 0);
++    }
++
++
+     /**
+      * \brief Check whether a fine frequency offset estimate is available already.
+      *
+diff --git a/lib/plsync_cc_impl.cc b/lib/plsync_cc_impl.cc
+index c4acb6a..0f8abe1 100644
+--- a/lib/plsync_cc_impl.cc
++++ b/lib/plsync_cc_impl.cc
+@@ -161,6 +161,7 @@ plsync_cc_impl::plsync_cc_impl(int gold_code,
+ 
+     /* Message port */
+     message_port_register_out(d_port_id);
++    message_port_register_out(d_lock_lost_port_id);
+ 
+     /* This block only outputs data symbols, while pilot symbols are
+      * retained. So until we find the need, tags are not propagated */
+@@ -834,8 +835,17 @@ int plsync_cc_impl::general_work(int noutput_items,
+             for (int i = n_consumed; i < ninput_items[0]; i++) {
+                 // Step the frame synchronizer and keep refreshing the locked state. It
+                 // could change any time.
++                const bool was_locked = d_locked;
+                 bool is_sof = d_frame_sync->step(in[i]);
+                 d_locked = d_frame_sync->is_locked();
++                if (was_locked && !d_locked) {
++                    // Frame lock was just lost. Reset the frequency
++                    // synchronizer state so that re-acquisition does not mix
++                    // stale pre-loss correlation data with new samples.
++                    d_freq_sync->reset();
++                    GR_LOG_DEBUG_LEVEL(1, "Lock lost: frequency synchronizer state reset");
++                    message_port_pub(d_lock_lost_port_id, pmt::PMT_T);
++                }
+                 n_consumed++;
+                 if (!is_sof)
+                     continue;
+diff --git a/lib/plsync_cc_impl.h b/lib/plsync_cc_impl.h
+index f7108f4..cbfe715 100644
+--- a/lib/plsync_cc_impl.h
++++ b/lib/plsync_cc_impl.h
+@@ -119,6 +119,7 @@ private:
+     pls_info_t d_ccm_sis_pls;
+ 
+     const pmt::pmt_t d_port_id = pmt::mp("rotator_phase_inc");
++    const pmt::pmt_t d_lock_lost_port_id = pmt::mp("lock_lost");
+ 
+     /* Objects */
+     frame_sync* d_frame_sync;         /**< frame synchronizer */
+diff --git a/lib/symbol_sync_cc_impl.cc b/lib/symbol_sync_cc_impl.cc
+index f68bdef..80dca34 100644
+--- a/lib/symbol_sync_cc_impl.cc
++++ b/lib/symbol_sync_cc_impl.cc
+@@ -266,6 +266,13 @@ symbol_sync_cc_impl::symbol_sync_cc_impl(float sps,
+ 
+     // Approximate output rate / input rate
+     set_inverse_relative_rate(d_sps);
++
++    // Async message port used to reset the timing loop state from outside this
++    // block's own scheduler thread (e.g. from plsync_cc on lock loss) without a
++    // data race, since GNU Radio dispatches message handlers on this block's own
++    // thread instead of the poster's thread.
++    message_port_register_in(d_reset_port_id);
++    set_msg_handler(d_reset_port_id, [this](pmt::pmt_t msg) { this->handle_reset_msg(msg); });
+ }
+ 
+ /*
+@@ -273,6 +280,18 @@ symbol_sync_cc_impl::symbol_sync_cc_impl(float sps,
+  */
+ symbol_sync_cc_impl::~symbol_sync_cc_impl() {}
+ 
++void symbol_sync_cc_impl::reset()
++{
++    d_vi = 0.0;
++    d_cnt = 1.0 - d_nominal_step;
++    d_mu = 0;
++    d_jump = d_sps;
++    d_init = false;
++    d_last_xi = 0;
++}
++
++void symbol_sync_cc_impl::handle_reset_msg(pmt::pmt_t msg) { reset(); }
++
+ void symbol_sync_cc_impl::forecast(int noutput_items,
+                                    gr_vector_int& ninput_items_required)
+ {
+diff --git a/lib/symbol_sync_cc_impl.h b/lib/symbol_sync_cc_impl.h
+index fcdcbe7..e898f26 100644
+--- a/lib/symbol_sync_cc_impl.h
++++ b/lib/symbol_sync_cc_impl.h
+@@ -102,6 +102,9 @@ private:
+     gr_complex d_last_xi;  /**< Last output interpolant */
+     std::vector<int> d_strobe_idx;     /**< Indexes of the output interpolants */
+     std::vector<tag_t> d_pending_tags; /**< Pending tags from the previous work */
++    const pmt::pmt_t d_reset_port_id = pmt::mp("reset"); /**< Async reset message port */
++
++    void handle_reset_msg(pmt::pmt_t msg);
+ 
+     // Interpolators
+     //
+@@ -133,6 +136,8 @@ public:
+ 
+     void forecast(int noutput_items, gr_vector_int& ninput_items_required);
+ 
++    void reset() override;
++
+     int general_work(int noutput_items,
+                      gr_vector_int& ninput_items,
+                      gr_vector_const_void_star& input_items,
+diff --git a/python/dvbs2rx/bindings/symbol_sync_cc_python.cc b/python/dvbs2rx/bindings/symbol_sync_cc_python.cc
+index f2411d9..d19509a 100644
+--- a/python/dvbs2rx/bindings/symbol_sync_cc_python.cc
++++ b/python/dvbs2rx/bindings/symbol_sync_cc_python.cc
+@@ -45,5 +45,7 @@ void bind_symbol_sync_cc(py::module& m)
+              py::arg("rrc_delay") = 5,
+              py::arg("n_subfilt") = 128,
+              py::arg("interp_method") = 0,
+-             D(symbol_sync_cc, make));
++             D(symbol_sync_cc, make))
++
++        .def("reset", &symbol_sync_cc::reset, "Reset the symbol timing loop state.");
+ }

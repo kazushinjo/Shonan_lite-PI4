@@ -1,0 +1,13 @@
+#!/bin/bash
+# Rebuild after new files have been pushed to this Pi over SSH
+# (run deploy_to_pi.sh from your PC first to update /home/pi/Langstone).
+cd /home/pi/Langstone
+chmod +x build
+chmod +x run_pluto
+chmod +x stop_pluto
+chmod +x update
+chmod +x set_pluto
+chmod +x set_sound
+./build
+ln -sf /home/pi/Langstone/run_pluto /home/pi/Langstone/run
+ln -sf /home/pi/Langstone/stop_pluto /home/pi/Langstone/stop
