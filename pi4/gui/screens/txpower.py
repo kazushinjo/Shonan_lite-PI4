@@ -17,7 +17,7 @@ class TxPowerScreen(SettingsSubScreen):
         self.body_layout.addLayout(columns, 1)
 
         setting_card = QtWidgets.QFrame()
-        setting_card.setStyleSheet("QFrame { background: #191d1f; border-radius: 12px; } QLabel { color: white; background: transparent; }")
+        setting_card.setStyleSheet("QFrame { background: #0f1214; border-radius: 12px; } QLabel { color: white; background: transparent; }")
         setting_layout = QtWidgets.QVBoxLayout(setting_card)
         setting_layout.setContentsMargins(16, 12, 16, 12)
         setting_layout.setSpacing(8)

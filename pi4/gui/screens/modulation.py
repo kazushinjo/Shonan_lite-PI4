@@ -61,7 +61,7 @@ class ModulationScreen(SettingsSubScreen):
 
         card = QtWidgets.QFrame()
         card.setStyleSheet(
-            "QFrame { background: #101416; border: 1px solid #34434b; border-radius: 14px; }"
+            "QFrame { background: #0a0c0d; border: 1px solid #34434b; border-radius: 14px; }"
             "QLabel { color: #eeeeee; background: transparent; }"
         )
         self.body_layout.addWidget(card, 1)
@@ -74,7 +74,7 @@ class ModulationScreen(SettingsSubScreen):
         outer.addLayout(columns, 1)
 
         left = QtWidgets.QFrame()
-        left.setStyleSheet("QFrame { background: #191d1f; border: 1px solid #34434b; border-radius: 10px; }")
+        left.setStyleSheet("QFrame { background: #0f1214; border: 1px solid #34434b; border-radius: 10px; }")
         left_layout = QtWidgets.QVBoxLayout(left)
         left_layout.setContentsMargins(10, 8, 10, 8)
         left_layout.setSpacing(1)
@@ -91,8 +91,8 @@ class ModulationScreen(SettingsSubScreen):
                 " border-radius: 8px; padding: 4px 12px; text-align: left;"
                 " font-size: 14px; font-weight: bold; min-height: 20px; }"
                 "QPushButton:checked { background-color: #1677ff; }"
-                "QPushButton:pressed { background-color: #222222; }"
-                "QPushButton:disabled { color: #777777; background-color: #252a2d; }"
+                "QPushButton:pressed { background-color: #102a5c; }"
+                "QPushButton:disabled { color: #777777; background-color: #171a1c; }"
             )
             button.setChecked(main_window.settings.modulation_scheme == scheme)
             if scheme not in MODULATION_SCHEMES:
@@ -106,7 +106,7 @@ class ModulationScreen(SettingsSubScreen):
         columns.addWidget(left, 1)
 
         right = QtWidgets.QFrame()
-        right.setStyleSheet("QFrame { background: #191d1f; border: 1px solid #34434b; border-radius: 10px; }")
+        right.setStyleSheet("QFrame { background: #0f1214; border: 1px solid #34434b; border-radius: 10px; }")
         right_layout = QtWidgets.QVBoxLayout(right)
         right_layout.setContentsMargins(10, 8, 10, 8)
         right_layout.setSpacing(4)

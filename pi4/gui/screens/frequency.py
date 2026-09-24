@@ -15,7 +15,7 @@ _CHIP_STYLE = (
     " border-radius: 8px; padding: 8px; font-size: 13px; font-weight: bold;"
     " min-height: 20px; text-align: left; }"
     "QPushButton:checked { background-color: #1677ff; }"
-    "QPushButton:pressed { background-color: #222222; }"
+    "QPushButton:pressed { background-color: #102a5c; }"
 )
 
 
@@ -36,7 +36,7 @@ class FrequencyScreen(SettingsSubScreen):
         # --- 左カラム: 周波数入力 ---
         input_card = QtWidgets.QFrame()
         input_card.setStyleSheet(
-            "QFrame { background-color: #191d1f; border-radius: 12px; }"
+            "QFrame { background-color: #0f1214; border-radius: 12px; }"
             "QLabel { color: white; background: transparent; }")
         input_layout = QtWidgets.QVBoxLayout(input_card)
         input_layout.setContentsMargins(16, 12, 16, 12)
@@ -83,12 +83,12 @@ class FrequencyScreen(SettingsSubScreen):
             # 800x480 LCDではモックに合わせてコンパクトな4行テンキーにする。
             button.setFixedSize(60, 38)
             button.setStyleSheet(
-                "QPushButton { background: #f5f7f8; color: #101820; border: 1px solid #c7d0d6;"
+                "QPushButton { background: #1d4388; color: white; border: 1px solid #2c5aa8;"
                 " border-radius: 5px; font-size: 16px; font-weight: bold;"
                 " min-width: 60px; max-width: 60px; min-height: 38px;"
                 " max-height: 38px; padding: 0px; }"
-                "QPushButton:pressed { background: #dbeaf2; }"
-                + ("QPushButton { background: #0797bd; color: white; border: none; }"
+                "QPushButton:pressed { background: #102a5c; }"
+                + ("QPushButton { background: #1677ff; color: white; border: none; }"
                    if label == "OK" else ""))
             button.clicked.connect(lambda _checked=False, value=label: self._on_key(value))
             keypad.addWidget(button, row, column)
@@ -104,7 +104,7 @@ class FrequencyScreen(SettingsSubScreen):
         band_card = QtWidgets.QFrame()
         band_card.setFixedWidth(240)
         band_card.setStyleSheet(
-            "QFrame { background-color: #191d1f; border-radius: 12px; }"
+            "QFrame { background-color: #0f1214; border-radius: 12px; }"
             "QLabel { color: white; background: transparent; }")
         band_layout = QtWidgets.QVBoxLayout(band_card)
         band_layout.setContentsMargins(14, 12, 14, 12)

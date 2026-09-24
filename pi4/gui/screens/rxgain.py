@@ -20,7 +20,7 @@ class RxGainScreen(SettingsSubScreen):
 
         # --- 左カラム: RXゲイン調整 ---
         gain_card = QtWidgets.QFrame()
-        gain_card.setStyleSheet("QFrame { background: #191d1f; border-radius: 12px; } QLabel { color: white; background: transparent; }")
+        gain_card.setStyleSheet("QFrame { background: #0f1214; border-radius: 12px; } QLabel { color: white; background: transparent; }")
         gain_layout = QtWidgets.QVBoxLayout(gain_card)
         gain_layout.setContentsMargins(16, 12, 16, 12)
         gain_layout.setSpacing(8)
@@ -62,7 +62,7 @@ class RxGainScreen(SettingsSubScreen):
 
         # --- 右カラム: 信号レベル ---
         level_card = QtWidgets.QFrame()
-        level_card.setStyleSheet("QFrame { background: #191d1f; border-radius: 12px; } QLabel { color: white; background: transparent; }")
+        level_card.setStyleSheet("QFrame { background: #0f1214; border-radius: 12px; } QLabel { color: white; background: transparent; }")
         level_layout = QtWidgets.QVBoxLayout(level_card)
         level_layout.setContentsMargins(16, 12, 16, 12)
         level_layout.setSpacing(8)

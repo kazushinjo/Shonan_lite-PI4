@@ -11,7 +11,7 @@ from pathlib import Path
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from i18n import tr
-from widgets import SettingsSubScreen, error_dialog, info_dialog, open_file_dialog
+from widgets import SettingsSubScreen, confirm_dialog, error_dialog, info_dialog, open_file_dialog
 
 # オーバーレイ文字サイズの選択肢(px、1920x1080の送信映像上での大きさ)。
 _CALLSIGN_FONT_SIZES = (36, 48, 68, 96, 128, 192, 256)
@@ -49,10 +49,10 @@ class VideoSourceScreen(SettingsSubScreen):
 
         card = QtWidgets.QFrame()
         card.setStyleSheet(
-            "QFrame { background: #101416; border: 1px solid #34434b; border-radius: 14px; }"
+            "QFrame { background: #0a0c0d; border: 1px solid #34434b; border-radius: 14px; }"
             "QLabel { color: #eeeeee; background: transparent; }"
-            "QComboBox { background: #191d1f; color: #eeeeee; border: 1px solid #46545b; border-radius: 6px; padding: 5px; }"
-            "QLineEdit { background: #191d1f; color: #eeeeee; border: 1px solid #46545b;"
+            "QComboBox { background: #0f1214; color: #eeeeee; border: 1px solid #46545b; border-radius: 6px; padding: 5px; }"
+            "QLineEdit { background: #0f1214; color: #eeeeee; border: 1px solid #46545b;"
             " border-radius: 6px; padding: 4px 8px; font-size: 14px; }"
             # ★祖先(SettingsSubScreen)のQSSがボタン・入力欄に大きいmin-heightを全体適用しており、
             # そのままでは800x480に収まらずスクロールが出た(Pi4実機で確認)。この画面では高さを抑える。
@@ -69,7 +69,7 @@ class VideoSourceScreen(SettingsSubScreen):
         outer.addLayout(columns, 1)
 
         left = QtWidgets.QFrame()
-        left.setStyleSheet("QFrame { background: #191d1f; border: 1px solid #34434b; border-radius: 10px; }")
+        left.setStyleSheet("QFrame { background: #0f1214; border: 1px solid #34434b; border-radius: 10px; }")
         left_layout = QtWidgets.QVBoxLayout(left)
         left_layout.setContentsMargins(10, 8, 10, 8)
         left_layout.setSpacing(2)
@@ -107,23 +107,43 @@ class VideoSourceScreen(SettingsSubScreen):
         left_layout.addWidget(self.audio_none_button)
         left_layout.addStretch(1)
         # カメラ映像を静止画(JPG)として撮影・保存する。保存した画像は「ファイル選択」で
-        # 送信画像として選べる。映像ソースが「カメラ」のときだけ押せる。
+        # 送信画像として選べる。映像ソースが「カメラ」のときだけ表示する。
         self._capture_process = None
         self._capture_path = None
         self.capture_btn = QtWidgets.QPushButton(tr("撮影", "Capture"))
         self.capture_btn.setMinimumHeight(30)
         self.capture_btn.setStyleSheet(
-            "QPushButton { background-color: #0f8fb8; color: white; border: none;"
+            "QPushButton { background-color: #1677ff; color: white; border: none;"
             " border-radius: 8px; padding: 4px 10px; font-size: 13px; font-weight: bold; }"
-            "QPushButton:pressed { background-color: #0b6f8f; }"
-            "QPushButton:disabled { color: #777777; background-color: #252a2d; }"
+            "QPushButton:pressed { background-color: #102a5c; }"
+            "QPushButton:disabled { color: #777777; background-color: #171a1c; }"
         )
         self.capture_btn.clicked.connect(self._capture_still)
-        left_layout.addWidget(self.capture_btn)
+        # 撮影した画像(CAPTURE_DIRのcapture_*.jpg)をまとめて削除する。撮影ボタンと
+        # 半分ずつの幅で横に並べ、誤操作と区別できるよう赤系の色にする。
+        self.delete_captures_btn = QtWidgets.QPushButton(tr("全削除", "Delete All"))
+        self.delete_captures_btn.setMinimumHeight(30)
+        self.delete_captures_btn.setStyleSheet(
+            "QPushButton { background-color: #c62828; color: white; border: none;"
+            " border-radius: 8px; padding: 4px 10px; font-size: 13px; font-weight: bold; }"
+            "QPushButton:pressed { background-color: #7f1a1a; }"
+            "QPushButton:disabled { color: #777777; background-color: #171a1c; }"
+        )
+        self.delete_captures_btn.clicked.connect(self._delete_all_captures)
+        # ★撮影中は撮影ボタンを無効にするが、押した直後のボタンがフォーカスを持っていると
+        # Qtがフォーカスを次の部品(コールサイン入力欄)へ移し、オンスクリーンキーボードが
+        # 出て撮影完了の案内(OKボタン)を隠してしまう(Pi4実機で確認)。フォーカスを持たせない。
+        self.capture_btn.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.delete_captures_btn.setFocusPolicy(QtCore.Qt.NoFocus)
+        capture_row = QtWidgets.QHBoxLayout()
+        capture_row.setSpacing(8)
+        capture_row.addWidget(self.capture_btn, 1)
+        capture_row.addWidget(self.delete_captures_btn, 1)
+        left_layout.addLayout(capture_row)
         columns.addWidget(left, 1)
 
         right = QtWidgets.QFrame()
-        right.setStyleSheet("QFrame { background: #191d1f; border: 1px solid #34434b; border-radius: 10px; }")
+        right.setStyleSheet("QFrame { background: #0f1214; border: 1px solid #34434b; border-radius: 10px; }")
         right_layout = QtWidgets.QVBoxLayout(right)
         right_layout.setContentsMargins(10, 8, 10, 8)
         right_layout.setSpacing(4)
@@ -228,8 +248,8 @@ class VideoSourceScreen(SettingsSubScreen):
             " border-radius: 8px; padding: 4px 10px; text-align: left;"
             " font-size: 13px; font-weight: bold; }"
             "QPushButton:checked { background-color: #1677ff; }"
-            "QPushButton:pressed { background-color: #222222; }"
-            "QPushButton:disabled { color: #777777; background-color: #252a2d; }"
+            "QPushButton:pressed { background-color: #102a5c; }"
+            "QPushButton:disabled { color: #777777; background-color: #171a1c; }"
         )
         if enabled:
             radio.toggled.connect(lambda active, s=source: active and self._select(s))
@@ -365,7 +385,40 @@ class VideoSourceScreen(SettingsSubScreen):
     def _update_capture_button(self) -> None:
         settings = self.main_window.settings
         is_camera = settings.video_source == "camera" and not settings.use_color_bar_source
+        # カメラ選択時だけ表示する(ファイル選択/テストパターンでは撮影できないため)。
+        self.capture_btn.setVisible(is_camera)
         self.capture_btn.setEnabled(is_camera and self._capture_process is None)
+        self.delete_captures_btn.setVisible(is_camera)
+        self.delete_captures_btn.setEnabled(is_camera and self._capture_process is None)
+
+    def _delete_all_captures(self) -> None:
+        captures = sorted(CAPTURE_DIR.glob("capture_*.jpg")) if CAPTURE_DIR.is_dir() else []
+        if not captures:
+            info_dialog(
+                self, tr("全削除", "Delete All"),
+                tr("削除する撮影画像はありません。", "There are no captured images to delete."))
+            return
+        if not confirm_dialog(
+                self, tr("全削除", "Delete All"),
+                tr(f"撮影した画像 {len(captures)} 枚をすべて削除します。よろしいですか？",
+                   f"Delete all {len(captures)} captured images?")):
+            return
+        failed = []
+        for path in captures:
+            try:
+                path.unlink()
+            except OSError:
+                failed.append(path.name)
+        # 削除した撮影画像が送信画像(ファイル選択)に選ばれていたら選択を解除する。
+        settings = self.main_window.settings
+        if settings.video_file_path and not Path(settings.video_file_path).exists():
+            settings.video_file_path = ""
+            self.main_window.save_settings()
+        if failed:
+            error_dialog(
+                self, tr("全削除", "Delete All"),
+                tr("削除できなかった画像があります:\n", "Some images could not be deleted:\n")
+                + "\n".join(failed))
 
     def _capture_still(self) -> None:
         if self._capture_process is not None:
@@ -510,8 +563,9 @@ class VideoSourceScreen(SettingsSubScreen):
     def _scaled_preview(self, pixmap: QtGui.QPixmap) -> QtGui.QPixmap:
         if pixmap.isNull():
             return pixmap
+        # 枠線の内側(contentsRect)に収める。
         return pixmap.scaled(
-            self.preview.size(), QtCore.Qt.KeepAspectRatio,
+            self.preview.contentsRect().size() - QtCore.QSize(4, 4), QtCore.Qt.KeepAspectRatio,
             QtCore.Qt.SmoothTransformation)
 
     def _refresh_still_preview(self) -> None:

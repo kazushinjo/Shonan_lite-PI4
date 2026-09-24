@@ -78,6 +78,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.settings = settings_store.load()
         # tr()(Pi5版から移植した画面が使う)の表示言語を設定に合わせる。
         set_language(self.settings.language)
+        # オンデバイス復調はテスト用(自局送信を受信する)のため、起動時は前回の状態に
+        # かかわらず必ずOFFにする(ONのままだと送信開始時に受信も自動で始まる)。
+        self.settings.use_on_device_demod = False
         self.settings.simultaneous_tx_rx_test = self.settings.use_on_device_demod
         settings_store.save(self.settings)
         self.tx_controller = TxController(self)
@@ -431,7 +434,7 @@ class MainWindow(QtWidgets.QMainWindow):
         panel = QtWidgets.QFrame(overlay)
         panel.setFixedSize(500, 240 if title in ("起動時Pluto再起動", "アプリ再起動") else 210)
         panel.setStyleSheet(
-            "QFrame { background: #101416; color: white; border-radius: 12px; } "
+            "QFrame { background: #0a0c0d; color: white; border-radius: 12px; } "
             "QLabel { color: white; }"
         )
         layout = QtWidgets.QVBoxLayout(panel)
@@ -658,11 +661,11 @@ class MainWindow(QtWidgets.QMainWindow):
 _GLOBAL_STYLESHEET = """
 QWidget { background-color: black; color: #eeeeee; font-size: 14px; }
 QPushButton {
-  background-color: #14235c; color: white; font-weight: bold;
-  border: 2px solid #0c1638; border-radius: 8px; padding: 8px;
+  background-color: #1d4388; color: white; font-weight: bold;
+  border: 2px solid #2c5aa8; border-radius: 8px; padding: 8px;
   outline: none;
 }
-QPushButton:pressed { background-color: #0c1638; }
+QPushButton:pressed { background-color: #102a5c; }
 QPushButton:disabled { background-color: #999999; border-color: #777777; color: #dddddd; }
 QPushButton:focus { outline: none; }
 QRadioButton, QCheckBox { color: #eeeeee; }

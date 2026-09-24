@@ -47,11 +47,11 @@ class IPSettingDialog(QtWidgets.QDialog):
         self.setWindowTitle("Pluto IP設定")
         self.setModal(True)
         self.setStyleSheet(
-            "QDialog{background:#101416;color:white;}"
+            "QDialog{background:#0a0c0d;color:white;}"
             "QLabel{color:white;}"
             "QPushButton{font-size:20px;min-height:56px;border-radius:8px;"
-            "background:#1c2733;color:white;border:1px solid #3b5159;}"
-            "QPushButton:pressed{background:#2d80c7;}"
+            "background:#1d4388;color:white;border:1px solid #2c5aa8;}"
+            "QPushButton:pressed{background:#102a5c;}"
         )
         layout = QtWidgets.QVBoxLayout(self)
         layout.setContentsMargins(24, 20, 24, 20)
@@ -89,7 +89,7 @@ class IPSettingDialog(QtWidgets.QDialog):
         buttons = QtWidgets.QHBoxLayout()
         cancel = QtWidgets.QPushButton("キャンセル / Cancel")
         ok = QtWidgets.QPushButton("保存 / Save")
-        ok.setStyleSheet("background:#164f87;font-weight:bold;")
+        ok.setStyleSheet("background:#1677ff;font-weight:bold;")
         cancel.clicked.connect(self.reject)
         ok.clicked.connect(self.accept)
         buttons.addWidget(cancel)
@@ -129,9 +129,9 @@ class BootMenu(QtWidgets.QWidget):
         for button in (shonan, langstone):
             button.setMinimumHeight(115)
             button.setStyleSheet(
-                "QPushButton{font-size:25px;font-weight:bold;background:#164f87;"
+                "QPushButton{font-size:25px;font-weight:bold;background:#1677ff;"
                 "border:3px solid white;border-radius:16px;}"
-                "QPushButton:pressed{background:#2d80c7;}"
+                "QPushButton:pressed{background:#102a5c;}"
                 "QPushButton:disabled{background:#333;color:#888;}"
             )
             layout.addWidget(button)
@@ -145,9 +145,9 @@ class BootMenu(QtWidgets.QWidget):
         self.ip_button = QtWidgets.QPushButton()
         self.ip_button.setMinimumHeight(64)
         self.ip_button.setStyleSheet(
-            "QPushButton{font-size:16px;font-weight:bold;background:#1c2733;"
-            "border:2px solid #3b5159;border-radius:12px;color:#7fd4ff;}"
-            "QPushButton:pressed{background:#2d80c7;color:white;}"
+            "QPushButton{font-size:16px;font-weight:bold;background:#1d4388;"
+            "border:2px solid #2c5aa8;border-radius:12px;color:#7fd4ff;}"
+            "QPushButton:pressed{background:#102a5c;color:white;}"
         )
         self.ip_button.clicked.connect(self._on_ip_setting)
         layout.addWidget(self.ip_button)
