@@ -469,7 +469,7 @@ class HomeScreen(QtWidgets.QWidget):
         shutdown.setMinimumHeight(44)
         cancel.setMinimumHeight(44)
         shutdown.setStyleSheet("QPushButton { background: #f05a45; color: white; border: none; border-radius: 6px; padding: 6px 18px; font-weight: bold; }")
-        cancel.setStyleSheet("QPushButton { color: white; border: 1px solid #3b5159; border-radius: 6px; padding: 6px 18px; font-weight: bold; }")
+        cancel.setStyleSheet("QPushButton { background-color: #14235c; color: white; border: 1px solid #3b5159; border-radius: 6px; padding: 6px 18px; font-weight: bold; } QPushButton:pressed { background-color: #0c1638; }")
         shutdown.clicked.connect(dialog.accept)
         cancel.clicked.connect(dialog.reject)
         buttons.addWidget(shutdown)

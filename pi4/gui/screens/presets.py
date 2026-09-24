@@ -7,7 +7,7 @@ from PyQt5 import QtCore, QtWidgets
 
 from backend import _push_pluto_settings
 from i18n import tr
-from widgets import SettingsSubScreen, _run_as_overlay, confirm_dialog, error_dialog
+from widgets import SettingsSubScreen, confirm_dialog, error_dialog
 
 
 _PRESET_FIELDS = (
@@ -39,10 +39,10 @@ class PresetsScreen(SettingsSubScreen):
         card.setObjectName("presetCard")
         card.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         card.setStyleSheet(
-            "QFrame#presetCard { background: #101416; border: 1px solid #34434b; border-radius: 14px; }"
+            "QFrame#presetCard { background: #0a0c0d; border: 1px solid #34434b; border-radius: 14px; }"
             "QLabel { color: #eeeeee; background: transparent; }"
-            "QPushButton { background-color: #303538; color: white; border: none; border-radius: 8px; }"
-            "QPushButton:pressed { background-color: #222222; }"
+            "QPushButton { background-color: #1d4388; color: white; border: none; border-radius: 8px; }"
+            "QPushButton:pressed { background-color: #102a5c; }"
         )
         card_layout = QtWidgets.QVBoxLayout(card)
         card_layout.setContentsMargins(10, 6, 10, 6)
@@ -109,7 +109,7 @@ class PresetsScreen(SettingsSubScreen):
             " border-radius: 8px; padding: 4px 10px; text-align: left;"
             " font-size: 13px; font-weight: bold; min-height: 0px; max-height: 34px; }"
             "QPushButton:checked { background-color: #1677ff; }"
-            "QPushButton:pressed { background-color: #222222; }")
+            "QPushButton:pressed { background-color: #102a5c; }")
         return button
 
     def _add_row(self, layout, select, edit, delete):
@@ -148,15 +148,64 @@ class PresetsScreen(SettingsSubScreen):
         return {name: deepcopy(getattr(settings, name)) for name in _PRESET_FIELDS}
 
     def _ask_name(self, initial=""):
-        # ★QInputDialog.getText()は独立ウィンドウで開くためlinuxfb(Pi4)では表示されない。
-        # ダイアログを作ってPi4の重ね表示(_run_as_overlay)で出す。
-        dialog = QtWidgets.QInputDialog(self)
-        dialog.setWindowTitle(tr("プリセット名", "Preset Name"))
-        dialog.setLabelText(tr("プリセット名を入力してください:", "Enter a preset name:"))
-        dialog.setTextValue(initial)
-        accepted = _run_as_overlay(dialog) == QtWidgets.QDialog.Accepted
-        name = dialog.textValue().strip()
-        return name if accepted and name else None
+        # ★QInputDialogはMainWindowとは別のトップレベルウィンドウになるため、MainWindowに
+        # 埋め込んだオンスクリーンキーボード(main.py _build_keyboard_panel)が表示されない
+        # (Pi4のlinuxfbでは独立ウィンドウ自体が表示されない)。MainWindowの子として入力パネルを重ねて表示し、
+        # キーボード(画面下部)に隠れないよう入力欄は画面上部に置く。
+        window = self.main_window
+        overlay = QtWidgets.QFrame(window)
+        overlay.setObjectName("presetNameOverlay")
+        overlay.setGeometry(window.rect())
+        overlay.setStyleSheet(
+            "QFrame#presetNameOverlay { background: rgba(0, 0, 0, 200); }"
+            "QFrame#presetNameCard { background: #0a0c0d; border: 1px solid #34434b; border-radius: 12px; }"
+            "QLabel { color: #eeeeee; background: transparent; font-size: 14px; font-weight: bold; }"
+            "QLineEdit { background: #171a1c; color: white; border: 1px solid #2c5aa8;"
+            " border-radius: 6px; padding: 4px 8px; font-size: 18px; min-height: 36px; }"
+            "QPushButton { background-color: #1d4388; color: white; border: none; border-radius: 8px;"
+            " font-weight: bold; min-width: 110px; min-height: 36px; max-height: 36px; padding: 0px; }"
+            "QPushButton:pressed { background-color: #102a5c; }")
+        card = QtWidgets.QFrame(overlay)
+        card.setObjectName("presetNameCard")
+        card.setGeometry(40, 16, window.width() - 80, 170)
+        layout = QtWidgets.QVBoxLayout(card)
+        layout.setContentsMargins(16, 12, 16, 12)
+        layout.setSpacing(8)
+        layout.addWidget(QtWidgets.QLabel(tr("プリセット名を入力してください:", "Enter a preset name:")))
+        edit = QtWidgets.QLineEdit(initial)
+        edit.setMaxLength(40)
+        layout.addWidget(edit)
+        buttons = QtWidgets.QHBoxLayout()
+        buttons.addStretch(1)
+        cancel = QtWidgets.QPushButton(tr("キャンセル", "Cancel"))
+        # 入力した名前で現在の設定をこのプリセットへ登録する。
+        ok = QtWidgets.QPushButton(tr("現在の設定を登録", "Save Current Settings"))
+        ok.setStyleSheet("QPushButton { background-color: #1677ff; min-width: 190px; }")
+        buttons.addWidget(cancel)
+        buttons.addWidget(ok)
+        layout.addLayout(buttons)
+
+        loop = QtCore.QEventLoop()
+        result = {"accepted": False}
+
+        def finish(accepted):
+            result["accepted"] = accepted
+            loop.quit()
+
+        ok.clicked.connect(lambda: finish(True))
+        edit.returnPressed.connect(lambda: finish(True))
+        cancel.clicked.connect(lambda: finish(False))
+        overlay.show()
+        overlay.raise_()
+        edit.setFocus()
+        edit.selectAll()
+        loop.exec_()
+        name = edit.text().strip()
+        edit.clearFocus()
+        window._hide_keyboard_panel()
+        overlay.hide()
+        overlay.deleteLater()
+        return name if result["accepted"] and name else None
 
     def _save_current(self, index):
         if self._busy():

@@ -26,7 +26,7 @@ class StreamOutputScreen(SettingsSubScreen):
         self.body_layout.addLayout(columns, 1)
 
         left = QtWidgets.QFrame()
-        left.setStyleSheet("QFrame { background: #191d1f; border-radius: 12px; } QLabel { color: white; background: transparent; }")
+        left.setStyleSheet("QFrame { background: #0f1214; border-radius: 12px; } QLabel { color: white; background: transparent; }")
         left_layout = QtWidgets.QVBoxLayout(left)
         left_layout.setContentsMargins(14, 12, 14, 12)
         left_layout.setSpacing(3)
@@ -76,7 +76,7 @@ class StreamOutputScreen(SettingsSubScreen):
         columns.addWidget(left, 1)
 
         right = QtWidgets.QFrame()
-        right.setStyleSheet("QFrame { background: #191d1f; border-radius: 12px; } QLabel { color: white; background: transparent; }")
+        right.setStyleSheet("QFrame { background: #0f1214; border-radius: 12px; } QLabel { color: white; background: transparent; }")
         right_layout = QtWidgets.QVBoxLayout(right)
         right_layout.setContentsMargins(14, 12, 14, 12)
         right_layout.setSpacing(8)

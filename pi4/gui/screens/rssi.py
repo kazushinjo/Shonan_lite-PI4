@@ -150,13 +150,13 @@ class RssiScreen(SettingsSubScreen):
         "QPushButton { background: #303538; color: white; border: none;"
         " border-radius: 6px; font-size: 13px; font-weight: bold;"
         " padding: 2px 4px; min-height: 30px; max-height: 30px; }"
-        "QPushButton:pressed { background: #222222; }")
+        "QPushButton:pressed { background: #102a5c; }")
     # 選択中のレンジを水色でハイライトする。
     _PRESET_STYLE_SELECTED = (
-        "QPushButton { background: #54bce0; color: #101416; border: none;"
+        "QPushButton { background: #1677ff; color: white; border: none;"
         " border-radius: 6px; font-size: 13px; font-weight: bold;"
         " padding: 2px 4px; min-height: 30px; max-height: 30px; }"
-        "QPushButton:pressed { background: #3f96b3; }")
+        "QPushButton:pressed { background: #102a5c; }")
     # 画面表示時に周波数画面の設定を自動で取り込む際の既定レンジ幅。
     _DEFAULT_RANGE_KHZ = 10000
     _PEAK_THRESHOLD_DB = 3.0
@@ -184,7 +184,7 @@ class RssiScreen(SettingsSubScreen):
 
         card = QtWidgets.QFrame()
         card.setStyleSheet(
-            "QFrame { background: #101416; border: 1px solid #34434b; border-radius: 14px; }"
+            "QFrame { background: #0a0c0d; border: 1px solid #34434b; border-radius: 14px; }"
             "QLabel { color: #eeeeee; background: transparent; }"
         )
         self.body_layout.addWidget(card, 1)
@@ -198,7 +198,7 @@ class RssiScreen(SettingsSubScreen):
 
         left = QtWidgets.QFrame()
         left.setFixedWidth(300)
-        left.setStyleSheet("QFrame { background: #191d1f; border: 1px solid #34434b; border-radius: 10px; } QLabel { font-size: 13px; }")
+        left.setStyleSheet("QFrame { background: #0f1214; border: 1px solid #34434b; border-radius: 10px; } QLabel { font-size: 13px; }")
         left_layout = QtWidgets.QVBoxLayout(left)
         left_layout.setContentsMargins(8, 6, 8, 6)
         left_layout.setSpacing(4)
@@ -257,10 +257,10 @@ class RssiScreen(SettingsSubScreen):
             button = QtWidgets.QPushButton(label)
             button.setFixedSize(50, 30)
             button.setStyleSheet(
-                "QPushButton { background: #252a2d; color: white; border: 1px solid #69747a;"
+                "QPushButton { background: #1d4388; color: white; border: 1px solid #2c5aa8;"
                 " border-radius: 6px; font-size: 14px; font-weight: bold;"
                 " min-width: 50px; max-width: 50px; min-height: 30px; max-height: 30px; padding: 0px; }"
-                "QPushButton:pressed { background: #0c9bc0; }")
+                "QPushButton:pressed { background: #102a5c; }")
             button.clicked.connect(lambda _checked=False, value=label: self._on_key(value))
             keypad_grid.addWidget(button, row, column)
         left_layout.addWidget(keypad, 0, QtCore.Qt.AlignHCenter)
@@ -269,14 +269,14 @@ class RssiScreen(SettingsSubScreen):
         self.search_btn.setFixedHeight(36)
         self.search_btn.clicked.connect(self._on_start_stop)
         self.search_btn.setStyleSheet(
-            "QPushButton { background: #0c91b5; color: white; border: none;"
+            "QPushButton { background: #1677ff; color: white; border: none;"
             " border-radius: 6px; font-size: 15px; font-weight: bold;"
             " padding: 2px 6px; min-height: 36px; max-height: 36px; }")
         left_layout.addWidget(self.search_btn)
         columns.addWidget(left, 1)
 
         right = QtWidgets.QFrame()
-        right.setStyleSheet("QFrame { background: #191d1f; border: 1px solid #34434b; border-radius: 10px; }")
+        right.setStyleSheet("QFrame { background: #0f1214; border: 1px solid #34434b; border-radius: 10px; }")
         right_layout = QtWidgets.QVBoxLayout(right)
         right_layout.setContentsMargins(10, 8, 10, 8)
         right_layout.setSpacing(4)
@@ -312,7 +312,7 @@ class RssiScreen(SettingsSubScreen):
                 "QPushButton { background: #303538; color: white; border: none;"
                 " border-radius: 6px; font-size: 13px; font-weight: bold; padding: 2px 8px;"
                 " min-height: 30px; max-height: 30px; }"
-                "QPushButton:checked { background: #54bce0; color: #101416; }")
+                "QPushButton:checked { background: #1677ff; color: white; }")
             self._mode_group.addButton(button)
             mode_row.addWidget(button)
         self.repeat_btn.toggled.connect(self._on_scan_mode_changed)
@@ -326,11 +326,11 @@ class RssiScreen(SettingsSubScreen):
         gain_row.addWidget(gain_title)
         gain_row.addStretch(1)
         gain_button_style = (
-            "QPushButton { background: #0c91b5; color: white; border: none;"
+            "QPushButton { background: #1677ff; color: white; border: none;"
             " border-radius: 6px; font-size: 14px; font-weight: bold; padding: 2px 8px;"
             " min-height: 30px; max-height: 30px; }"
-            "QPushButton:pressed { background: #3f96b3; }"
-            "QPushButton:disabled { background: #303538; color: #6b7880; }")
+            "QPushButton:pressed { background: #102a5c; }"
+            "QPushButton:disabled { background: #202427; color: #6b7880; }")
         self.agc_btn = QtWidgets.QPushButton("AGC")
         self.agc_btn.setCheckable(True)
         self.agc_btn.setMinimumHeight(30)
@@ -338,7 +338,7 @@ class RssiScreen(SettingsSubScreen):
             "QPushButton { background: #303538; color: white; border: none;"
             " border-radius: 6px; font-size: 12px; font-weight: bold; padding: 2px 8px;"
             " min-height: 30px; max-height: 30px; }"
-            "QPushButton:checked { background: #0c91b5; }")
+            "QPushButton:checked { background: #1677ff; }")
         self.agc_btn.toggled.connect(self._on_agc_toggled)
         gain_row.addWidget(self.agc_btn)
         self.gain_down_btn = QtWidgets.QPushButton("−")

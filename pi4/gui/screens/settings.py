@@ -28,11 +28,11 @@ class SettingsScreen(SettingsSubScreen):
         panel.setMinimumWidth(740)
         panel.setMaximumWidth(780)
         panel.setStyleSheet(
-            "QFrame#settingsPanel { background-color: #252a2d;"
+            "QFrame#settingsPanel { background-color: #171a1c;"
             " border: 1px solid #4b5357; border-radius: 18px; }"
             "QFrame#settingsPanel QLabel { color: #eeeeee; background-color: transparent; }"
             "QFrame#settingsPanel QComboBox, QLineEdit, QDateTimeEdit {"
-            " background-color: #303538; color: #eeeeee;"
+            " background-color: #202427; color: #eeeeee;"
             " border: 1px solid #42494d; border-radius: 8px; padding: 8px; }"
             "QFrame#settingsPanel QCheckBox { color: #eeeeee; }"
             "QFrame#settingsPanel QPushButton { border-radius: 8px; }"
@@ -182,7 +182,7 @@ class SettingsScreen(SettingsSubScreen):
             "QPushButton { background-color: #303538; color: #eeeeee; border: none;"
             " min-height: 32px; padding: 3px 8px; font-size: 12px; font-weight: bold; }"
             "QPushButton:checked { background-color: #1677ff; color: white; }"
-            "QPushButton:pressed { background-color: #0b55c7; }"
+            "QPushButton:pressed { background-color: #102a5c; }"
         )
         return button
 

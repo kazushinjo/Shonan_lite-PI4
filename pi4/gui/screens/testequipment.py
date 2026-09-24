@@ -50,7 +50,7 @@ class TestEquipmentScreen(SettingsSubScreen):
         self.body_layout.addLayout(columns, 1)
 
         table_card = QtWidgets.QFrame()
-        table_card.setStyleSheet("QFrame { background: #191d1f; border-radius: 12px; } QLabel { color: white; background: transparent; }")
+        table_card.setStyleSheet("QFrame { background: #0f1214; border-radius: 12px; } QLabel { color: white; background: transparent; }")
         table_layout = QtWidgets.QVBoxLayout(table_card)
         table_layout.setContentsMargins(8, 5, 8, 5)
         table_layout.setSpacing(2)
@@ -68,7 +68,7 @@ class TestEquipmentScreen(SettingsSubScreen):
         self.result_table.horizontalHeader().setStretchLastSection(True)
         self.result_table.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
         self.result_table.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
-        self.result_table.setStyleSheet("QTableWidget { background: #191d1f; color: white; border: none; gridline-color: #30383c; } QHeaderView::section { background: #252a2d; color: #cccccc; border: none; padding: 3px; } QTableWidget::item { padding: 3px; }")
+        self.result_table.setStyleSheet("QTableWidget { background: #0f1214; color: white; border: none; gridline-color: #30383c; } QHeaderView::section { background: #171a1c; color: #cccccc; border: none; padding: 3px; } QTableWidget::item { padding: 3px; }")
         for row, name in enumerate((
                 tr("Pluto SDR接続", "Pluto SDR Connection"), tr("送信テスト", "TX Test"),
                 tr("受信テスト", "RX Test"), tr("温度センサー", "Temperature Sensor"))):
@@ -95,7 +95,7 @@ class TestEquipmentScreen(SettingsSubScreen):
         columns.addWidget(table_card, 1)
 
         graph_card = QtWidgets.QFrame()
-        graph_card.setStyleSheet("QFrame { background: #191d1f; border-radius: 12px; } QLabel { color: white; background: transparent; }")
+        graph_card.setStyleSheet("QFrame { background: #0f1214; border-radius: 12px; } QLabel { color: white; background: transparent; }")
         graph_layout = QtWidgets.QVBoxLayout(graph_card)
         graph_layout.setContentsMargins(12, 10, 12, 10)
         graph_layout.setSpacing(6)
@@ -105,7 +105,7 @@ class TestEquipmentScreen(SettingsSubScreen):
         graph_layout.addWidget(self.health_label)
         self.log_view = QtWidgets.QTextEdit()
         self.log_view.setReadOnly(True)
-        self.log_view.setStyleSheet("QTextEdit { background: #101416; color: #b9c4c8; border: 1px solid #30383c; border-radius: 6px; font-size: 11px; }")
+        self.log_view.setStyleSheet("QTextEdit { background: #0a0c0d; color: #b9c4c8; border: 1px solid #30383c; border-radius: 6px; font-size: 11px; }")
         graph_layout.addWidget(self.log_view, 1)
         graph_layout.addWidget(self.status_label)
         columns.addWidget(graph_card, 1)

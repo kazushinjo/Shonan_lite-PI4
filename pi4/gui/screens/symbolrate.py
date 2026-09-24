@@ -29,7 +29,7 @@ class SymbolRateScreen(SettingsSubScreen):
         preset_card = QtWidgets.QFrame()
         preset_card.setFixedWidth(220)
         preset_card.setStyleSheet(
-            "QFrame { background-color: #191d1f; border-radius: 12px; }"
+            "QFrame { background-color: #0f1214; border-radius: 12px; }"
             "QLabel { color: white; background: transparent; }")
         preset_layout = QtWidgets.QVBoxLayout(preset_card)
         preset_layout.setContentsMargins(14, 12, 14, 12)
@@ -44,11 +44,11 @@ class SymbolRateScreen(SettingsSubScreen):
             button = QtWidgets.QPushButton(f"{_ksps(msps)} kS/s")
             button.setCheckable(True)
             button.setStyleSheet(
-                "QPushButton { background: #252a2d; color: white; border: 1px solid #394146;"
+                "QPushButton { background: #303538; color: white; border: 1px solid #4b5357;"
                 " border-radius: 6px; padding: 3px 8px; text-align: left; font-size: 13px;"
                 " min-height: 30px; max-height: 30px; }"
-                "QPushButton:checked { background: #0c9bc0; border-color: #0c9bc0; }"
-                "QPushButton:pressed { background: #087c9a; }")
+                "QPushButton:checked { background: #1677ff; border-color: #1677ff; }"
+                "QPushButton:pressed { background: #102a5c; }")
             button.setFixedHeight(30)
             button.clicked.connect(lambda _checked=False, value=msps: self._select(value))
             self._preset_group.addButton(button)
@@ -60,7 +60,7 @@ class SymbolRateScreen(SettingsSubScreen):
         # --- 右カラム: カスタム設定 ---
         custom_card = QtWidgets.QFrame()
         custom_card.setStyleSheet(
-            "QFrame { background-color: #191d1f; border-radius: 12px; }"
+            "QFrame { background-color: #0f1214; border-radius: 12px; }"
             "QLabel { color: white; background: transparent; }")
         custom_layout = QtWidgets.QVBoxLayout(custom_card)
         custom_layout.setContentsMargins(16, 12, 16, 12)
@@ -92,7 +92,7 @@ class SymbolRateScreen(SettingsSubScreen):
                                   ("0", 3, 0), ("＋", 3, 1), ("OK", 3, 3)]:
             button = QtWidgets.QPushButton(text)
             button.setFixedSize(66, 38)
-            button.setStyleSheet("QPushButton { background: #252a2d; color: white; border: 1px solid #69747a; border-radius: 6px; font-size: 16px; font-weight: bold; min-width: 66px; max-width: 66px; min-height: 38px; max-height: 38px; padding: 0px; } QPushButton:pressed { background: #0c9bc0; }")
+            button.setStyleSheet("QPushButton { background: #1d4388; color: white; border: 1px solid #2c5aa8; border-radius: 6px; font-size: 16px; font-weight: bold; min-width: 66px; max-width: 66px; min-height: 38px; max-height: 38px; padding: 0px; } QPushButton:pressed { background: #102a5c; }")
             if text == "−":
                 button.clicked.connect(lambda: self._step(-1))
             elif text == "＋":

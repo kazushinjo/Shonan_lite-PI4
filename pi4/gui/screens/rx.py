@@ -32,7 +32,7 @@ class RxScreen(SettingsSubScreen):
         self.status_card = QtWidgets.QFrame()
         self.status_card.setFixedWidth(270)
         self.status_card.setStyleSheet(
-            "QFrame { background-color: #191d1f; border-radius: 12px; }"
+            "QFrame { background-color: #0f1214; border-radius: 12px; }"
             "QLabel { color: white; background: transparent; }")
         top_row.addWidget(self.status_card)
         status_layout = QtWidgets.QVBoxLayout(self.status_card)
@@ -68,7 +68,7 @@ class RxScreen(SettingsSubScreen):
 
         divider = QtWidgets.QFrame()
         divider.setFixedHeight(1)
-        divider.setStyleSheet("background-color: #303538;")
+        divider.setStyleSheet("background-color: #202427;")
         status_layout.addWidget(divider)
 
         stats_grid = QtWidgets.QGridLayout()
@@ -155,9 +155,9 @@ class RxScreen(SettingsSubScreen):
         button = QtWidgets.QPushButton(text)
         button.setMinimumSize(100, 40)
         button.setStyleSheet(
-            "QPushButton { background-color: #303538; color: white; border: none;"
+            "QPushButton { background-color: #1d4388; color: white; border: none;"
             " border-radius: 8px; padding: 4px 10px; font-size: 12px; font-weight: bold; }"
-            "QPushButton:pressed { background-color: #222222; }")
+            "QPushButton:pressed { background-color: #102a5c; }")
         return button
 
     def on_show(self) -> None:
@@ -201,7 +201,7 @@ class RxScreen(SettingsSubScreen):
             self.start_stop_btn.setStyleSheet(
                 "QPushButton { background-color: #1677ff; color: white; border: none;"
                 " border-radius: 8px; padding: 4px 10px; font-size: 14px; font-weight: bold; }"
-                "QPushButton:pressed { background-color: #0b55c7; }")
+                "QPushButton:pressed { background-color: #102a5c; }")
 
     def _on_start_stop(self) -> None:
         if self.controller.is_running():

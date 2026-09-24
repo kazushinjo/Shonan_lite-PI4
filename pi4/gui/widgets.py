@@ -98,14 +98,15 @@ class SettingsSubScreen(QtWidgets.QWidget):
 
         bar = QtWidgets.QWidget()
         self.header_bar = bar
-        bar.setStyleSheet("background-color: #191d1f;")
+        bar.setObjectName("subScreenHeader")
+        bar.setStyleSheet("QWidget#subScreenHeader { background-color: #0f1214; }")
         bar_layout = QtWidgets.QHBoxLayout(bar)
         back_btn = QtWidgets.QPushButton("ホームに戻る")
         back_btn.setMinimumSize(100, TOUCH_MIN_HEIGHT)
         back_btn.clicked.connect(on_back)
         bar_layout.addWidget(back_btn)
         title_label = QtWidgets.QLabel(title)
-        title_label.setStyleSheet(f"color: white; font-size: {FONT_SIZE_TITLE}px; font-weight: bold;")
+        title_label.setStyleSheet(f"color: white; background: transparent; font-size: {FONT_SIZE_TITLE}px; font-weight: bold;")
         bar_layout.addWidget(title_label, 1)
         outer.addWidget(bar)
 
@@ -115,13 +116,13 @@ class SettingsSubScreen(QtWidgets.QWidget):
         body = QtWidgets.QWidget()
         body.setObjectName("settingsBody")
         body.setStyleSheet(
-            "QWidget#settingsBody { background: #070808; }"
+            "QWidget#settingsBody { background: #000000; }"
             "QLabel { color: #eeeeee; font-size: 16px; }"
-            "QPushButton { background-color: #080808; color: white;"
-            " border: 1px solid #4b5357; border-radius: 8px;"
+            "QPushButton { background-color: #1d4388; color: white;"
+            " border: 1px solid #2c5aa8; border-radius: 8px;"
             " padding: 8px 12px; font-weight: bold; min-height: 52px; }"
             "QPushButton:pressed { background-color: #1677ff; }"
-            "QLineEdit, QComboBox, QDateTimeEdit { background-color: #252a2d;"
+            "QLineEdit, QComboBox, QDateTimeEdit { background-color: #171a1c;"
             " color: white; border: 1px solid #4b5357; border-radius: 8px;"
             " padding: 8px; min-height: 42px; }"
             "QSlider { min-height: 40px; }"
