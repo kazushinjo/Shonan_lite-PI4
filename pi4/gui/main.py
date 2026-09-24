@@ -197,6 +197,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.keyboard_panel.setGeometry(0, keyboard_top, self.width(), height)
         self.keyboard_panel.show()
         self.keyboard_panel.raise_()
+        # ★キーボードはQQuickWidgetとして独自に出し入れしているため、Qt側
+        # (QInputMethod)はキーボードが表示中だと認識しない。Qt Virtual Keyboardの
+        # ShiftHandlerは「表示中」になったときにだけシフト可否を初期化するため、
+        # このままだとシフトキーが無効(灰色)のままで大文字が打てなかった(実機で確認)。
+        # 表示したことをQtへ伝えてシフトを有効にする。
+        QtWidgets.QApplication.inputMethod().show()
         self._scroll_field_above_keyboard(focused_widget, height)
 
     def _scroll_field_above_keyboard(
@@ -258,6 +264,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def _hide_keyboard_panel(self) -> None:
         self.keyboard_panel.hide()
+        QtWidgets.QApplication.inputMethod().hide()
         if self._active_scroll_area is not None:
             body_layout = self._active_scroll_area.widget().layout()
             body_layout.removeItem(self._keyboard_spacer)
