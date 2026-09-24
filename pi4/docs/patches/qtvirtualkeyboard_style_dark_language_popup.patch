@@ -1,0 +1,31 @@
+--- qtvk-orig/src/virtualkeyboard/content/styles/default/style.qml	2026-08-15 02:09:15
++++ qtvk-style-check/src/virtualkeyboard/content/styles/default/style.qml	2026-08-15 02:06:27
+@@ -956,7 +956,7 @@
+             anchors.topMargin: languageNameTextMetrics.height / 3
+             anchors.bottomMargin: anchors.topMargin
+             text: languageNameFormatter.elidedText
+-            color: "#5CAA15"
++            color: "white"
+             font {
+                 family: fontFamily
+                 weight: Font.Normal
+@@ -988,16 +988,16 @@
+             when: languageListItem.ListView.isCurrentItem
+             PropertyChanges {
+                 target: languageListLabel
+-                color: "black"
++                color: "#8fb3ff"
+             }
+         }
+     }
+ 
+     languageListBackground: Rectangle {
+-        color: "white"
++        color: "#202020"
+         border {
+             width: 1
+-            color: "#929495"
++            color: "#555555"
+         }
+     }
+ 

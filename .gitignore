@@ -1,0 +1,32 @@
+.DS_Store
+
+# iOS
+ios/Tanzawa/.build/
+ios/Tanzawa/Frameworks/
+ios/Tanzawa/xcuserdata/
+ios/Tanzawa/DerivedData/
+*.xcuserstate
+
+# Android
+android/build/
+android/*/build/
+android/.gradle/
+android/.kotlin/
+android/local.properties
+android/*.iml
+android/.idea/
+android/.cxx/
+android/*/.cxx/
+
+# Android third_party: ビルド中間生成物のみ除外。成果物(ffmpeg-mpegts-install-arm64-v8a/、
+# dvbs2-deps-install-arm64-v8a/)はportsdown5-androidの前例(ffmpeg-install-arm64-v8a/約12MB)に
+# 倣いgit管理下に置く。
+android/third_party/.build-tmp/
+android/third_party/.build-tmp-dvbs2/
+
+# Pi4 native build/runtime artifacts (依存ライブラリはPi4上で別途ビルド、
+# ~/shonan-pi4-native-build/参照。runtime/はrun_tx.shが実行時に生成)
+pi4/build/
+pi4/runtime/
+pi4/gui/__pycache__/
+pi4/gui/screens/__pycache__/

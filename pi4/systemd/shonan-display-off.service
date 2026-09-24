@@ -1,0 +1,13 @@
+[Unit]
+Description=Blank Shonan DSI display during shutdown
+After=multi-user.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/sh -c 'for p in /sys/class/backlight/*/bl_power; do if [ -e "$p" ]; then echo 0 > "$p"; fi; done; for b in /sys/class/backlight/*/brightness; do if [ -e "$b" ]; then echo 255 > "$b"; fi; done; if [ -e /sys/class/graphics/fb0/blank ]; then echo 0 > /sys/class/graphics/fb0/blank; fi'
+ExecStop=/bin/sh -c 'if [ -e /sys/class/graphics/fb0/blank ]; then echo 4 > /sys/class/graphics/fb0/blank; fi; for p in /sys/class/backlight/*/bl_power; do if [ -e "$p" ]; then echo 4 > "$p"; fi; done'
+TimeoutStopSec=5
+
+[Install]
+WantedBy=multi-user.target

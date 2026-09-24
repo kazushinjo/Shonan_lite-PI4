@@ -1,0 +1,109 @@
+#
+#!/bin/bash
+
+# Do not Change this line directly.
+# Please use the command ./set_pluto to configure the Pluto IP address if required. 
+# This will ensure that all necessary files are updated, including this one. 
+
+export PLUTO_IP=$(python3 -c "
+import json
+from pathlib import Path
+p = Path.home() / '.config' / 'shonan-pi4' / 'settings.json'
+try:
+    d = json.loads(p.read_text())
+    uri = d.get('pluto_uri', 'ip:192.168.0.136')
+    print(uri[3:] if uri.startswith('ip:') else uri)
+except Exception:
+    print('192.168.0.136')
+" 2>/dev/null)
+
+# PA_Power/PTTコントローラ(ESP32+W5500、hardware/W5500_PA_PTT_Control)のIPアドレス。
+# 空なら未接続として扱う(GUI_Pluto側でハードウェアPTT連携をスキップする)。
+export PTT_CONTROLLER_HOST=$(python3 -c "
+import json
+from pathlib import Path
+p = Path.home() / '.config' / 'shonan-pi4' / 'settings.json'
+try:
+    d = json.loads(p.read_text())
+    print(d.get('ptt_controller_host', ''))
+except Exception:
+    print('')
+" 2>/dev/null)
+
+#Create command pipe
+if test -e /tmp/langstoneTRx ;then
+rm /tmp/langstoneTRx
+fi
+mkfifo /tmp/langstoneTRx
+
+# The bundled splash files are 32-bit BGRA.  Do not copy them into a
+# 16-bit RGB565 framebuffer; the copy would overflow /dev/fb0.
+show_splash() {
+   if fbset -i 2>/dev/null | grep -q 'rgba 5/11'; then
+      return 0
+   fi
+   sudo cp "$1" /dev/fb0
+}
+
+# The GUI requires a real framebuffer.  On KMS systems without a connected
+# HDMI display, /dev/fb0 may be absent (or may be a regular file created by a
+# failed splash copy), so stop cleanly instead of starting a GUI that crashes.
+if [ ! -c /dev/fb0 ]; then
+   echo "ERROR: /dev/fb0 is not a framebuffer device; check the HDMI/display connection."
+   exit 1
+fi
+
+# Raspberry Pi console blanking can leave the physical LCD powered down even
+# though the framebuffer still contains the GUI image.
+if [ -e /sys/class/graphics/fb0/blank ]; then
+   echo 0 | sudo tee /sys/class/graphics/fb0/blank >/dev/null
+fi
+
+#Test to see if the flowgraph is already running
+if !(ps -ax |grep -v grep| grep -q Lang_TRX_Pluto.py) then
+   sudo amixer -c1 cset numid=6 100%  > /dev/null 2>&1
+   sudo amixer -c1 cset numid=8 50%  > /dev/null 2>&1
+   show_splash /home/pi/Langstone/splashload_Pluto.bgra
+   if command -v raspi-gpio >/dev/null 2>&1; then
+      sudo raspi-gpio set 17,18 pu
+   fi
+   
+   # ★Shonan_lite-PI4統合版パッチ: Pluto+の起動には実機で20〜40秒程度
+   # かかることがあり、元の4回(最大4秒)のping再試行では間に合わず
+   # "Pluto not responding"と誤表示することを実機で確認した。60回(最大60秒)
+   # まで待つように延長する。
+   retry=0
+   until [ ${retry} -ge 60 ]
+   do
+      (ping -c1 $PLUTO_IP 2>/dev/null |grep -q received) && break
+       retry=$[${retry}+1]
+       sleep 1
+   done
+
+   #Check if Pluto failed to respond
+
+   if [ ${retry} -ge 60 ]; then
+      clear
+      show_splash /home/pi/Langstone/plutofail.bgra
+      sleep 5
+      exit 0
+   fi
+
+   # Check if Pluto was rebooting and was slow to respond
+
+   if [ ${retry} -ge 1 ]; then
+      sleep 5
+   fi
+
+   # GNU Radio is started by GUI_Pluto, matching the Pi5 Langstone flow.
+   /home/pi/Langstone/GUI_Pluto > /tmp/LangstoneGUI_Pluto.log 2>&1
+   # Send a reboot command to Pluto after GUI Exits
+   ssh-keygen -f "/home/pi/.ssh/known_hosts" -R $PLUTO_IP >/dev/null 2>&1
+   timeout 2 sshpass -p analog ssh -o StrictHostKeyChecking=no root@$PLUTO_IP 'PATH=/bin:/sbin:/usr/bin;reboot'  >/dev/null 2>&1
+
+else
+   echo Langstone is already running. Use ./stop first.
+   sleep 5
+fi
+
+show_splash /home/pi/Langstone/splash.bgra

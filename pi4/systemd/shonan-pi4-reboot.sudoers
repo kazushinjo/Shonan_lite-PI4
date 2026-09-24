@@ -1,0 +1,1 @@
+pi ALL=(root) NOPASSWD: /sbin/reboot, /sbin/shutdown, /usr/sbin/poweroff, /bin/systemctl start --no-block shonan-gui.service, /bin/systemctl start --no-block langstone.service, /bin/systemctl stop shonan-display-off.service
