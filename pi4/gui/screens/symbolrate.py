@@ -4,6 +4,7 @@ from __future__ import annotations
 from PyQt5 import QtCore, QtWidgets
 
 from widgets import SettingsSubScreen
+from i18n import tr
 
 _PRESETS_MSPS = (0.333, 0.5, 0.666, 1.0, 1.25, 1.666, 2.0)
 
@@ -34,7 +35,7 @@ class SymbolRateScreen(SettingsSubScreen):
         preset_layout = QtWidgets.QVBoxLayout(preset_card)
         preset_layout.setContentsMargins(14, 12, 14, 12)
         preset_layout.setSpacing(5)
-        preset_title = QtWidgets.QLabel("プリセット選択")
+        preset_title = QtWidgets.QLabel(tr("プリセット選択", "Preset Selection"))
         preset_title.setStyleSheet("font-size: 13px; font-weight: bold; color: #cccccc;")
         preset_layout.addWidget(preset_title)
 
@@ -66,7 +67,7 @@ class SymbolRateScreen(SettingsSubScreen):
         custom_layout.setContentsMargins(16, 12, 16, 12)
         custom_layout.setSpacing(8)
 
-        custom_title = QtWidgets.QLabel("カスタム設定")
+        custom_title = QtWidgets.QLabel(tr("カスタム設定", "Custom Setting"))
         custom_title.setStyleSheet("font-size: 13px; font-weight: bold; color: #cccccc;")
         custom_layout.addWidget(custom_title)
 
@@ -77,7 +78,7 @@ class SymbolRateScreen(SettingsSubScreen):
         self.rate_label = rate_label
         custom_layout.addWidget(rate_label)
 
-        unit = QtWidgets.QLabel("シンボルレート (kS/s)")
+        unit = QtWidgets.QLabel(tr("シンボルレート (kS/s)", "Symbol Rate (kS/s)"))
         unit.setAlignment(QtCore.Qt.AlignCenter)
         unit.setStyleSheet("font-size: 12px; color: #9aa0a6;")
         custom_layout.addWidget(unit)
@@ -107,7 +108,7 @@ class SymbolRateScreen(SettingsSubScreen):
         current.setStyleSheet("font-size: 13px; color: #0c9bc0; font-weight: bold;")
         self.current_label = current
         custom_layout.addWidget(current)
-        recommended = QtWidgets.QLabel("帯域幅の目安: 5.0 MHz")
+        recommended = QtWidgets.QLabel(tr("帯域幅の目安: 5.0 MHz", "Estimated bandwidth: 5.0 MHz"))
         recommended.setStyleSheet("font-size: 12px; color: #9aa0a6;")
         custom_layout.addWidget(recommended)
         columns.addWidget(custom_card, 1)
@@ -119,7 +120,7 @@ class SymbolRateScreen(SettingsSubScreen):
         ksps = _ksps(msps)
         self._pending_text = str(ksps)
         self.rate_label.setText(str(ksps))
-        self.current_label.setText(f"現在の設定: {ksps} kS/s")
+        self.current_label.setText(tr(f"現在の設定: {ksps} kS/s", f"Current setting: {ksps} kS/s"))
         for value, button in self._preset_buttons.items():
             button.setChecked(abs(value - msps) < 0.0005)
 

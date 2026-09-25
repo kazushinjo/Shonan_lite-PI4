@@ -13,6 +13,7 @@ from PyQt5 import QtCore, QtWidgets
 
 from settings_store import supported_fec_rates
 from widgets import MemoNote, SettingsSubScreen
+from i18n import tr
 
 # 丸いラジオボタンではなく、右カラムのDATA/FEC/PARITYバッジと揃えた
 # 四角いチップボタンでFECモードを選択する(選択時は青地)。
@@ -33,10 +34,10 @@ def _overhead_percent(rate: str) -> float:
 def _describe(rate: str) -> str:
     overhead = _overhead_percent(rate)
     if overhead >= 40:
-        return "誤り訂正能力を重視した設定です。C/Nが低い環境でも安定して復調しやすくなります。"
+        return tr("誤り訂正能力を重視した設定です。C/Nが低い環境でも安定して復調しやすくなります。", "A setting that prioritizes error correction strength. Easier to demodulate stably even in low C/N environments.")
     if overhead >= 15:
-        return "誤り訂正能力とスループットのバランスが取れた設定です。"
-    return "スループットを重視した設定です。良好なC/N環境で高い伝送効率を得られます。"
+        return tr("誤り訂正能力とスループットのバランスが取れた設定です。", "A balanced setting between error correction strength and throughput.")
+    return tr("スループットを重視した設定です。良好なC/N環境で高い伝送効率を得られます。", "A setting that prioritizes throughput. Achieves high transmission efficiency in a good C/N environment.")
 
 
 class FecScreen(SettingsSubScreen):
@@ -61,7 +62,7 @@ class FecScreen(SettingsSubScreen):
         mode_outer = QtWidgets.QVBoxLayout(mode_card)
         mode_outer.setContentsMargins(12, 10, 12, 10)
         mode_outer.setSpacing(6)
-        mode_title = QtWidgets.QLabel("FECモード選択")
+        mode_title = QtWidgets.QLabel(tr("FECモード選択", "FEC Mode Selection"))
         mode_title.setStyleSheet("font-size: 13px; font-weight: bold; color: #cccccc;")
         mode_outer.addWidget(mode_title)
 
@@ -127,14 +128,14 @@ class FecScreen(SettingsSubScreen):
         legend_row = QtWidgets.QHBoxLayout()
         legend_row.addWidget(self._legend_dot("#1677ff", "DATA"))
         legend_row.addSpacing(16)
-        legend_row.addWidget(self._legend_dot("#d08a20", "FEC(パリティ)"))
+        legend_row.addWidget(self._legend_dot("#d08a20", tr("FEC(パリティ)", "FEC (Parity)")))
         legend_row.addStretch(1)
         info_layout.addLayout(legend_row)
         info_layout.addStretch(1)
 
         note = MemoNote(
-            "変調方式(Modulation画面)と組み合わせてMod-Codを構成します。"
-            "対応組み合わせ以外を選ぶと送受信開始時にエラーになります。"
+            tr("変調方式(Modulation画面)と組み合わせてMod-Codを構成します。"
+            "対応組み合わせ以外を選ぶと送受信開始時にエラーになります。", "Combines with the modulation scheme (Modulation screen) to form the Mod-Cod. Choosing an unsupported combination causes an error when TX/RX starts.")
         )
         note.setStyleSheet("color: #999999; font-size: 14px; padding: 4px;")
         info_layout.addWidget(note)
@@ -149,7 +150,7 @@ class FecScreen(SettingsSubScreen):
         frame_layout = QtWidgets.QVBoxLayout(frame_card)
         frame_layout.setContentsMargins(12, 10, 12, 10)
         frame_layout.setSpacing(8)
-        frame_title = QtWidgets.QLabel("フレーム構成")
+        frame_title = QtWidgets.QLabel(tr("フレーム構成", "Frame Structure"))
         frame_title.setStyleSheet("font-size: 13px; font-weight: bold; color: #cccccc;")
         frame_layout.addWidget(frame_title)
         frame_layout.addWidget(self._frame_badge("DATA", active=False))
@@ -194,9 +195,9 @@ class FecScreen(SettingsSubScreen):
 
     def _update_info(self, rate: str) -> None:
         overhead = _overhead_percent(rate)
-        self.current_label.setText(f"現在の設定: {rate}")
+        self.current_label.setText(tr(f"現在の設定: {rate}", f"Current setting: {rate}"))
         self.description_label.setText(_describe(rate))
-        self.overhead_label.setText(f"オーバーヘッド: {overhead:.0f}%")
+        self.overhead_label.setText(tr(f"オーバーヘッド: {overhead:.0f}%", f"Overhead: {overhead:.0f}%"))
         fec_stretch = max(1, round(overhead))
         data_stretch = max(1, round(100 - overhead))
         bar_layout = self.overhead_bar.layout()

@@ -6,6 +6,7 @@ from pathlib import Path
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from widgets import SettingsSubScreen, error_dialog
+from i18n import tr
 
 
 class TxScreen(SettingsSubScreen):
@@ -23,7 +24,7 @@ class TxScreen(SettingsSubScreen):
         top_row = QtWidgets.QHBoxLayout()
         top_row.setSpacing(8)
         self.body_layout.addLayout(top_row, 1)
-        self.preview_label = QtWidgets.QLabel("送信開始前")
+        self.preview_label = QtWidgets.QLabel(tr("送信開始前", "Before TX start"))
         self.preview_label.setAlignment(QtCore.Qt.AlignCenter)
         self.preview_label.setStyleSheet("background-color: black; border-radius: 10px; color: #999999;")
         self.preview_label.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
@@ -44,7 +45,7 @@ class TxScreen(SettingsSubScreen):
         self.status_dot = QtWidgets.QLabel()
         self.status_dot.setFixedSize(12, 12)
         header.addWidget(self.status_dot)
-        self.status_label = QtWidgets.QLabel("送信停止中")
+        self.status_label = QtWidgets.QLabel(tr("送信停止中", "TX Stopped"))
         self.status_label.setStyleSheet("font-size: 14px; font-weight: bold;")
         header.addWidget(self.status_label)
         header.addStretch(1)
@@ -61,9 +62,9 @@ class TxScreen(SettingsSubScreen):
         fields.setVerticalSpacing(6)
         fields.setColumnStretch(0, 1)
         fields.setColumnStretch(1, 1)
-        self.freq_value = self._add_field(fields, 0, 0, "周波数")
-        self.symbol_value = self._add_field(fields, 0, 1, "シンボルレート")
-        self.modulation_value = self._add_field(fields, 1, 0, "変調方式")
+        self.freq_value = self._add_field(fields, 0, 0, tr("周波数", "Frequency"))
+        self.symbol_value = self._add_field(fields, 0, 1, tr("シンボルレート", "Symbol Rate"))
+        self.modulation_value = self._add_field(fields, 1, 0, tr("変調方式", "Modulation"))
         self.fec_value = self._add_field(fields, 1, 1, "FEC")
         status_layout.addLayout(fields)
         divider = QtWidgets.QFrame()
@@ -75,10 +76,10 @@ class TxScreen(SettingsSubScreen):
         stats.setVerticalSpacing(6)
         stats.setColumnStretch(0, 1)
         stats.setColumnStretch(1, 1)
-        self.power_value = self._add_field(stats, 0, 0, "出力減衰")
-        self.packets_value = self._add_field(stats, 0, 1, "パケット数")
-        self.frames_value = self._add_field(stats, 1, 0, "フレーム数")
-        self.connection_value = self._add_field(stats, 1, 1, "接続")
+        self.power_value = self._add_field(stats, 0, 0, tr("出力減衰", "Attenuation"))
+        self.packets_value = self._add_field(stats, 0, 1, tr("パケット数", "Packets"))
+        self.frames_value = self._add_field(stats, 1, 0, tr("フレーム数", "Frames"))
+        self.connection_value = self._add_field(stats, 1, 1, tr("接続", "Link"))
         status_layout.addLayout(stats)
         status_layout.addStretch(1)
 
@@ -91,17 +92,17 @@ class TxScreen(SettingsSubScreen):
         panel_layout.setSpacing(6)
         buttons = QtWidgets.QHBoxLayout()
         buttons.addStretch(1)
-        self.start_stop_btn = QtWidgets.QPushButton("送信開始")
+        self.start_stop_btn = QtWidgets.QPushButton(tr("送信開始", "Start TX"))
         self.start_stop_btn.setMinimumSize(120, 40)
         self.start_stop_btn.clicked.connect(self._on_start_stop)
         buttons.addWidget(self.start_stop_btn)
-        self.receive_screen_btn = self._secondary_button("受信画面へ")
+        self.receive_screen_btn = self._secondary_button(tr("受信画面へ", "Go to RX"))
         self.receive_screen_btn.clicked.connect(lambda: self.main_window.navigate_to("rx"))
         buttons.addWidget(self.receive_screen_btn)
-        self.settings_btn = self._secondary_button("設定")
+        self.settings_btn = self._secondary_button(tr("設定", "Settings"))
         self.settings_btn.clicked.connect(lambda: self.main_window.navigate_to("settings"))
         buttons.addWidget(self.settings_btn)
-        self.home_btn = self._secondary_button("ホームへ戻る")
+        self.home_btn = self._secondary_button(tr("ホームへ戻る", "Back to Home"))
         self.home_btn.clicked.connect(lambda: self.main_window.navigate_to("home"))
         buttons.addWidget(self.home_btn)
         buttons.addStretch(1)
@@ -139,7 +140,7 @@ class TxScreen(SettingsSubScreen):
     def on_show(self):
         settings = self.main_window.settings
         lo_hz = settings.effective_lo_hz()
-        self.freq_value.setText(f"{lo_hz / 1000:.0f} kHz" if lo_hz else "未設定")
+        self.freq_value.setText(f"{lo_hz / 1000:.0f} kHz" if lo_hz else tr("未設定", "Not set"))
         self.symbol_value.setText(f"{settings.symbol_rate_msps * 1000:.0f} kS/s")
         self.modulation_value.setText(settings.modulation_scheme)
         self.fec_value.setText(settings.fec_rate)
@@ -153,7 +154,7 @@ class TxScreen(SettingsSubScreen):
             # 拡大するとテストパターンの四隅が切れる。レイアウト後にもう一度縮小する。
             QtCore.QTimer.singleShot(0, self._refresh_colorbar_preview)
         elif not self.controller.is_running():
-            self.preview_label.setText("送信開始前")
+            self.preview_label.setText(tr("送信開始前", "Before TX start"))
 
     def _uses_colorbar(self) -> bool:
         settings = self.main_window.settings
@@ -184,8 +185,8 @@ class TxScreen(SettingsSubScreen):
         self.status_dot.setStyleSheet(
             f"background-color: {'#d02020' if running else '#5a5a5a'}; border-radius: 6px;")
         self.on_air_badge.setVisible(running)
-        self.status_label.setText("送信中" if running else "送信停止中")
-        self.start_stop_btn.setText("送信停止" if running else "送信開始")
+        self.status_label.setText(tr("送信中", "Transmitting") if running else tr("送信停止中", "TX Stopped"))
+        self.start_stop_btn.setText(tr("送信停止", "Stop TX") if running else tr("送信開始", "Start TX"))
         color = "#d02020" if running else "#1677ff"
         pressed = "#901010" if running else "#102a5c"
         self.start_stop_btn.setStyleSheet(
@@ -222,13 +223,13 @@ class TxScreen(SettingsSubScreen):
         self._sync_button_state()
 
     def _on_status(self, status):
-        self.connection_value.setText("接続中" if status.get("connected", False) else "未接続")
+        self.connection_value.setText(tr("接続中", "Connected") if status.get("connected", False) else tr("未接続", "Not connected"))
         self.packets_value.setText(str(status.get("packets", 0)))
         self.frames_value.setText(str(status.get("frames", 0)))
         self._sync_button_state()
 
     def _on_error(self, message):
-        error_dialog(self, "送信エラー", message)
+        error_dialog(self, tr("送信エラー", "TX Error"), message)
         self._sync_button_state()
 
     def _on_stopped(self):
@@ -238,7 +239,7 @@ class TxScreen(SettingsSubScreen):
         settings = self.main_window.settings
         if not (settings.use_color_bar_source or settings.video_source == "colorbar"):
             self.preview_label.setPixmap(QtGui.QPixmap())
-            self.preview_label.setText("送信開始前")
+            self.preview_label.setText(tr("送信開始前", "Before TX start"))
 
     def _on_log(self, line):
         # 統計はstatus_updated(_on_status)で更新する。

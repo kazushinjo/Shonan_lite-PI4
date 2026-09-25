@@ -9,6 +9,7 @@ from PyQt5 import QtCore, QtWidgets
 
 from settings_store import BAND_PROFILES
 from widgets import SettingsSubScreen
+from i18n import tr
 
 _CHIP_STYLE = (
     "QPushButton { background-color: #303538; color: white; border: none;"
@@ -41,7 +42,7 @@ class FrequencyScreen(SettingsSubScreen):
         input_layout = QtWidgets.QVBoxLayout(input_card)
         input_layout.setContentsMargins(16, 12, 16, 12)
         input_layout.setSpacing(6)
-        input_title = QtWidgets.QLabel("周波数入力")
+        input_title = QtWidgets.QLabel(tr("周波数入力", "Frequency Input"))
         input_title.setStyleSheet("font-size: 13px; font-weight: bold; color: #cccccc;")
         input_layout.addWidget(input_title)
 
@@ -109,7 +110,7 @@ class FrequencyScreen(SettingsSubScreen):
         band_layout = QtWidgets.QVBoxLayout(band_card)
         band_layout.setContentsMargins(14, 12, 14, 12)
         band_layout.setSpacing(6)
-        band_title = QtWidgets.QLabel("バンド選択")
+        band_title = QtWidgets.QLabel(tr("バンド選択", "Band Selection"))
         band_title.setStyleSheet("font-size: 13px; font-weight: bold; color: #cccccc;")
         band_layout.addWidget(band_title)
 
@@ -145,8 +146,8 @@ class FrequencyScreen(SettingsSubScreen):
     def _update_current_label(self) -> None:
         settings = self.main_window.settings
         lo_hz = settings.effective_lo_hz()
-        text = f"{lo_hz / 1000:.0f} kHz" if lo_hz else "未設定"
-        self.current_label.setText(f"現在の周波数: {text}")
+        text = f"{lo_hz / 1000:.0f} kHz" if lo_hz else tr("未設定", "Not set")
+        self.current_label.setText(tr(f"現在の周波数: {text}", f"Current frequency: {text}"))
 
     def _select_band(self, band: str) -> None:
         settings = self.main_window.settings
