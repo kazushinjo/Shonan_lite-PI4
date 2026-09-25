@@ -7,6 +7,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from settings_store import MODULATION_SCHEMES
 from widgets import SettingsSubScreen
+from i18n import tr
 
 
 _MOCK_SCHEMES = ("QPSK", "8PSK")
@@ -78,7 +79,7 @@ class ModulationScreen(SettingsSubScreen):
         left_layout = QtWidgets.QVBoxLayout(left)
         left_layout.setContentsMargins(10, 8, 10, 8)
         left_layout.setSpacing(1)
-        label = QtWidgets.QLabel("変調方式選択")
+        label = QtWidgets.QLabel(tr("変調方式選択", "Modulation Selection"))
         label.setStyleSheet("font-size: 13px; font-weight: bold; color: #54bce0;")
         left_layout.addWidget(label)
         self._group = QtWidgets.QButtonGroup(self)
@@ -97,7 +98,7 @@ class ModulationScreen(SettingsSubScreen):
             button.setChecked(main_window.settings.modulation_scheme == scheme)
             if scheme not in MODULATION_SCHEMES:
                 button.setEnabled(False)
-                button.setToolTip("現在の送受信経路では未対応")
+                button.setToolTip(tr("現在の送受信経路では未対応", "Not supported by the current TX/RX path"))
             else:
                 button.toggled.connect(lambda checked, s=scheme: checked and self._select(s))
             self._group.addButton(button)
@@ -110,7 +111,7 @@ class ModulationScreen(SettingsSubScreen):
         right_layout = QtWidgets.QVBoxLayout(right)
         right_layout.setContentsMargins(10, 8, 10, 8)
         right_layout.setSpacing(4)
-        title = QtWidgets.QLabel("コンステレーション")
+        title = QtWidgets.QLabel(tr("コンステレーション", "Constellation"))
         title.setStyleSheet("font-size: 13px; font-weight: bold; color: #54bce0;")
         right_layout.addWidget(title)
         self.constellation = ConstellationWidget(self)
@@ -118,7 +119,7 @@ class ModulationScreen(SettingsSubScreen):
         columns.addWidget(right, 2)
 
         bottom = QtWidgets.QHBoxLayout()
-        bottom.addWidget(QtWidgets.QLabel("ビット/シンボル："))
+        bottom.addWidget(QtWidgets.QLabel(tr("ビット/シンボル：", "Bits/Symbol:")))
         self.bits_label = QtWidgets.QLabel()
         self.bits_label.setStyleSheet("font-weight: bold;")
         bottom.addWidget(self.bits_label)
@@ -126,7 +127,7 @@ class ModulationScreen(SettingsSubScreen):
         self.scheme_label = QtWidgets.QLabel()
         self.scheme_label.setStyleSheet("font-weight: bold; color: #54bce0;")
         bottom.addWidget(self.scheme_label)
-        home_btn = QtWidgets.QPushButton("ホームに戻る")
+        home_btn = QtWidgets.QPushButton(tr("ホームに戻る", "Back to Home"))
         home_btn.setFixedHeight(34)
         home_btn.clicked.connect(lambda: self.main_window.navigate_to("home"))
         bottom.addWidget(home_btn)

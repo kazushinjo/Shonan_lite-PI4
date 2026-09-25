@@ -4,6 +4,7 @@ from __future__ import annotations
 from PyQt5 import QtCore, QtWidgets
 
 from widgets import SettingsSubScreen
+from i18n import tr
 
 
 class RxGainScreen(SettingsSubScreen):
@@ -25,11 +26,11 @@ class RxGainScreen(SettingsSubScreen):
         gain_layout.setContentsMargins(16, 12, 16, 12)
         gain_layout.setSpacing(8)
         title_row = QtWidgets.QHBoxLayout()
-        title = QtWidgets.QLabel("RXゲイン調整")
+        title = QtWidgets.QLabel(tr("RXゲイン調整", "RX Gain Adjustment"))
         title.setStyleSheet("font-size: 13px; font-weight: bold; color: #cccccc;")
         title_row.addWidget(title)
         title_row.addStretch(1)
-        auto_label = QtWidgets.QLabel("自動調整")
+        auto_label = QtWidgets.QLabel(tr("自動調整", "Auto"))
         auto_label.setStyleSheet("font-size: 12px; color: #cccccc;")
         title_row.addWidget(auto_label)
         self.agc_checkbox = QtWidgets.QCheckBox("ON")
@@ -66,7 +67,7 @@ class RxGainScreen(SettingsSubScreen):
         level_layout = QtWidgets.QVBoxLayout(level_card)
         level_layout.setContentsMargins(16, 12, 16, 12)
         level_layout.setSpacing(8)
-        level_title = QtWidgets.QLabel("信号レベル")
+        level_title = QtWidgets.QLabel(tr("信号レベル", "Signal Level"))
         level_title.setStyleSheet("font-size: 13px; font-weight: bold; color: #cccccc;")
         level_layout.addWidget(level_title)
         self.level_value = QtWidgets.QLabel("72 %")

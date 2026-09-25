@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from PyQt5 import QtCore, QtWidgets
 from widgets import SettingsSubScreen
+from i18n import tr
 
 
 class TxPowerScreen(SettingsSubScreen):
@@ -22,7 +23,7 @@ class TxPowerScreen(SettingsSubScreen):
         setting_layout.setContentsMargins(16, 12, 16, 12)
         setting_layout.setSpacing(8)
         title_row = QtWidgets.QHBoxLayout()
-        title = QtWidgets.QLabel("出力減衰量設定")
+        title = QtWidgets.QLabel(tr("出力減衰量設定", "Output Attenuation"))
         title.setStyleSheet("font-size: 13px; font-weight: bold; color: #cccccc;")
         title_row.addWidget(title)
         title_row.addStretch(1)
@@ -45,7 +46,7 @@ class TxPowerScreen(SettingsSubScreen):
         setting_layout.addWidget(self.power_label)
         setting_layout.addStretch(1)
         columns.addWidget(setting_card, 1)
-        note = QtWidgets.QLabel("0 dB = 最大出力、値が小さいほど減衰します。")
+        note = QtWidgets.QLabel(tr("0 dB = 最大出力、値が小さいほど減衰します。", "0 dB = maximum output; a smaller value attenuates more."))
         note.setStyleSheet("color: #9aa0a6; font-size: 12px;")
         setting_layout.addWidget(note)
 
