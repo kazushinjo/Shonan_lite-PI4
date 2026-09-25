@@ -44,6 +44,34 @@ SERVICE_NAME="shonan-gui.service"
 
 log() { echo -e "\n=== $* ===\n"; }
 
+log "表示設定の確認(DFRobot DFR0550)"
+# ★2026-09版Raspberry Pi OSの既定config.txt(dtoverlay=vc4-kms-v3d・display_auto_detect=1・
+# disable_fw_kms_setup=1)のままだと、DFR0550ではKMS側のパネル初期化(バックライト・
+# タッチのI2C)がタイムアウトし、/dev/fb0もタッチ(raspberrypi-ts)も使えないことを
+# 実機で確認した。さらにこの状態でビルドの高負荷をかけると実機が再起動し、書き込み
+# 途中のパッケージ(libcairo2等)が破損した。正常動作している旧SDと同じく、firmwareの
+# レガシーDSI表示(BCM2708 FB 800x480)を使う設定にそろえ、反映のため再起動を求める。
+BOOT_CONFIG="/boot/firmware/config.txt"
+DISPLAY_CONFIG_CHANGED=0
+if [ -f "$BOOT_CONFIG" ]; then
+  for key in 'dtoverlay=vc4-kms-v3d' 'display_auto_detect=1' 'disable_fw_kms_setup=1'; do
+    if grep -qx "$key" "$BOOT_CONFIG"; then
+      sudo sed -i "s/^${key}\$/#${key}/" "$BOOT_CONFIG"
+      echo "${BOOT_CONFIG}の${key}をコメントアウトしました。"
+      DISPLAY_CONFIG_CHANGED=1
+    fi
+  done
+  if ! grep -q '^dtparam=i2c_arm=on' "$BOOT_CONFIG"; then
+    printf '[all]\ndtparam=i2c_arm=on\n' | sudo tee -a "$BOOT_CONFIG" > /dev/null
+    echo "${BOOT_CONFIG}にdtparam=i2c_arm=onを追記しました。"
+    DISPLAY_CONFIG_CHANGED=1
+  fi
+fi
+if [ "$DISPLAY_CONFIG_CHANGED" = "1" ]; then
+  echo "表示設定を変更しました。Pi4を再起動(sudo reboot)してから、このスクリプトを再実行してください。"
+  exit 0
+fi
+
 log "1/9 ソース取得 (${REPO_URL})"
 if [ -f "$INSTALL_DIR/pi4/gui/main.py" ]; then
   echo "ローカル転送済みソースを使用します: $INSTALL_DIR"
