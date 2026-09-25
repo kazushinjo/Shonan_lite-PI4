@@ -157,6 +157,16 @@ class RssiScreen(SettingsSubScreen):
         " border-radius: 6px; font-size: 13px; font-weight: bold;"
         " padding: 2px 4px; min-height: 30px; max-height: 30px; }"
         "QPushButton:pressed { background: #102a5c; }")
+    _SEARCH_BTN_STYLE = (
+        "QPushButton { background: #1677ff; color: white; border: none;"
+        " border-radius: 6px; font-size: 15px; font-weight: bold;"
+        " padding: 2px 6px; min-height: 36px; max-height: 36px; }")
+    # 測定中は停止ボタンになるため、「全削除」ボタンと同じ赤系にして状態を区別する。
+    _SEARCH_BTN_STYLE_RUNNING = (
+        "QPushButton { background: #c62828; color: white; border: none;"
+        " border-radius: 6px; font-size: 15px; font-weight: bold;"
+        " padding: 2px 6px; min-height: 36px; max-height: 36px; }"
+        "QPushButton:pressed { background: #7f1a1a; }")
     # 画面表示時に周波数画面の設定を自動で取り込む際の既定レンジ幅。
     _DEFAULT_RANGE_KHZ = 10000
     _PEAK_THRESHOLD_DB = 3.0
@@ -268,10 +278,7 @@ class RssiScreen(SettingsSubScreen):
         self.search_btn = QtWidgets.QPushButton(tr("検索開始", "Start Search"))
         self.search_btn.setFixedHeight(36)
         self.search_btn.clicked.connect(self._on_start_stop)
-        self.search_btn.setStyleSheet(
-            "QPushButton { background: #1677ff; color: white; border: none;"
-            " border-radius: 6px; font-size: 15px; font-weight: bold;"
-            " padding: 2px 6px; min-height: 36px; max-height: 36px; }")
+        self.search_btn.setStyleSheet(self._SEARCH_BTN_STYLE)
         left_layout.addWidget(self.search_btn)
         columns.addWidget(left, 1)
 
@@ -489,6 +496,7 @@ class RssiScreen(SettingsSubScreen):
         self._scanning = True
         self.status_label.setText(tr("検索中...", "Searching..."))
         self.search_btn.setText(tr("検索停止", "Stop Search"))
+        self.search_btn.setStyleSheet(self._SEARCH_BTN_STYLE_RUNNING)
         if settings.use_on_device_demod and self.main_window.tx_controller.is_running():
             # ★検索が管理する送信として状態を揃えるため、既存の送信を一旦止めてから
             # 検索用に送信をやり直す(周波数・設定を検索開始時点のものへ確実に合わせる
@@ -552,6 +560,7 @@ class RssiScreen(SettingsSubScreen):
             self.main_window.tx_controller.stop()
         self.status_label.setText(tr("検索待機中", "Search idle"))
         self.search_btn.setText(tr("検索開始", "Start Search"))
+        self.search_btn.setStyleSheet(self._SEARCH_BTN_STYLE)
         self._commit_scan_result()
 
     def _load_scan_mode_controls(self) -> None:
