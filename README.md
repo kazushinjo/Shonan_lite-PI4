@@ -80,6 +80,13 @@ cd Shonan_lite-PI4
 SKIP_JA_KEYBOARD=1 SKIP_GNURADIO_BUILD=1 SKIP_LANGSTONE_BUILD=1 ./pi4/scripts/install.sh
 ```
 
+★OSを新規インストールした直後の初回実行では、DFR0550をfirmwareのレガシーDSI表示で
+動かすため、`install.sh`が最初に`/boot/firmware/config.txt`の`dtoverlay=vc4-kms-v3d`・
+`display_auto_detect=1`・`disable_fw_kms_setup=1`をコメントアウトし、`dtparam=i2c_arm=on`を
+追記して終了する。案内に従ってPi4を再起動(`sudo reboot`)し、同じコマンドを再実行すると
+ビルドへ進む(KMS有効のままビルドすると画面・タッチが使えないうえ、実機が再起動して
+パッケージが破損することを確認している)。
+
 完了後、`shonan-gui.service`がsystemdに登録されGUIが自動起動する。あわせて
 `/boot/firmware/config.txt`へ`avoid_warnings=1`(電源電圧警告アイコンの表示抑制)
 を未設定なら自動で追記する(反映には再起動が必要)。

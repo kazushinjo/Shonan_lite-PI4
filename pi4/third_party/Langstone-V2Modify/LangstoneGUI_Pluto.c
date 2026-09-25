@@ -20,7 +20,11 @@
 #include <limeRFE/limeRFE.h>
 
 /* The Pi4 image provides these legacy libiio symbols at runtime, but its
-   current headers no longer declare them. */
+   current headers no longer declare them. The build script defines
+   LANGSTONE_DECLARE_LEGACY_IIO only when the iio.h in use lacks them; the
+   libiio 0.25 header (2026-09 OS image) already declares them with const,
+   so redeclaring them there is a conflicting-types error. */
+#ifdef LANGSTONE_DECLARE_LEGACY_IIO
 struct iio_context *iio_create_context_from_uri(const char *uri);
 int iio_channel_attr_write_longlong(struct iio_channel *chn, const char *name,
                                     long long val);
@@ -34,6 +38,7 @@ int iio_channel_attr_write_bool(struct iio_channel *chn, const char *name,
                                 bool val);
 int iio_device_debug_attr_write(struct iio_device *dev, const char *name,
                                 const char *value);
+#endif
 
 //#define PLUTOIP "ip:pluto.local"
 
