@@ -187,6 +187,17 @@ _TRANSLATIONS = {
     "操作説明 / Help": "Operation Guide / Help",
     "目次 / Table of Contents": "Table of Contents",
     "章を選択してください": "Select a section",
+    # ---- Pi5版から移植した機能のエラー表示(error_dialogで英語化される) ----
+    "LNB使用中は送信できません(受信専用)。周波数画面でLNBをOFFにしてください":
+        "Cannot transmit while the LNB is in use (receive only). Turn the LNB OFF on the Frequency screen.",
+    "Langstone設定失敗": "Langstone Setting Failed",
+    "Langstone起動失敗": "Langstone Start Failed",
+    "PTTコントローラ未設定": "PTT Controller Not Set",
+    "設定画面で「ESP32 W5500を使用する」をONにし、PA_Power/PTTコントローラ(ESP32)のIPアドレスを設定してください。":
+        "On the Settings screen, turn on \"Use ESP32 W5500\" and set the IP address of the PA_Power/PTT controller (ESP32).",
+    "Pluto電源OFF失敗": "Pluto Power OFF Failed",
+    "Pluto電源ON失敗": "Pluto Power ON Failed",
+    "シャットダウン失敗": "Shutdown Failed",
 }
 
 
