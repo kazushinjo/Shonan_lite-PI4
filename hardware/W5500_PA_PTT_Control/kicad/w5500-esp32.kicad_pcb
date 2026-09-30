@@ -8858,8 +8858,8 @@
 		(uuid "fe0e5216-1b3c-4044-b017-9493095a24c4")
 	)
 	(gr_rect
-		(start 151.5 110)
-		(end 171.5 130)
+		(start 151.2 118.5)
+		(end 171.2 138.5)
 		(stroke
 			(width 0.1)
 			(type default)
@@ -8868,9 +8868,20 @@
 		(layer "Dwgs.User")
 		(uuid "f4830e8d-f3d4-4112-9672-0535adc08feb")
 	)
+	(gr_circle
+		(center 151.2 128.5)
+		(end 152.7 128.5)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "113075a7-840b-484f-a9e1-8c1b9e35b0b5")
+	)
 	(gr_rect
-		(start 151.5 133)
-		(end 171.5 153)
+		(start 151.2 140.5)
+		(end 171.2 160.5)
 		(stroke
 			(width 0.1)
 			(type default)
@@ -8879,9 +8890,20 @@
 		(layer "Dwgs.User")
 		(uuid "0e609b40-bf94-485e-a5f3-ec1e31e626b3")
 	)
+	(gr_circle
+		(center 151.2 150.5)
+		(end 152.7 150.5)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "50e013cc-ac1c-4888-b216-4a3a41f0f2ce")
+	)
 	(gr_rect
-		(start 151.5 156)
-		(end 171.5 176)
+		(start 151.2 162.5)
+		(end 171.2 182.5)
 		(stroke
 			(width 0.1)
 			(type default)
@@ -8889,6 +8911,17 @@
 		(fill no)
 		(layer "Dwgs.User")
 		(uuid "300711ae-a0b6-4a42-ad37-568b0c554944")
+	)
+	(gr_circle
+		(center 151.2 172.5)
+		(end 152.7 172.5)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "57a6523e-cb65-40e6-8ec8-a526f0864e80")
 	)
 	(gr_circle
 		(center 156 97.5)
@@ -9042,8 +9075,8 @@
 			)
 		)
 	)
-	(gr_text "放熱器 U1 20x20"
-		(at 161.5 120 0)
+	(gr_text "放熱器 U1 20x20 (M3穴 高さ18)"
+		(at 161.2 120.5 0)
 		(layer "Dwgs.User")
 		(uuid "ba28ba1a-7d8c-4ba2-9f40-93d2ae0d04be")
 		(effects
@@ -9053,8 +9086,8 @@
 			)
 		)
 	)
-	(gr_text "放熱器 U2 20x20"
-		(at 161.5 143 0)
+	(gr_text "放熱器 U2 20x20 (M3穴 高さ18)"
+		(at 161.2 142.5 0)
 		(layer "Dwgs.User")
 		(uuid "5110f35e-927e-4224-963d-3a9605dd4fd8")
 		(effects
@@ -9064,8 +9097,8 @@
 			)
 		)
 	)
-	(gr_text "放熱器 Q5 20x20"
-		(at 161.5 166 0)
+	(gr_text "放熱器 Q5 20x20 (M3穴 高さ18)"
+		(at 161.2 164.5 0)
 		(layer "Dwgs.User")
 		(uuid "191b8733-eda5-475d-998e-fecdc9481f5e")
 		(effects
