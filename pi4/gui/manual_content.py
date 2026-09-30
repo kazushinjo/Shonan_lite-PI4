@@ -16,11 +16,15 @@ MANUAL_SCREENSHOTS = {
 }
 
 MANUAL_SECTIONS = [
+    ("重要", [
+        ("Plutoのユーザー名・パスワード",
+         "Plutoのユーザー名(root)とパスワード(analog)は、デフォルト値のまま変更しないでください。本アプリとLangstoneは、SSHでPlutoにログインしてリブートや設定ファイルの書き込みを行っています(アプリ起動時・アプリ再起動・機器試験・送受信開始時・Langstone終了時)。変更するとPlutoをリブートできなくなります。"),
+    ]),
     ("1. 画面構成", [
         ("このアプリでできること",
          "Shonan_Liteは、無印ADALM-Plutoを使ってDVB-S2 DATVの送信・受信・RFループバック試験を行うアプリです。ホーム画面から各機能へ移動します。"),
         ("ホーム画面",
-         "「送信」「受信」「周波数」「RSSI測定」「シンボルレート」「誤り訂正(FEC)」「変調方式」「映像ソース」「出力設定」「RXゲイン」「TX出力」「設定」「機器試験」「ヘルプ」「アプリ再起動」「電源オフ」「Langstone」「プリセット」「Pluto電源」を表示します。各カードはアイコン・日本語名・英語名を同じ配置で表示します(英語表示では英語名のみ)。周波数カードには現在の周波数を表示します。"),
+         "「送信」「受信」「周波数」「RSSI測定」「シンボルレート」「誤り訂正(FEC)」「変調方式」「映像ソース」「出力設定」「RXゲイン」「TX出力」「設定」「機器試験」「ヘルプ」「アプリ再起動」「電源オフ」「Langstone」「プリセット」「Pluto電源」を表示します。各カードはアイコン・日本語名・英語名を同じ配置で表示します(英語表示では英語名のみ)。周波数カードには現在の周波数を表示します。背景右側の衛星をタップすると、Langstoneを10GHz受信用のバンドで開きます(9章参照)。"),
         ("画面の共通操作",
          "カードまたはボタンをタップして画面を開きます。各画面の「ホームへ戻る」でホーム画面へ戻ります。送受信中に設定を変更する場合は、先に送信・受信を停止してください。"),
     ]),
@@ -38,9 +42,13 @@ MANUAL_SECTIONS = [
         ("設定を始める前に",
          "相手局と先に次の共通値を決めます。周波数437.000 MHz、シンボルレート500 kS/s、変調QPSK、FEC 3/5、パイロットONを標準例とします。送信側と受信側でこの5項目が一致しないと受信できません。"),
         ("1. 設定画面：基本設定",
-         "ホーム画面で「設定」をタップします。表示言語(日本語/English)を選び、送信先(Pluto Tx)にPlutoのIPアドレスを入力します(UDP-TSポートは8282固定)。PA_Power/PTTコントローラ(ESP32)を使う場合はそのIPアドレスを入力します(空欄なら連携しません)。入力後にキーボードを閉じ、入力欄からフォーカスが外れたことを確認します。PlutoのIPアドレスを相手局と混同しないようにしてください。"),
+         "ホーム画面で「設定」をタップします。表示言語(日本語/English)を選び、送信先(Pluto Tx)にPlutoのIPアドレスを入力します(UDP-TSポートは8282固定)。PA_Power/PTTコントローラ(ESP32)を使う場合は「ESP32 W5500を使用する」をONにしてIPアドレスを入力します(OFFまたは空欄なら連携しません。OFFにしてもIPアドレスは保持されます)。入力後にキーボードを閉じ、入力欄からフォーカスが外れたことを確認します。PlutoのIPアドレスを相手局と混同しないようにしてください。"),
+        ("ESP32 W5500なしでのPA/LNA制御",
+         "ESP32 W5500(PA_Power/PTTコントローラ)を使わなくても、RasPI4からのPTT ON信号でPA・LNAの送受信切替を制御できます。送信中はPi 4のGPIO21(40番ピン、GNDは39番ピン)がHIGH(3.3V)、受信中はLOWになります。Shonan_Liteの送信とLangstoneの送信(Langstone標準のTx Output)のどちらでも同じピンに出力されます。GPIO21は電流を取れないため、トランジスタやリレードライバ等でバッファしてからPA・LNA(同軸リレー等)を駆動してください。12V電源のON/OFFとホーム画面の「Pluto電源」カードはESP32 W5500が必要です。"),
         ("2. 周波数画面",
          "ホーム画面で「周波数」をタップします。相手局と決めた周波数を入力し、「OK」または確定ボタンをタップします。ホーム画面の周波数カードが同じ値に変わったことを確認します。標準例は437.000 MHzです。"),
+        ("10GHz帯とLNB",
+         "周波数画面のバンド選択で「10GHz帯」を押すと、LNBを使用するかどうかを確認します。「はい」を選ぶと表示周波数は10.2365 GHz(10,236,500 kHz)になり、受信時はLNB局部発振9750 MHzを引いた486.5 MHzでPlutoが受信します(受信画面・RSSI測定も同じ)。LNB使用中は受信専用で、送信はできません。「いいえ」を選ぶと従来どおり10,180 MHz(LNBなし)です。「10GHz帯」を押し直すと選び直せ、他のバンドを選ぶとLNBは解除されます。LNBへの電源供給(同軸経由のバイアスT)は別途用意してください。"),
         ("3. シンボルレート画面",
          "ホーム画面で「シンボルレート」をタップし、500 kS/sを選択します。確定後、カード表示が500 kS/sになったことを確認します。相手局と異なる値にしないでください。"),
         ("4. 変調方式画面",
@@ -114,13 +122,15 @@ MANUAL_SECTIONS = [
         ("基本操作",
          "Langstone画面下部のBAND、MODE、SET、BEACON、PTTなどをタップして操作します。"),
         ("Shonan_Liteへ戻る",
-         "LangstoneのSET画面で「GOTO SHONAN_LITE」を押します。Langstoneを停止し、Plutoを再起動してからShonan_Liteへ切り替えます。"),
+         "LangstoneのSET画面で「GOTO SHONAN_LITE」を押します。Langstoneを停止してShonan_Liteへ切り替えます。切替時間を短くするため、切替のときはPlutoを再起動しません(Langstoneが止めた送信LOは元に戻します)。電源投入時・アプリ再起動などでは従来どおりPlutoを再起動します。"),
+        ("10GHz受信(衛星をタップ)",
+         "ホーム画面の背景右側の衛星をタップすると、Langstoneを10GHz受信用のバンド(表示10236.5 MHz、Pluto受信486.5 MHz、LNB局部発振9750 MHz)で開きます。このバンドは受信専用で、PTTボタンは灰色の「RX ONLY」表示になり、PTT・CWキー・ビーコンのいずれでも送信しません。普通のLangstoneカードで開くと、衛星の前に使っていたバンドに戻ります。"),
     ]),
     ("10. Help・診断・アプリ再起動", [
         ("Help",
          "Helpでは章を選択して操作手順を確認できます。プリセットの登録・適用方法、送受信手順、RFループバック試験手順は本書と同じ順番で表示されます。"),
         ("機器試験",
-         "機器試験の「全体試験」は、送信・受信を停止してから押します。最初にPlutoを再起動して接続を確認し、次の4項目を順に試験して結果を表に表示します: Pluto SDR接続(IIOコンテキスト接続)、送信テスト(8秒間の送出継続)、受信テスト(8秒間の受信継続)、温度センサー(Pi 4のCPU温度)。最後に「TX: 正常 / RX: 正常」のように総合結果を表示します。終了時は送信・受信とも自動で停止します。「カメラ＋音声診断」はUSBカメラの映像と内蔵マイクの音声を実際に取り込んで送出できるかを確認します。診断結果はアンテナ性能やRF環境を保証するものではありません。"),
+         "機器試験の「全体試験」は、送信・受信を停止してから押します。最初にPlutoを再起動して接続を確認し、次の4項目を順に試験して結果を表に表示します: Pluto SDR接続(IIOコンテキスト接続)、送信テスト(8秒間の送出継続)、受信テスト(8秒間の受信継続)、温度センサー(Pi 4のCPU温度)。最後に「TX: 正常 / RX: 正常」のように総合結果を表示します。試験の実行中は、押したボタンが赤で表示されます。終了時は送信・受信とも自動で停止します。「カメラ＋音声診断」はUSBカメラの映像と内蔵マイクの音声を実際に取り込んで送出できるかを確認します。診断結果はアンテナ性能やRF環境を保証するものではありません。"),
         ("アプリ再起動",
          "送受信を停止してから「アプリ再起動」を使用します。Plutoを再起動し、オフライン確認、Web UI・IIOの復旧確認、保存済み設定の再適用を順番に行います。確認できない場合はホーム画面を表示します。"),
     ]),
@@ -145,5 +155,89 @@ MANUAL_SECTIONS = [
         ("検証について", "本書の内容は実機で動作確認した内容に基づきます。ただし、使用するPluto、RF配線、電源、ネットワーク、映像機器の組み合わせによっては、まだバグが内在している可能性があります。"),
         ("RF安全", "送信機と受信機の接続条件を確認し、指定値以上のアッテネータを使用してください。"),
         ("クレジット", "受信部の方式考案・原システム設計: 山崎慎慈氏(JE1BTA)。受信部安定化調査・本アプリ開発: 真城和一。"),
+    ]),
+]
+
+# 英語表示のHelp(screens/manual.py)と、DOCX操作説明書の英語編で使う。
+# 日本語章とは項目数が異なる(日本語の方が詳しい)。
+MANUAL_SECTIONS_EN = [
+    ("Important", [
+        ("Pluto username and password", "Keep the Pluto's username (root) and password (analog) at their default values. This app and Langstone log in to the Pluto via SSH to reboot it and write its settings file (at app start, app restart, equipment test, TX/RX start and Langstone exit). If they are changed, the Pluto cannot be rebooted."),
+    ]),
+    ("1. Overview", [
+        ("What this app does", "Shonan_Lite is a DVB-S2 DATV transmitter, receiver, and RF loopback test tool for ADALM-Pluto."),
+        ("Home screen", "Use the cards for Transmit, Receive, Frequency, RSSI Measurement, Symbol Rate, FEC, Modulation, Video Source, Stream Output, RX Gain, TX Power, Settings, Diagnostic, Help, App Restart, Power Off, Langstone, Presets, and Pluto Power. Every card shows its icon and name in the same layout; the Frequency card also shows the current frequency. Tapping the satellite on the right of the background opens Langstone on the band for 10 GHz reception (see chapter 9)."),
+        ("Common operation", "Tap a card or button to open it. Use Back to Home to return. Stop transmit and receive before changing operating parameters."),
+    ]),
+    ("2. Startup and shutdown", [
+        ("Before startup", "Power on Pluto and connect it to Pi 4 over Ethernet. Set the Pluto address for your network."),
+        ("Startup sequence", "The startup menu selects Shonan_Lite or Langstone. Shonan_Lite restarts Pluto, checks the connection, and reapplies settings before showing Home. If confirmation takes over 20 seconds, it continues to Home."),
+        ("Shutdown", "Stop transmit and receive, then use Power Off from Home."),
+        ("RF safety", "Never connect TX directly to RX. Use TX → external attenuator of at least 40 dB → RX."),
+    ]),
+    ("3. Operating parameters", [
+        ("Standard example", "Frequency 437.000 MHz, symbol rate 500 kS/s, QPSK, FEC 3/5, and Pilot ON. TX and RX must use the same values."),
+        ("Settings", "Open Settings, choose the display language (Japanese/English), and enter the Pluto IP address under Destination (Pluto Tx); the UDP-TS port is fixed at 8282. To use the PA_Power/PTT controller (ESP32), turn on \"Use ESP32 W5500\" and enter its IP address (the link is disabled when it is OFF or the address is empty; the IP address is kept even when OFF)."),
+        ("PA/LNA control without ESP32 W5500", "Even without the ESP32 W5500 (PA_Power/PTT controller), the PA and LNA can be switched between TX and RX by the PTT ON signal from the RasPI4. GPIO21 on the Pi 4 (pin 40; GND on pin 39) is HIGH (3.3 V) while transmitting and LOW while receiving, both for Shonan_Lite and for Langstone (Langstone's standard Tx Output). GPIO21 cannot supply current, so buffer it with a transistor, relay driver or similar before driving the PA and LNA. Switching the 12 V power ON/OFF and the Pluto Power card still require the ESP32 W5500."),
+        ("Frequency", "Enter the agreed frequency and press OK. Confirm that the Home card shows the same value."),
+        ("10 GHz band and LNB", "Pressing 10GHz Band in the band selection on the Frequency screen asks whether to use an LNB. Choosing Yes sets the displayed frequency to 10.2365 GHz (10,236,500 kHz), and when receiving the Pluto receives at 486.5 MHz, i.e. minus the 9750 MHz LNB local oscillator (the same applies to the RX screen and RSSI measurement). While the LNB is in use it is receive only and transmitting is not possible. Choosing No gives 10,180 MHz (no LNB) as before. Press 10GHz Band again to choose again; selecting another band cancels the LNB. Provide power for the LNB (bias-T over the coax) separately."),
+        ("Symbol Rate", "Choose or enter the agreed symbol rate. The standard example is 500 kS/s."),
+        ("Modulation and FEC", "Select the same modulation and FEC as the other station. Modulation is QPSK or 8PSK, and the FEC choices are limited to working combinations (QPSK: 1/2, 3/5, 8/9; 8PSK: 3/5, 8/9). QPSK and FEC 3/5 are the standard example."),
+        ("Video Source", "Choose Camera for live video, Test Pattern for diagnostics, or File to send a still image (png/jpg/jpeg/bmp); the preview on the right shows the selected source. The camera is captured at 1280x720 (MJPEG at 30 fps when supported; cameras without 1280x720 use their default size), and in dim light the camera may lower its frame rate. With Camera, Capture saves a 1920x1080 JPG to Pictures/Shonan_Lite (not while transmitting), and File opens that folder. The Callsign and Note fields are burned into camera and image video with the date and time; choose their font size and color next to each field. The transmitted video is fixed at Full HD (1920x1080) with black bars when the aspect ratio differs. Only video is transmitted (No Audio)."),
+        ("Stream Output", "Enter the Pluto IP address in Pluto URI, or press Detect to find the Pluto on the same LAN automatically. The destination port is fixed at 8282 on the Pluto. Change the RX TS port and Status port only if needed."),
+        ("RX Gain and TX Power", "Use AGC or set RX gain manually. The standard test gain is 60 dB. TX Power sets the output attenuation: 0 dB is maximum output, and the value is shown as TX Attenuation (dB) on the Transmit screen."),
+        ("On-device demodulation", "ON automatically enables TX/RX simultaneous operation, but starting RX does not automatically start TX. Turning it ON first asks you to confirm that an attenuator of 40 dB or more is connected between the Pluto TX and RX ports. OFF keeps TX and RX exclusive."),
+        ("Final check", "Read every Home card and compare frequency, symbol rate, modulation, FEC, source, RX gain, and TX power with the other station."),
+    ]),
+    ("4. Presets", [
+        ("Apply", "Open Presets and select one of five entries. The values are applied to the app and Pluto; transmit and receive do not start automatically."),
+        ("Register or edit", "Set values manually in the individual screens, return to Presets, press Save / Edit, and enter the preset name with the keyboard."),
+        ("Delete", "Press Delete on the selected row. Edit and delete while transmit and receive are stopped."),
+    ]),
+    ("5. Transmit", [
+        ("Start", "Open Transmit, check the preview and parameters, and press Start Transmit. Opening the screen does not start transmission."),
+        ("While transmitting", "Check the preview, frequency, symbol rate, modulation, FEC, and TX attenuation (dB). Packets is the total number of UDP packets sent to the Pluto and Frames is the number of encoded video frames; both keep increasing while transmitting and return to 0 when stopped. Connection shows Connected while the stream is being sent to the Pluto."),
+        ("Stop", "Press Stop Transmit before changing settings or wiring."),
+    ]),
+    ("6. Receive", [
+        ("Start", "Match frequency, symbol rate, modulation, FEC, and Pilot with the transmitting station, then press Start Receive."),
+        ("Check", "LOCK, SOF, packets, bitrate, errors, and the video image should be monitored. SOF and packets must continue to increase."),
+        ("No video", "First check LOCK and packets, then check video source, H.264 encoding, transmitter state, test pattern, and wiring."),
+        ("Stop", "Press Stop Receive when finished."),
+    ]),
+    ("7. Normal operation", [
+        ("Station-to-station procedure", "Agree on all parameters, configure each screen in order, compare Home cards, start RX or TX as required, and verify LOCK, SOF, packets, errors, and video."),
+        ("RSSI Measurement", "RSSI Measurement scans ±5/±10/±20 MHz around the center frequency (from the Frequency screen) and graphs the received level; a smaller RSSI value means a stronger signal. Choose Repeat or Once, and adjust RX gain (AGC/manual) on the right. With on-device demodulation OFF (normal operation) it does not transmit and measures the other station. With it ON (a test feature) your station also transmits the test pattern automatically and measures its own signal; always use an attenuator of 40 dB or more."),
+        ("TX/RX switching", "When TX starts while RX is active, the app performs RX stop → TX configuration → TX start → RX restart."),
+    ]),
+    ("8. TX/RX and RF loopback test", [
+        ("Test values", "437.000 MHz, 500 kS/s, QPSK, FEC 3/5, Long Frame, roll-off 0.35, RX gain 60 dB, Test Pattern, Pilot ON, on-device demodulation ON, and RF loopback ON."),
+        ("Important distinction", "On-device demodulation permits simultaneous TX/RX in one Pluto. RF loopback describes the physical attenuated RF path; it is not enabled by on-device demodulation alone."),
+        ("Pass criteria", "LOCK is established, SOF and packet counts increase continuously, errors remain stable, and the test pattern is displayed."),
+    ]),
+    ("9. Langstone", [
+        ("Switching", "Select Langstone from the startup menu or Home. Only one application uses Pluto at a time."),
+        ("Return", "Use GOTO SHONAN_LITE in Langstone to stop it and return to Shonan_Lite. To shorten the switching time, the Pluto is not rebooted when switching (the TX LO that Langstone powered down is restored). The Pluto is still rebooted at power-up and app restart."),
+        ("10 GHz reception (tap the satellite)", "Tapping the satellite on the right of the Home screen background opens Langstone on the band for 10 GHz reception (displayed 10236.5 MHz, Pluto RX 486.5 MHz, LNB local oscillator 9750 MHz). This band is receive only: the PTT button is shown grayed out as RX ONLY, and it does not transmit from PTT, the CW key or the beacon. Opening Langstone from the normal Langstone card returns to the band used before the satellite."),
+    ]),
+    ("10. Help, diagnostics, and restart", [
+        ("Help", "Use the table of contents or search field to find an operating procedure."),
+        ("Diagnostic", "Stop TX and RX, then press Full Test. It restarts the Pluto and checks four items in order: Pluto SDR connection (IIO context), TX test (8 s of continuous output), RX test (8 s of continuous reception), and temperature sensor (Pi 4 CPU temperature), then shows an overall TX/RX result. While a test is running, the pressed button is shown in red. TX and RX are stopped automatically at the end. Camera + Audio Diagnostic checks that the USB camera video and its microphone audio can actually be captured and sent. The result does not guarantee antenna or RF performance."),
+        ("App Restart", "Stop TX/RX first. App Restart restarts Pluto, checks recovery, and reapplies saved settings in order."),
+    ]),
+    ("11. Troubleshooting", [
+        ("Cannot transmit", "Check Pluto IP, frequency, video source, TX power, and that Start Transmit was pressed."),
+        ("Cannot receive", "Match all five RF parameters and Pilot, confirm TX is active, and check attenuator, wiring, and RX gain."),
+        ("SOF does not increase", "Recheck Pluto settings, frequency, symbol rate, modulation, FEC, Pilot, RX gain, TX power, and attenuation."),
+        ("Cannot connect to Pluto", "Check power, IP address, and Ethernet. Wait for configuration reapplication after a restart."),
+    ]),
+    ("12. Pluto and connection information", [
+        ("Firmware", "Use the F5OEO DATV custom firmware on an ADALM-Pluto. Pluto settings must match the app."),
+        ("Pi 4", "Host name: DVB-S2-PI4. Configure the IP address and SSH destination for the operating environment."),
+        ("Standard test", "437.000 MHz, 500 kS/s, QPSK, FEC 3/5, Test Pattern, and RX gain 60 dB."),
+    ]),
+    ("13. Notes and validation scope", [
+        ("Validation", "This guide is based on actual equipment checks. Bugs may still exist depending on Pluto, RF wiring, power, network, and video equipment combinations."),
+        ("Credit", "Receiver method and original system design: Shinji Yamazaki (JE1BTA). Receiver stabilization and application development: Kazuichi Shinjo."),
     ]),
 ]

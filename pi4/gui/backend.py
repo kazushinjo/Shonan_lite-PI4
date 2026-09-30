@@ -487,6 +487,25 @@ def _push_pluto_settings(settings: AppSettings, lo_hz: float) -> None:
         raise OSError(f"Pluto設定ファイル書き込み失敗: {detail or result.returncode}")
 
 
+# Pi4本体のTX出力GPIO。Langstone V2のTx Output(wiringPi 29=GPIO21=物理40番ピン、
+# 送信中HIGH)と同じピンに揃え、ESP32+W5500(PA_Power/PTTコントローラ)なしでも
+# PA/LNA切替用のPTT ON信号を取り出せるようにする。
+PI_TX_GPIO = 21
+
+
+def _set_pi_tx_gpio(on: bool) -> None:
+    """Pi4本体のTX出力GPIO(PI_TX_GPIO)をHIGH(送信中)/LOW(受信)にする。
+
+    ★ラインをclaimするとLangstone側と取り合いになる可能性があるため、ラインを
+    保持しない`pinctrl set`で直接書き込む。Pi以外の環境などでpinctrlが無い・
+    失敗した場合は例外をそのまま送出する(呼び出し側でログのみ)。
+    """
+    subprocess.run(
+        ["pinctrl", "set", str(PI_TX_GPIO), "op", "dh" if on else "dl"],
+        check=True, timeout=2, capture_output=True,
+    )
+
+
 # ESP32ファームウェア(hardware/W5500_PA_PTT_Control.ino)のPIN_OUTインデックスに対応。
 PTT_CHANNEL_POWER = 0  # GPIO26: 12V電源(2SJ334ハイサイドスイッチ)
 PTT_CHANNEL_PTT = 1    # GPIO27: PTT
@@ -601,6 +620,9 @@ class TxController(QtCore.QObject):
         if lo_hz is None:
             self.error.emit("周波数が未設定です(ループバック試験を選択中はFrequency画面で手動設定してください)")
             return
+        if settings.lnb_active():
+            self.error.emit("LNB使用中は送信できません(受信専用)。周波数画面でLNBをOFFにしてください")
+            return
 
         self._last_settings = settings
         self._last_mode = "video"
@@ -653,6 +675,10 @@ class TxController(QtCore.QObject):
                 self.error.emit(f"Pluto+設定送信に失敗しました: {exc}")
                 return
             output_url = _build_udp_ts_url(settings)
+        try:
+            _set_pi_tx_gpio(True)
+        except (OSError, subprocess.SubprocessError) as exc:
+            self.log_line.emit(f"[PTT] Pi4 GPIO{PI_TX_GPIO}のHIGH出力に失敗しました: {exc}")
         # 通常送信は映像のみ。音声入力・AAC音声は送信しない。
         args = video_args + overlay_input_args + overlay_filter_args + [
             "-map", video_map,
@@ -682,7 +708,15 @@ class TxController(QtCore.QObject):
 
     def stop(self) -> None:
         self._should_be_running = False
-        if not self.is_running():
+        was_running = self.is_running()
+        # ★Pi4 GPIOはローカルで軽いため、起動途中で失敗した場合もHIGHのまま
+        # 残さないよう、送信中かどうかにかかわらずLOWへ戻す。
+        try:
+            _set_pi_tx_gpio(False)
+        except (OSError, subprocess.SubprocessError) as exc:
+            if was_running:
+                self.log_line.emit(f"[PTT] Pi4 GPIO{PI_TX_GPIO}のLOW出力に失敗しました: {exc}")
+        if not was_running:
             return
         # ffmpegを直接起動している(setsid/bash -cのパイプ構成をやめた)ため、QProcessの
         # terminate()/kill()がそのままffmpeg本体に届く。
@@ -763,6 +797,9 @@ class TxController(QtCore.QObject):
         lo_hz = settings.effective_lo_hz()
         if lo_hz is None:
             self.error.emit("周波数が未設定です")
+            return
+        if settings.lnb_active():
+            self.error.emit("LNB使用中は送信できません(受信専用)。周波数画面でLNBをOFFにしてください")
             return
 
         self._last_settings = settings
@@ -893,7 +930,8 @@ class RxController(QtCore.QObject):
                 f"対応組み合わせ: {', '.join(RX_SUPPORTED_MODCODS)}"
             )
             return
-        lo_hz = settings.effective_lo_hz()
+        # ★LNB使用中は表示周波数(10GHz)ではなく、LNB局部発振を引いたIF周波数で受信する。
+        lo_hz = settings.rx_tune_hz()
         if lo_hz is None:
             self.error.emit("周波数が未設定です")
             return

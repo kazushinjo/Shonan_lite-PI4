@@ -670,7 +670,8 @@ class RssiScreen(SettingsSubScreen):
         settings = self.main_window.settings
         try:
             subprocess.run([IIO_ATTR_BIN, "-u", settings.pluto_uri, "-c", "ad9361-phy",
-                            "altvoltage0", "frequency", str(freq)], capture_output=True, timeout=2)
+                            "altvoltage0", "frequency", str(settings.rx_tune_hz(freq))],
+                           capture_output=True, timeout=2)
             result = subprocess.run([IIO_ATTR_BIN, "-u", settings.pluto_uri, "-c", "ad9361-phy",
                                      "voltage0", "rssi"], capture_output=True, text=True, timeout=2)
             text = result.stdout.strip()

@@ -37,6 +37,11 @@ BAND_PROFILES = {
     "LOOPBACK": {"label_ja": "ループバック試験", "label_en": "Loopback Test", "lo_hz": None},
 }
 
+# 10GHz帯をLNBで受信するときの値。Langstoneの10GHz受信(langstone_config.py)と同じく、
+# 表示10236.5MHz・LNB局部発振9750MHz(→Pluto受信486.5MHz)。LNBは受信専用。
+LNB_LO_HZ = 9_750_000_000
+LNB_DISPLAY_HZ = 10_236_500_000
+
 FEC_RATES = ["1/4", "1/3", "2/5", "1/2", "3/5", "2/3", "3/4", "4/5", "5/6", "8/9", "9/10"]
 # ★32APSKはTX_SUPPORTED_MODCODSに対応するFECが1つもない(実装なし)ため、
 # 選択肢自体から除外する(選んでも必ず「未対応のMod-Cod組み合わせ」になるため)。
@@ -117,6 +122,9 @@ class AppSettings:
     selected_band: str = "BAND_1200"
     use_custom_lo_frequency: bool = True
     custom_lo_frequency_hz: int = 437_000_000
+    # 周波数画面で10GHz帯を選んだときの「LNBを使用する」。ONの間は画面の周波数を
+    # 10GHz表示のまま扱い、受信時だけLNB局部発振(LNB_LO_HZ)を引いてPlutoへ渡す。
+    use_lnb: bool = False
 
     # Pluto+接続(Pi4はローカル直結のためURI形式。Android版のtxDestinationIP/Port相当を代替)
     pluto_uri: str = "ip:192.168.0.10"
@@ -124,6 +132,8 @@ class AppSettings:
     # PA_Power/PTTコントローラ(ESP32+W5500、hardware/W5500_PA_PTT_Control)のIPアドレス。
     # 空文字なら連携しない(未接続環境でもTX/RXの動作に影響しない)。
     ptt_controller_host: str = "192.168.0.100"
+    # 設定画面の「ESP32 W5500を使用する」。OFFならIPアドレスを保持したまま連携しない。
+    use_ptt_controller: bool = True
     tx_destination_port: int = 7272
     rx_listen_port: int = 4003
     rx_status_port: int = 4002
@@ -182,14 +192,37 @@ class AppSettings:
     def effective_lo_hz(self) -> Optional[int]:
         if self.use_custom_lo_frequency:
             return self.custom_lo_frequency_hz
+        # 10GHz帯をLNB使用で選んだ場合は、バンド既定値ではなくLNB用の表示周波数。
+        if self.use_lnb and self.selected_band == "BAND_10000":
+            return LNB_DISPLAY_HZ
         # Android版effectiveLoHzと同じくLOOPBACKでは手動値へフォールバックする。
         return BAND_PROFILES[self.selected_band]["lo_hz"] or self.custom_lo_frequency_hz
+
+    def lnb_active(self) -> bool:
+        """LNB使用中(受信専用)か。周波数がLNB局部発振より上のときだけ有効。"""
+        lo_hz = self.effective_lo_hz()
+        return self.use_lnb and lo_hz is not None and lo_hz > LNB_LO_HZ
+
+    def rx_tune_hz(self, display_hz: Optional[int] = None) -> Optional[int]:
+        """画面表示の周波数から、受信時にPlutoへ設定する周波数を返す。
+
+        LNB使用中は表示周波数からLNB局部発振を引く(10236.5MHz→486.5MHz)。
+        """
+        if display_hz is None:
+            display_hz = self.effective_lo_hz()
+        if display_hz is None:
+            return None
+        return display_hz - LNB_LO_HZ if self.lnb_active() else display_hz
 
     def is_loopback(self) -> bool:
         return self.selected_band == "LOOPBACK"
 
     def effective_loopback_host(self) -> str:
         return "127.0.0.1" if self.loopback_use_localhost else self.loopback_target_ip
+
+    def active_ptt_controller_host(self) -> str:
+        """PTTコントローラ連携に使う接続先。未使用設定またはIP未設定なら""。"""
+        return self.ptt_controller_host if self.use_ptt_controller else ""
 
     def mod_cod(self) -> str:
         """FEC + Modulation を合成した --mod-cod 文字列(aff3ct/gr-dvbs2rx共通の命名)。"""

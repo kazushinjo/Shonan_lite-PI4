@@ -165,7 +165,11 @@ class RxScreen(SettingsSubScreen):
         self.scroll_area.verticalScrollBar().setValue(0)
         settings = self.main_window.settings
         lo_hz = settings.effective_lo_hz()
-        self.freq_value.setText(f"{lo_hz / 1000:.0f} kHz" if lo_hz else tr("未設定", "Not set"))
+        freq_text = f"{lo_hz / 1000:.0f} kHz" if lo_hz else tr("未設定", "Not set")
+        if settings.lnb_active():
+            # LNB使用中は表示周波数(10GHz)と、実際にPlutoで受信する周波数を併記する。
+            freq_text += f" (LNB → {settings.rx_tune_hz() / 1000:.0f} kHz)"
+        self.freq_value.setText(freq_text)
         self.symbol_value.setText(f"{settings.symbol_rate_msps * 1000:.0f} kS/s")
         self.modulation_value.setText(settings.modulation_scheme)
         self.fec_value.setText(settings.fec_rate)

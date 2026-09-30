@@ -7,8 +7,11 @@ from __future__ import annotations
 
 from PyQt5 import QtCore, QtWidgets
 
-from settings_store import BAND_PROFILES
-from widgets import SettingsSubScreen
+from settings_store import BAND_PROFILES, LNB_DISPLAY_HZ, LNB_LO_HZ
+from widgets import SettingsSubScreen, confirm_dialog
+
+# 押したときにLNBを使用するか確認するバンド。
+_LNB_BAND = "BAND_10000"
 from i18n import tr
 
 _CHIP_STYLE = (
@@ -123,7 +126,10 @@ class FrequencyScreen(SettingsSubScreen):
             chip = QtWidgets.QPushButton(f"{info['label_ja']}\n{mhz:g} MHz")
             chip.setCheckable(True)
             chip.setStyleSheet(_CHIP_STYLE)
-            chip.toggled.connect(lambda checked, b=band: self._select_band(b) if checked else None)
+            # ★toggledではなくclickedを使う。on_show()でのsetChecked()では発火させず
+            # (画面を開くたびにLNB確認が出ないように)、選択中の10GHz帯を押し直した
+            # ときはLNB使用有無を選び直せるようにするため。
+            chip.clicked.connect(lambda _checked=False, b=band: self._select_band(b))
             self._band_group.addButton(chip)
             self._band_buttons[band] = chip
             band_layout.addWidget(chip)
@@ -147,13 +153,40 @@ class FrequencyScreen(SettingsSubScreen):
         settings = self.main_window.settings
         lo_hz = settings.effective_lo_hz()
         text = f"{lo_hz / 1000:.0f} kHz" if lo_hz else tr("未設定", "Not set")
+        if settings.lnb_active():
+            rx_khz = f"{settings.rx_tune_hz() / 1000:.0f} kHz"
+            text += tr(f"\nLNB使用(受信専用): Pluto受信 {rx_khz}",
+                       f"\nLNB in use (RX only): Pluto RX {rx_khz}")
         self.current_label.setText(tr(f"現在の周波数: {text}", f"Current frequency: {text}"))
+        lnb_chip = self._band_buttons.get(_LNB_BAND)
+        if lnb_chip is not None:
+            info = BAND_PROFILES[_LNB_BAND]
+            label = info["label_ja"]
+            if settings.lnb_active() and not settings.use_custom_lo_frequency:
+                lnb_chip.setText(f"{label} (LNB)\n{settings.effective_lo_hz() / 1_000_000:g} MHz")
+            else:
+                lnb_chip.setText(f"{label}\n{info['lo_hz'] / 1_000_000:g} MHz")
 
     def _select_band(self, band: str) -> None:
         settings = self.main_window.settings
         settings.selected_band = band
         settings.use_custom_lo_frequency = False
+        settings.use_lnb = False
         settings.custom_lo_frequency_hz = BAND_PROFILES[band]["lo_hz"]
+        if band == _LNB_BAND and confirm_dialog(
+                self, tr("LNBの使用", "Use LNB"),
+                tr(f"LNBを使用しますか?\n\n"
+                   f"「はい」: 表示周波数 {LNB_DISPLAY_HZ / 1e9:g} GHz、"
+                   f"Pluto受信 {(LNB_DISPLAY_HZ - LNB_LO_HZ) / 1e6:g} MHz"
+                   f"(LNB局部発振 {LNB_LO_HZ / 1e6:g} MHz)。受信専用で送信はできません。\n"
+                   f"「いいえ」: {BAND_PROFILES[band]['lo_hz'] / 1e6:g} MHz(LNBなし)",
+                   f"Use an LNB?\n\n"
+                   f"Yes: displayed frequency {LNB_DISPLAY_HZ / 1e9:g} GHz, "
+                   f"Pluto RX {(LNB_DISPLAY_HZ - LNB_LO_HZ) / 1e6:g} MHz "
+                   f"(LNB local oscillator {LNB_LO_HZ / 1e6:g} MHz). Receive only; transmitting is not possible.\n"
+                   f"No: {BAND_PROFILES[band]['lo_hz'] / 1e6:g} MHz (no LNB)")):
+            settings.use_lnb = True
+            settings.custom_lo_frequency_hz = LNB_DISPLAY_HZ
         self.main_window.save_settings()
         self.freq_edit.setText(str(int(settings.custom_lo_frequency_hz / 1000)))
         self._update_current_label()

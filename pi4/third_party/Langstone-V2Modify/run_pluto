@@ -25,7 +25,7 @@ from pathlib import Path
 p = Path.home() / '.config' / 'shonan-pi4' / 'settings.json'
 try:
     d = json.loads(p.read_text())
-    print(d.get('ptt_controller_host', ''))
+    print(d.get('ptt_controller_host', '') if d.get('use_ptt_controller', True) else '')
 except Exception:
     print('')
 " 2>/dev/null)
@@ -97,9 +97,14 @@ if !(ps -ax |grep -v grep| grep -q Lang_TRX_Pluto.py) then
 
    # GNU Radio is started by GUI_Pluto, matching the Pi5 Langstone flow.
    /home/pi/Langstone/GUI_Pluto > /tmp/LangstoneGUI_Pluto.log 2>&1
+   # ★Shonan_lite-PI4統合版パッチ(切替時間の短縮、Pi5版から移植): 「GOTO SHONAN_LITE」で
+   # Shonan_Liteへ切り替えた場合(GUI_Plutoが/tmp/langstone_goto_shonanを
+   # 作る)は、Pluto+を再起動しない(Shonan_Liteがそのまま使うため)。
+   if [ ! -e /tmp/langstone_goto_shonan ]; then
    # Send a reboot command to Pluto after GUI Exits
    ssh-keygen -f "/home/pi/.ssh/known_hosts" -R $PLUTO_IP >/dev/null 2>&1
    timeout 2 sshpass -p analog ssh -o StrictHostKeyChecking=no root@$PLUTO_IP 'PATH=/bin:/sbin:/usr/bin;reboot'  >/dev/null 2>&1
+   fi
 
 else
    echo Langstone is already running. Use ./stop first.

@@ -140,6 +140,17 @@ shonan-androidの送信ボタンが押された際、以下の順序で切り替
 
 ESP32のIPアドレスはDHCP割当のため、shonan-android側の設定画面等で利用者がIPを入力・保持する運用を想定する（★DDNS/mDNS等による自動検出は本版では未実装）。
 
+### 4.4 Shonan_lite-PI4(pi4/gui)側の連携
+
+- 設定画面の「ESP32 W5500を使用する」をONにし、IPアドレスを入力したときだけ連携する
+  （OFFまたは空欄なら連携しない。OFFにしてもIPアドレスは保持される）。
+- アプリ起動/終了に連動した12V電源の制御と、ホーム画面の「Pluto電源」カードで本コントローラを使う。
+  Langstone V2Modify側は、ハードウェアPTT・画面のPTTに連動して`/tx?state=on|off`を送る。
+- ★ESP32 W5500(本コントローラ)は必須ではない。Pi4本体のGPIO21(40番ピン、GNDは39番ピン)が
+  送信中HIGH(3.3V)・受信中LOWになるため、これをトランジスタ/リレードライバ等でバッファすれば
+  ESP32なしでもPA・LNAの送受信切替ができる(Langstone V2Modifyのtx出力と同じピン。Shonan_Lite側は
+  `pi4/gui/backend.py`の`_set_pi_tx_gpio()`で`pinctrl`により出力)。12V電源のON/OFFは本コントローラが必要。
+
 ---
 
 ## 5. 未確定・今後の課題

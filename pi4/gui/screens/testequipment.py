@@ -110,6 +110,20 @@ class TestEquipmentScreen(SettingsSubScreen):
         graph_layout.addWidget(self.status_label)
         columns.addWidget(graph_card, 1)
 
+    # 試験の実行中は、押したボタンを無効化したまま赤で表示する(RSSI測定の
+    # 測定中ボタンと同じ赤)。:disabledにも同じ色を指定しないと、全体の
+    # スタイルシートの灰色(無効時)で表示されてしまう。
+    _RUNNING_BTN_STYLE = (
+        "QPushButton, QPushButton:disabled { background-color: #c62828;"
+        " color: white; border: 2px solid #e53935; }")
+
+    def _set_btn_running(self, button: QtWidgets.QPushButton, running: bool) -> None:
+        button.setStyleSheet(self._RUNNING_BTN_STYLE if running else "")
+        if running:
+            # 全体試験は開始直後にPluto再起動を同期的に待つ(その間イベントループが
+            # 止まる)ため、赤表示をここで画面へ反映させておく。
+            QtWidgets.QApplication.processEvents(QtCore.QEventLoop.ExcludeUserInputEvents)
+
     def _log(self, text: str) -> None:
         # HTML特殊文字を含みうる生テキスト行はエスケープしてから追記する
         # (OK/NGの色付けはself._ok_ng_html()で作った断片をtextに埋め込んで渡す)。
@@ -144,6 +158,7 @@ class TestEquipmentScreen(SettingsSubScreen):
             return
         self._running = True
         self.run_btn.setEnabled(False)
+        self._set_btn_running(self.run_btn, True)
         self.log_view.clear()
         self._log(tr("全体試験を開始します", "Starting the full test"))
 
@@ -154,6 +169,7 @@ class TestEquipmentScreen(SettingsSubScreen):
                           "[Diag] Failed to recover the connection after restarting Pluto SDR"))
             self.health_label.setText(tr("システム状態: Pluto再起動エラー", "System Status: Pluto Restart Error"))
             self.run_btn.setEnabled(True)
+            self._set_btn_running(self.run_btn, False)
             self._running = False
             return
 
@@ -165,6 +181,7 @@ class TestEquipmentScreen(SettingsSubScreen):
         if not pluto_ok:
             self.health_label.setText(tr("システム状態: Pluto接続エラー", "System Status: Pluto Connection Error"))
             self.run_btn.setEnabled(True)
+            self._set_btn_running(self.run_btn, False)
             self._running = False
             return
         self._set_row(1, tr("試験中", "Testing"), "…")
@@ -333,6 +350,7 @@ class TestEquipmentScreen(SettingsSubScreen):
             return
         self.run_btn.setEnabled(True)
         self.camera_audio_run_btn.setEnabled(True)
+        self._set_btn_running(self.run_btn, False)
         self._running = False
 
     def _run_hardware_sensor_tests(self) -> None:
@@ -374,6 +392,7 @@ class TestEquipmentScreen(SettingsSubScreen):
 
         self._running = True
         self.camera_audio_run_btn.setEnabled(False)
+        self._set_btn_running(self.camera_audio_run_btn, True)
         self.log_view.clear()
         self._log(tr("カメラ＋音声送出の診断を開始します", "Starting the camera + audio TX diagnostic"))
 
@@ -463,6 +482,7 @@ class TestEquipmentScreen(SettingsSubScreen):
             return
         self.camera_audio_run_btn.setEnabled(True)
         self.run_btn.setEnabled(True)
+        self._set_btn_running(self.camera_audio_run_btn, False)
         self._running = False
 
 

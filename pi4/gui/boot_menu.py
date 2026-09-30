@@ -186,7 +186,7 @@ class BootMenu(QtWidgets.QWidget):
             # 直接Langstoneを選んだ場合もHome画面の「Langstone V2Modify」ボタンと
             # 同様にここで明示的にONを送っておく(PA電源が入っていない状態で
             # Langstone側の送信が行われる事態を避ける)。
-            host = settings_store.load().ptt_controller_host
+            host = settings_store.load().active_ptt_controller_host()
             if host:
                 try:
                     _send_ptt_channel_state(host, PTT_CHANNEL_POWER, "on")

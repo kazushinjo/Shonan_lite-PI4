@@ -49,8 +49,8 @@ from PyQt5 import QtCore, QtNetwork, QtQuickWidgets, QtWidgets
 
 import settings_store
 from backend import (
-    PTT_CHANNEL_POWER, RxController, TxController, _push_pluto_settings,
-    _send_ptt_channel_state,
+    PI_TX_GPIO, PTT_CHANNEL_POWER, RxController, TxController, _push_pluto_settings,
+    _send_ptt_channel_state, _set_pi_tx_gpio,
 )
 from i18n import apply_language, is_english, set_language
 from widgets import error_dialog
@@ -59,6 +59,12 @@ from widgets import error_dialog
 MCU1_GPIO26_ON_DELAY_MS = 5_000
 # プログラム終了時、MCU1のGPIO26をOFFにしてから実際に終了するまでの遅延。
 MCU1_GPIO26_OFF_DELAY_SEC = 3
+
+# Langstone V2の「GOTO SHONAN_LITE」で切り替えてきたときにLangstone側
+# (LangstoneGUI_Pluto.c)が作る印。あれば起動時のPluto+再起動を省き、使ったら消す
+# (その後のアプリ再起動では従来どおりPluto+を再起動する)。/tmp配下なので
+# Pi4の再起動でも消え、電源投入時は必ず再起動する。
+LANGSTONE_SWITCH_MARKER = Path("/tmp/shonan_switch_from_langstone")
 
 SCREEN_ROUTES = [
     "home", "tx", "rx", "frequency", "rssi", "symbolrate", "fec", "modulation",
@@ -85,6 +91,12 @@ class MainWindow(QtWidgets.QMainWindow):
         settings_store.save(self.settings)
         self.tx_controller = TxController(self)
         self.rx_controller = RxController(self)
+        # 前回異常終了でPi4のTX出力GPIOがHIGHのまま残っていてもPA/LNAが送信側に
+        # 切り替わったままにならないよう、起動時にLOW(受信)へ戻しておく。
+        try:
+            _set_pi_tx_gpio(False)
+        except (OSError, subprocess.SubprocessError) as exc:
+            print(f"[PTT] Pi4 GPIO{PI_TX_GPIO}の初期化(LOW)に失敗しました: {exc}", flush=True)
 
         self.stack = QtWidgets.QStackedWidget()
         self.setCentralWidget(self.stack)
@@ -111,7 +123,7 @@ class MainWindow(QtWidgets.QMainWindow):
         QtWidgets.QApplication.instance().installEventFilter(self)
 
     def _power_on_mcu1_gpio26(self) -> None:
-        host = self.settings.ptt_controller_host
+        host = self.settings.active_ptt_controller_host()
         if not host:
             return
         try:
@@ -410,6 +422,16 @@ class MainWindow(QtWidgets.QMainWindow):
             host = self.settings.pluto_host()
         except ValueError:
             host = ""
+        if host and LANGSTONE_SWITCH_MARKER.exists():
+            # ★Langstone V2からの切替ではPluto+を再起動しない(切替時間の短縮。
+            # Pi5版で、再起動しなくてもDATVの送受信は正常に動くことを確認済み)。
+            # ただしLangstoneは送信LOをpowerdownしたまま終了することがあり、
+            # そのままではDATV送信の電波が出ないため、送信LOだけは必ず元に戻す
+            # (Langstone側も終了時に戻すが、念のためこちらでも行う)。
+            print("[pluto-startup] switched from Langstone; skipping Pluto reboot", flush=True)
+            LANGSTONE_SWITCH_MARKER.unlink(missing_ok=True)
+            threading.Thread(target=self._restore_pluto_tx_lo, daemon=True).start()
+            host = ""
         if not host:
             self._startup_restart_pending = False
             self.navigate_to("home")
@@ -417,6 +439,19 @@ class MainWindow(QtWidgets.QMainWindow):
             self.rx_controller.run_iio_preflight(self.settings)
             return
         self._begin_pluto_restart("起動時Pluto再起動", "アプリ起動時にPlutoも再起動しています…")
+
+    def _restore_pluto_tx_lo(self) -> None:
+        """Plutoの送信LO(altvoltage1)のpowerdownを解除する。"""
+        native = "/home/pi/shonan-pi4-native-build/dvbs2-deps-install-native-aarch64/bin/iio_attr"
+        iio_attr = native if os.path.exists(native) else "iio_attr"
+        try:
+            result = subprocess.run(
+                [iio_attr, "-u", self.settings.pluto_uri, "-c", "ad9361-phy",
+                 "altvoltage1", "powerdown", "0"],
+                capture_output=True, text=True, timeout=10)
+            print(f"[pluto-startup] TX LO powerdown cleared rc={result.returncode}", flush=True)
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            print(f"[pluto-startup] TX LO restore failed: {exc}", flush=True)
 
     def _begin_pluto_restart(self, title: str, message_text: str) -> None:
         if self._app_restarting:
@@ -655,7 +690,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # 先にMCU1(ESP32)のGPIO26をOFFにしてから、実際の終了(super().closeEvent)を
         # MCU1_GPIO26_OFF_DELAY_SEC秒待つ(電源系統が安全に落ちきるのを待つ猶予)。
         # Pi4本体のGPIOは使用しない。
-        host = self.settings.ptt_controller_host
+        host = self.settings.active_ptt_controller_host()
         if host:
             try:
                 _send_ptt_channel_state(host, PTT_CHANNEL_POWER, "off")

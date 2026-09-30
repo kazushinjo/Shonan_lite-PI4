@@ -8,6 +8,8 @@ from pathlib import Path
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+import langstone_config
+
 from backend import PTT_CHANNEL_POWER, _send_ptt_channel_state
 from i18n import is_english
 from widgets import NavButton, _run_as_overlay, confirm_dialog, error_dialog
@@ -37,6 +39,9 @@ _BUTTONS = [
 # Pluto+のdatvplutofrmファームウェアの既定rootクレデンシャル(Dropbear SSH)。
 _PLUTO_SSH_USER = "root"
 _PLUTO_SSH_PASSWORD = "analog"
+# Langstoneの「GOTO SHONAN_LITE」で戻ったときにLangstoneのrun_plutoが見る印
+# (あればGUI終了後のPluto+再起動を省く。LangstoneGUI_Pluto.c参照)。
+LANGSTONE_GOTO_SHONAN_MARKER = Path("/tmp/langstone_goto_shonan")
 
 
 def _fec_icon() -> QtGui.QIcon:
@@ -545,6 +550,18 @@ class HomeScreen(QtWidgets.QWidget):
             self._connect_home_action(button, route)
             self._buttons[route] = button
             button._mock_rect = rect
+        # 背景画像の右側の衛星をタップすると、Langstoneを10GHz受信用のバンド
+        # (受信専用、langstone_config.py参照)で開く。カードとは重ならない位置。
+        satellite_btn = QtWidgets.QPushButton(canvas)
+        satellite_btn.setFocusPolicy(QtCore.Qt.NoFocus)
+        satellite_btn.setToolTip("10GHz受信 (Langstone) / 10GHz RX (Langstone)")
+        satellite_btn.setStyleSheet(
+            "QPushButton { background: transparent; border: none; }"
+            "QPushButton:pressed { background: rgba(50, 110, 220, 45); border: 2px solid #4d8dff; }"
+        )
+        satellite_btn.clicked.connect(self._on_satellite_clicked)
+        satellite_btn._mock_rect = (1395, 470, 170, 125)
+        self._buttons["satellite"] = satellite_btn
 
         outer.addWidget(canvas, 1)
         self._position_mock_home()
@@ -607,11 +624,36 @@ class HomeScreen(QtWidgets.QWidget):
         self.main_window.navigate_to("tx")
 
     def _on_langstone_clicked(self) -> None:
+        # 衛星から10GHz受信用バンドで開いたままなら、その前のバンドに戻して開く。
         try:
+            langstone_config.restore_previous_band()
+        except OSError as exc:
+            print(f"[langstone] 前のバンドへ戻せませんでした: {exc}", flush=True)
+        self._switch_to_langstone()
+
+    def _on_satellite_clicked(self) -> None:
+        # Langstoneを10GHz受信用バンド(表示10236.5MHz、Pluto受信486.5MHz、受信専用)で開く。
+        try:
+            langstone_config.select_satellite_band()
+        except OSError as exc:
+            error_dialog(self, "Langstone設定失敗", str(exc))
+            return
+        self._switch_to_langstone()
+
+    def _switch_to_langstone(self) -> None:
+        try:
+            # ★切替時間の短縮のため、Langstone側(GOTO SHONAN_LITE・run_pluto)でも
+            # 切替のたびのPluto+再起動をやめた(Pi5版と同じ)。代わりにDATVの送受信を
+            # 止めてPlutoを空けてから切り替える。
+            self.main_window.tx_controller.stop()
+            self.main_window.rx_controller.stop()
+            # 前回Langstoneから戻ったときの印を消す(次にLangstoneを「GOTO
+            # SHONAN_LITE」以外で終了したときは、従来どおりPluto+を再起動させる)。
+            LANGSTONE_GOTO_SHONAN_MARKER.unlink(missing_ok=True)
             # ★Langstone V2自身は12V電源(GPIO26)に触れないため、切替時に
             # ここで明示的にONを送っておく(Langstone側の送信でPA電源が
             # 入っていない、という事態を避ける)。
-            host = self.main_window.settings.ptt_controller_host
+            host = self.main_window.settings.active_ptt_controller_host()
             if host:
                 try:
                     _send_ptt_channel_state(host, PTT_CHANNEL_POWER, "on")
@@ -632,11 +674,12 @@ class HomeScreen(QtWidgets.QWidget):
     def _on_pluto_power_cycle_clicked(self) -> None:
         """PA_Power/PTTコントローラ(ESP32)のGPIO26(12V電源)をOFF→3秒待ち→ONする
         (Pluto+含む12V系統全体の電源サイクル)。"""
-        host = self.main_window.settings.ptt_controller_host
+        host = self.main_window.settings.active_ptt_controller_host()
         if not host:
             error_dialog(
                 self, "PTTコントローラ未設定",
-                "設定画面でPA_Power/PTTコントローラ(ESP32)のIPアドレスを設定してください。")
+                "設定画面で「ESP32 W5500を使用する」をONにし、"
+                "PA_Power/PTTコントローラ(ESP32)のIPアドレスを設定してください。")
             return
         try:
             _send_ptt_channel_state(host, PTT_CHANNEL_POWER, "off")

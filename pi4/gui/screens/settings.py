@@ -102,6 +102,11 @@ class SettingsScreen(SettingsSubScreen):
 
         self.body_layout.addWidget(self._section_label(
             tr("PA_Power/PTTコントローラ (ESP32)", "PA_Power/PTT Controller (ESP32)")))
+        self.use_ptt_controller_checkbox = QtWidgets.QCheckBox(
+            tr("ESP32 W5500を使用する", "Use ESP32 W5500"))
+        self.use_ptt_controller_checkbox.setMinimumHeight(48)
+        self.use_ptt_controller_checkbox.toggled.connect(self._on_use_ptt_controller_toggled)
+        self.body_layout.addWidget(self.use_ptt_controller_checkbox)
         self.ptt_controller_ip_edit = QtWidgets.QLineEdit()
         self.ptt_controller_ip_edit.setMinimumHeight(48)
         self.ptt_controller_ip_edit.setPlaceholderText(tr("未使用の場合は空欄のまま", "Leave empty if not used"))
@@ -110,10 +115,10 @@ class SettingsScreen(SettingsSubScreen):
         ptt_note = QtWidgets.QLabel(tr(
             "hardware/W5500_PA_PTT_Control のESP32+W5500ボードのIPアドレス。"
             "送信開始/終了に連動してPTTを、アプリ起動/終了に連動して12V電源を自動切替します。"
-            "空欄なら連携しません。",
+            "「使用する」がOFFまたは空欄なら連携しません。",
             "IP address of the ESP32 + W5500 board (hardware/W5500_PA_PTT_Control). "
             "PTT follows TX start/stop and the 12 V power is switched automatically at "
-            "app start/exit. Leave empty to disable the link."
+            "app start/exit. The link is disabled when \"Use\" is OFF or the address is empty."
         ))
         # ★長い説明文(特に英語)が折り返されずに画面の右端で切れていたため、折り返す。
         ptt_note.setWordWrap(True)
@@ -158,6 +163,10 @@ class SettingsScreen(SettingsSubScreen):
         self._update_band_info(settings.selected_band)
         self.pluto_ip_edit.setText(settings.pluto_host())
         self.ptt_controller_ip_edit.setText(settings.ptt_controller_host)
+        self.use_ptt_controller_checkbox.blockSignals(True)
+        self.use_ptt_controller_checkbox.setChecked(settings.use_ptt_controller)
+        self.use_ptt_controller_checkbox.blockSignals(False)
+        self.ptt_controller_ip_edit.setEnabled(settings.use_ptt_controller)
         self.on_device_checkbox.blockSignals(True)
         self.on_device_checkbox.setChecked(settings.use_on_device_demod)
         self.on_device_checkbox.blockSignals(False)
@@ -197,6 +206,7 @@ class SettingsScreen(SettingsSubScreen):
         settings = self.main_window.settings
         settings.selected_band = band
         settings.use_custom_lo_frequency = False
+        settings.use_lnb = False
         lo_hz = BAND_PROFILES[band]["lo_hz"]
         if lo_hz is not None:
             settings.custom_lo_frequency_hz = lo_hz
@@ -232,6 +242,11 @@ class SettingsScreen(SettingsSubScreen):
             error_dialog(self, tr("PTTコントローラ接続先エラー", "PTT Controller Destination Error"), str(exc))
             return
         self.main_window.settings.ptt_controller_host = host
+        self.main_window.save_settings()
+
+    def _on_use_ptt_controller_toggled(self, checked: bool) -> None:
+        self.ptt_controller_ip_edit.setEnabled(checked)
+        self.main_window.settings.use_ptt_controller = checked
         self.main_window.save_settings()
 
     def _on_on_device_toggled(self, checked: bool) -> None:

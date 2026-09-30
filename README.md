@@ -5,7 +5,21 @@ Raspberry Pi 4 + ADALM-Pluto+によるDVB-S2 DATV送受信タッチGUIシステ�
 移植版(Android/iOS)は別リポジトリ(`Shonan_Lite-android`/`Shonan_Lite-iPad`等)
 で管理している。
 
-## 主な機能
+A touch-GUI DVB-S2 DATV transceiver system using a Raspberry Pi 4 and an ADALM-Pluto+.
+The application lives under `pi4/` (Python/PyQt5; drawn with `linuxfb` on the DFRobot DFR0550 and with `eglfs` on the
+official DSI touch display). Ports to other platforms (Android/iOS) are maintained in separate repositories
+(`Shonan_Lite-android`, `Shonan_Lite-iPad`, etc.).
+
+> [!IMPORTANT]
+> **Plutoのユーザー名(`root`)・パスワード(`analog`)はデフォルト値のまま変更しないでください。**
+> 本アプリとLangstone V2Modifyは、SSHでPlutoにログインしてリブートや設定ファイルの書き込みを行っています
+> (アプリ起動時・アプリ再起動・機器試験・送受信開始時・Langstone終了時)。変更するとPlutoをリブートできなくなります。
+>
+> **Keep the Pluto's username (`root`) and password (`analog`) at their default values.**
+> This app and Langstone V2Modify log in to the Pluto via SSH to reboot it and write its settings file
+> (at app start, app restart, equipment test, TX/RX start and Langstone exit). If they are changed, the Pluto cannot be rebooted.
+
+## 主な機能 / Features
 
 - **送信**: 周波数・シンボルレート(250k〜2 Msym/s)・FEC・変調方式(QPSK/8PSK)・出力減衰量を画面で設定し、
   UDP-TSでPluto+へ送ってPluto内蔵の変調器(`pluto_dvb`)で送信する(Plutoの設定はSSHで`/www/settings.txt`へ
@@ -22,33 +36,76 @@ Raspberry Pi 4 + ADALM-Pluto+によるDVB-S2 DATV送受信タッチGUIシステ�
   相手局の電波を測り、ON(テスト用)では自局もテストパターンで自動送信して自分の信号を測る。
 - **プリセット**: 現在の設定を5件まで登録・呼び出し(プリセット1は未登録の間RFループバック試験用)。
 - **機器試験**: 「全体試験」でPlutoを再起動したうえで、Pluto SDR接続・送信テスト・受信テスト・
-  温度センサー(Pi 4のCPU温度)の4項目を順に確認し、TX/RXの総合結果を表示する。
+  温度センサー(Pi 4のCPU温度)の4項目を順に確認し、TX/RXの総合結果を表示する。実行中のボタンは赤で表示する。
+- **10GHz受信(LNB)**: Home画面の衛星をタップすると、Langstone V2Modifyを10236.5 MHz表示・
+  Pluto受信486.5 MHz(LNB局部発振9750 MHz)の受信専用バンドで開く。Shonan_Lite(DATV)でも、
+  周波数画面で「10GHz帯」を押すとLNBを使用するか確認し、使用する場合は表示周波数10.2365 GHz・
+  Pluto受信486.5 MHzで受信する(受信専用、送信不可。「いいえ」なら従来どおり10180 MHz)。下記参照。
+- **PA/LNAの送受信切替**: 送信中はPi 4のGPIO21(40番ピン)がHIGHになる。ESP32 W5500
+  (PA_Power/PTTコントローラ)を使わなくても、この信号でPA・LNAを切り替えられる。下記参照。
 - **その他**: Pluto URIの自動検出、日本語/英語表示、日本語オンスクリーンキーボード、アプリ内Help、
   起動時のアプリ選択(Shonan_Lite / Langstone)。DFRobot DFR0550(`linuxfb`)と公式DSIタッチ画面(`eglfs`)に対応。
 
-## スクリーンショット
+<!-- English -->
+
+- **Transmit**: Set the frequency, symbol rate (250k–2 Msym/s), FEC, modulation (QPSK/8PSK) and attenuation on screen,
+  send UDP-TS to the Pluto+ and transmit with the Pluto's built-in modulator (`pluto_dvb`) (the Pluto settings are
+  written to `/www/settings.txt` via SSH; the destination port is fixed at 8282). Only FEC rates that work with each
+  modulation can be selected (QPSK: 1/2, 3/5, 8/9; 8PSK: 3/5, 8/9). H.264 is encoded with the Pi 4's hardware encoder
+  (`h264_v4l2m2m`), and the transmitted video is fixed at Full HD (1920x1080). Video only (no audio). The TX screen shows
+  the attenuation (dB), the number of UDP packets sent to the Pluto and the number of encoded frames.
+- **Video source**: Choose from a USB camera, an image file (a still image transmitted repeatedly) or a test pattern.
+  The USB camera is captured at 1280x720 (MJPEG at 30 fps if supported, otherwise the camera's default resolution).
+  With the camera selected, the "Capture" button takes a still image (JPG, `~/Pictures/Shonan_Lite/`) that can be used
+  directly as the transmit image. A callsign and a note can be burned into the video with a selectable text size and
+  color (the date and time are shown as well).
+- **Receive**: UDP-TS reception from an external demodulator, or on-device demodulation on the Pi 4 with GNU Radio (gr-dvbs2rx).
+- **RSSI measurement**: Sweeps the frequency and graphs the received level. With on-device demodulation OFF (normal
+  operation) it measures the other station's signal; with it ON (for testing) the station also transmits a test
+  pattern automatically and measures its own signal.
+- **Presets**: Save and recall up to 5 sets of settings (preset 1 is used for the RF loopback test while it is empty).
+- **Equipment test**: "Full test" reboots the Pluto and then checks the Pluto SDR connection, TX test, RX test and
+  temperature sensor (Pi 4 CPU temperature) in turn, and shows the overall TX/RX result. The running button is shown in red.
+- **10 GHz reception (LNB)**: Tapping the satellite on the Home screen opens Langstone V2Modify on a receive-only band
+  showing 10236.5 MHz, with the Pluto receiving at 486.5 MHz (LNB local oscillator 9750 MHz). In Shonan_Lite (DATV) as
+  well, pressing "10GHz Band" on the Frequency screen asks whether to use an LNB; if so, it receives with the displayed
+  frequency 10.2365 GHz and the Pluto receiving at 486.5 MHz (receive only, no transmit; "No" keeps 10180 MHz as before). See below.
+- **PA/LNA TX/RX switching**: GPIO21 (pin 40) of the Pi 4 goes HIGH while transmitting. The PA and LNA can be switched
+  with this signal even without the ESP32 W5500 (PA_Power/PTT controller). See below.
+- **Other**: Automatic Pluto URI detection, Japanese/English display, Japanese on-screen keyboard, in-app Help, and
+  application selection at boot (Shonan_Lite / Langstone). Supports the DFRobot DFR0550 (`linuxfb`) and the official DSI
+  touch display (`eglfs`).
+
+## スクリーンショット / Screenshots
 
 実機(DFR0550、800x480)の画面(2026-09-25撮影)。映像はすべてテストパターンで撮影している。
 送信画面は送信中、RSSI測定はオンデバイス復調ONで「1回」実行した結果(自局のテストパターン信号)。
 
-| Home画面 | 送信画面(TX) | 受信画面(RX) | RSSI測定 |
+Screens on the device (DFR0550, 800x480, taken on 2026-09-25). All video was taken with the test pattern.
+The TX screen is shown while transmitting, and RSSI measurement shows the result of a "Once" run with on-device
+demodulation ON (the station's own test-pattern signal).
+
+| Home画面 / Home | 送信画面 / TX | 受信画面 / RX | RSSI測定 / RSSI |
 | --- | --- | --- | --- |
 | ![Home画面](pi4/docs/images/screenshot_home.png) | ![送信画面](pi4/docs/images/screenshot_tx.png) | ![受信画面](pi4/docs/images/screenshot_rx.png) | ![RSSI測定](pi4/docs/images/screenshot_rssi.png) |
 
-| 映像ソース | 変調方式 | 出力設定 | プリセット |
+| 映像ソース / Video Source | 変調方式 / Modulation | 出力設定 / Stream Output | プリセット / Presets |
 | --- | --- | --- | --- |
 | ![映像ソース](pi4/docs/images/screenshot_videosource.png) | ![変調方式](pi4/docs/images/screenshot_modulation.png) | ![出力設定](pi4/docs/images/screenshot_streamoutput.png) | ![プリセット](pi4/docs/images/screenshot_presets.png) |
 
-| 機器試験 | 設定 | 周波数 | 電源オフ |
+| 機器試験 / Diagnostic | 設定 / Config | 周波数 / Frequency | 電源オフ / Power Off |
 | --- | --- | --- | --- |
 | ![機器試験](pi4/docs/images/screenshot_diagnostic.png) | ![設定](pi4/docs/images/screenshot_settings.png) | ![周波数](pi4/docs/images/screenshot_frequency.png) | ![電源オフ](pi4/docs/images/screenshot_poweroff.png) |
 
 各画面の操作方法は、アプリ内の「ヘルプ」または操作説明書
 [`pi4/docs/shonan_pi4_operation_manual.docx`](pi4/docs/shonan_pi4_operation_manual.docx)を参照。
 
-## インストール
+For how to operate each screen, see the in-app "Help" or the operation manual
+[`pi4/docs/shonan_pi4_operation_manual.docx`](pi4/docs/shonan_pi4_operation_manual.docx).
 
-### 0. Raspberry Pi OSのインストール
+## インストール / Installation
+
+### 0. Raspberry Pi OSのインストール / Installing Raspberry Pi OS
 
 Pi4本体に、あらかじめRaspberry Pi OSをインストールしておく。
 
@@ -62,19 +119,34 @@ Pi4本体に、あらかじめRaspberry Pi OSをインストールしておく�
 6. 「書き込む」を実行し、完了後microSD/NVMeをPi4に取り付けて起動する。
 7. PCから`ssh <ユーザー名>@<ホスト名>.local`で接続できることを確認する。
 
-### 1. install.shの実行
+Install Raspberry Pi OS on the Pi 4 beforehand.
 
-SSH接続したPi4上で:
+1. Start [Raspberry Pi Imager](https://www.raspberrypi.com/software/) on a PC.
+2. Under "Choose Device", select **Raspberry Pi 4**.
+3. Under "Choose OS", select **Raspberry Pi OS (64-bit)**
+   (★the 32-bit version does not work; see "Requirements" below).
+4. Under "Choose Storage", select the microSD/NVMe to write to.
+5. In the gear icon (advanced options), pre-configure the hostname, username/password, Wi-Fi and SSH
+   so that you can connect via SSH right after the first boot.
+6. Run "Write", then attach the microSD/NVMe to the Pi 4 and boot it.
+7. Check that you can connect from the PC with `ssh <username>@<hostname>.local`.
+
+### 1. install.shの実行 / Running install.sh
+
+SSH接続したPi4上で / On the Pi 4 connected via SSH:
 
 ```sh
 git clone https://github.com/kazushinjo/Shonan_lite-PI4.git
 cd Shonan_lite-PI4
-./pi4/scripts/install.sh          # HTTPSでclone(既定)
-# ./pi4/scripts/install_ssh.sh    # GitHubにSSH鍵を登録済みならこちらでも可
+./pi4/scripts/install.sh          # HTTPSでclone(既定) / clone via HTTPS (default)
+# ./pi4/scripts/install_ssh.sh    # GitHubにSSH鍵を登録済みならこちらでも可 / or this if your SSH key is registered on GitHub
 ```
 
 日本語入力ビルド・受信(RX)用GNU Radio/gr-dvbs2rxビルド・Langstone V2Modifyビルドは
 それぞれ省略して時間短縮できる(省略した機能は使えなくなる):
+
+The Japanese input build, the GNU Radio/gr-dvbs2rx build for RX and the Langstone V2Modify build can each be
+skipped to save time (the skipped features will not be available):
 
 ```sh
 SKIP_JA_KEYBOARD=1 SKIP_GNURADIO_BUILD=1 SKIP_LANGSTONE_BUILD=1 ./pi4/scripts/install.sh
@@ -87,11 +159,21 @@ SKIP_JA_KEYBOARD=1 SKIP_GNURADIO_BUILD=1 SKIP_LANGSTONE_BUILD=1 ./pi4/scripts/in
 ビルドへ進む(KMS有効のままビルドすると画面・タッチが使えないうえ、実機が再起動して
 パッケージが破損することを確認している)。
 
+★On the first run right after a fresh OS install, to drive the DFR0550 with the firmware's legacy DSI display,
+`install.sh` first comments out `dtoverlay=vc4-kms-v3d`, `display_auto_detect=1` and `disable_fw_kms_setup=1` in
+`/boot/firmware/config.txt`, adds `dtparam=i2c_arm=on`, and exits. Reboot the Pi 4 as instructed (`sudo reboot`) and
+run the same command again to proceed to the build (building with KMS enabled leaves the display and touch unusable,
+and we confirmed that the device reboots and packages get corrupted).
+
 完了後、`shonan-gui.service`がsystemdに登録されGUIが自動起動する。あわせて
 `/boot/firmware/config.txt`へ`avoid_warnings=1`(電源電圧警告アイコンの表示抑制)
 を未設定なら自動で追記する(反映には再起動が必要)。
 
-### 実行条件
+When finished, `shonan-gui.service` is registered with systemd and the GUI starts automatically. It also adds
+`avoid_warnings=1` (suppresses the under-voltage warning icon) to `/boot/firmware/config.txt` if not already set
+(a reboot is required for it to take effect).
+
+### 実行条件 / Requirements
 
 一般ユーザーが実行して`install.sh`が正常完了するには、以下が必要。
 
@@ -101,30 +183,91 @@ SKIP_JA_KEYBOARD=1 SKIP_GNURADIO_BUILD=1 SKIP_LANGSTONE_BUILD=1 ./pi4/scripts/in
 - **sudoが使える対話的な実行**(パスワード入力に応答できるtty)
 - **`patch`コマンドが使えること**
 
+For `install.sh` to complete successfully when run as a normal user, the following are required.
+
+- **Raspberry Pi OS 64-bit (aarch64)** (the 32-bit version does not work)
+- **`git` installed beforehand**
+- **Internet access to GitHub and the apt mirrors**
+- **Interactive execution with sudo** (a tty that can answer the password prompt)
+- **The `patch` command available**
+
 詳細な各手順の解説・トラブルシュートは
 [`pi4/docs/install_script_guide.md`](pi4/docs/install_script_guide.md)
 (DOCX版: `pi4/docs/install_script_guide.docx`)を参照。
 
-## Langstone V2Modify(SDRトランシーバー)への切替
+For a detailed explanation of each step and troubleshooting, see
+[`pi4/docs/install_script_guide.md`](pi4/docs/install_script_guide.md)
+(DOCX version: `pi4/docs/install_script_guide.docx`).
 
-Home画面の「Langstone V2Modify」ボタンから、[kazushinjo/Langstone-V2Modify](https://github.com/kazushinjo/Langstone-V2Modify)
+## PA/LNAの送受信切替(ESP32 W5500なしでも可) / PA/LNA TX/RX switching (possible without ESP32 W5500)
+
+ESP32 W5500(PA_Power/PTTコントローラ、[`hardware/W5500_PA_PTT_Control`](hardware/W5500_PA_PTT_Control))は
+使わなくても、RasPI4からのPTT ON信号でPA・LNAの送受信切替を制御できる。
+
+| 項目<br>Item | 内容<br>Details |
+| --- | --- |
+| 出力ピン<br>Output pin | Pi 4 GPIO21(40番ピン)、GNDは39番ピン<br>Pi 4 GPIO21 (pin 40), GND on pin 39 |
+| 論理<br>Logic | 送信中HIGH(3.3 V)、受信中LOW<br>HIGH (3.3 V) while transmitting, LOW while receiving |
+| 対象<br>Applies to | Shonan_Liteの送信・Langstone V2Modifyの送信(Langstone標準のTx Output)のどちらも同じピン<br>Both Shonan_Lite TX and Langstone V2Modify TX (Langstone's standard Tx Output) use the same pin |
+
+- GPIO21は3.3 Vロジックで電流を取れないため、トランジスタやリレードライバ等でバッファしてから
+  PA・LNA(同軸リレー等)を駆動すること。
+- Shonan_Liteは送信開始時(映像送出の前)にHIGH、送信停止時とアプリ起動時にLOWにする
+  ([`pi4/gui/backend.py`](pi4/gui/backend.py)の`_set_pi_tx_gpio()`、`pinctrl`で出力)。
+- 12 V電源のON/OFFとホーム画面の「Pluto電源」カードはESP32 W5500が必要。ESP32を使うかどうかは
+  設定画面の「ESP32 W5500を使用する」で選ぶ(OFFにしてもIPアドレスは保持される)。
+
+<!-- English -->
+
+The PA and LNA can be switched between TX and RX by the PTT ON signal from the RasPI4, even without the
+ESP32 W5500 (PA_Power/PTT controller, [`hardware/W5500_PA_PTT_Control`](hardware/W5500_PA_PTT_Control)).
+
+- GPIO21 is a 3.3 V logic output that cannot supply current. Buffer it with a transistor, relay driver or
+  similar before driving the PA and LNA (coax relays, etc.).
+- Shonan_Lite sets it HIGH when TX starts (before the video is sent) and LOW when TX stops and at app startup
+  (`_set_pi_tx_gpio()` in [`pi4/gui/backend.py`](pi4/gui/backend.py), driven with `pinctrl`).
+- Switching the 12 V power ON/OFF and the "Pluto Power" card on the Home screen require the ESP32 W5500. Whether to use
+  the ESP32 is selected with "Use ESP32 W5500" on the Settings screen (the IP address is kept even when OFF).
+
+## Langstone V2Modify(SDRトランシーバー)への切替 / Switching to Langstone V2Modify (SDR transceiver)
+
+Home画面の「Langstone」カードから、[kazushinjo/Langstone-V2Modify](https://github.com/kazushinjo/Langstone-V2Modify)
 (VHF/UHF/マイクロ波帯SDRトランシーバー、ADALM-Pluto対応)へ切り替えられる。
 Langstone V2ModifyはQt eglfsとは別に`/dev/fb0`を直接描画する独立アプリのため、
-DATV送受信アプリとは同時起動できず、**reboot方式で切り替える**。
+DATV送受信アプリとは同時起動できない。`shonan-gui.service`/`langstone.service`/
+`shonan-boot-menu.service`はsystemdの`Conflicts=`で互いに排他制御されるため、
+Pi4自体は再起動せず、サービスを直接切り替える。
 
-- Shonan_Lite Home画面の「Langstone V2Modify」ボタン → Pluto+とPi4が再起動 →
-  Langstone V2Modifyが起動
-- Langstone V2Modifyの設定メニュー内「BACK TO SHONAN_LITE」ボタン → Pluto+とPi4が
-  再起動 → Shonan_Lite Home画面に戻る
+- Shonan_Lite Home画面の「Langstone」カード → DATVの送受信を止めてLangstone V2Modifyが起動
+- Langstone V2Modifyの設定メニュー内「GOTO SHONAN_LITE」ボタン → Shonan_Lite Home画面に戻る
 
-Pluto+はTX/RXを繰り返した後にIIOコンテキストが詰まったような状態
-(`fmcomms2_source: Unable to refill buffer`等)になることがあり、その状態の
-ままアプリを切り替えると正常動作しないことがある(実機で確認)。そのため
-切替のたびに必ずPluto+もrebootして毎回クリーンな状態にする。
+切替時間を短くするため、切替のときはPluto+を再起動しない(Pi5版で、再起動しなくても両アプリの
+送受信が正常に動くことを確認済み)。ただしLangstoneは受信中に送信LOを止めたまま終了するため、
+戻るときはLangstone側・Shonan_Lite側の両方で送信LOを元に戻す。切替以外(電源投入時・アプリ再起動・
+Langstoneを「GOTO SHONAN_LITE」以外で終了したとき)は、従来どおりPluto+を再起動する。
+Langstone側は`/tmp/langstone_goto_shonan`、Shonan_Lite側は`/tmp/shonan_switch_from_langstone`
+の印で切替かどうかを判断する。
+
+Langstone V2Modify is a standalone app that draws directly to `/dev/fb0` separately from Qt eglfs, so it cannot run at
+the same time as the DATV app. `shonan-gui.service`, `langstone.service` and `shonan-boot-menu.service` are mutually
+exclusive through systemd's `Conflicts=`, so the services are switched directly without rebooting the Pi 4.
+
+- "Langstone" card on the Shonan_Lite Home screen → DATV TX/RX is stopped and Langstone V2Modify starts
+- "GOTO SHONAN_LITE" button in the Langstone V2Modify settings menu → returns to the Shonan_Lite Home screen
+
+To shorten the switching time, the Pluto+ is not rebooted when switching (confirmed on the Pi 5 version that both apps
+transmit and receive normally without a reboot). However, Langstone exits with the TX LO powered down while receiving,
+so the TX LO is restored on both the Langstone side and the Shonan_Lite side when returning. Other than when switching
+(power-up, app restart, or when Langstone exits other than via "GOTO SHONAN_LITE"), the Pluto+ is rebooted as before.
+The Langstone side uses the `/tmp/langstone_goto_shonan` marker and the Shonan_Lite side uses
+`/tmp/shonan_switch_from_langstone` to tell whether it is a switch.
 
 内部的には`~/.pi4_boot_mode_langstone`マーカーファイルの有無をsystemdの
 `ConditionPathExists`で判定し、`shonan-gui.service`/`langstone.service`の
-どちらか一方だけがブート時に起動する。
+どちらを起動すべきかを決める。
+
+Internally, systemd's `ConditionPathExists` checks for the `~/.pi4_boot_mode_langstone` marker file to decide whether
+`shonan-gui.service` or `langstone.service` should start.
 
 ウォーターフォール/スペクトラム表示は幅約512px→約790pxへ拡張済み
 (FFT点数自体はGNU Radio側のfft_size=512のまま、SCALEPX()マクロで描画のみ
@@ -133,19 +276,81 @@ Pluto+はTX/RXを繰り返した後にIIOコンテキストが詰まったよう
 余地が無かったため、スペクトラム欄の高さ(80→55px)とウォーターフォールの
 表示履歴行数(130→90行)を縮めて表示位置を上に詰め、SQL/Vol/RITいずれとも
 Y方向に重ならない帯(Y=130〜295)に収めることで横方向をほぼ画面全幅まで
-広げた(実機で確認、詳細は下記パッチ参照)。
+広げた(実機で確認)。
 統合元は`kazushinjo/Langstone-V2Modify`で、Pi 4 + DFRobot DFR0550 +
 ADALM-Pluto向けの修正を含む。
 
+The waterfall/spectrum display has been widened from about 512 px to about 790 px (the number of FFT points stays at
+fft_size=512 on the GNU Radio side; only the drawing is stretched by the SCALEPX() macro, applied consistently to the
+bandwidth indicator, scale and touch detection). Since there was no room to widen it horizontally in the same Y band as
+the SQL button (x=30–130) and Vol button (x=660–), the spectrum area height (80 → 55 px) and the number of waterfall
+history rows (130 → 90) were reduced and the display moved up into a band (Y=130–295) that does not overlap SQL/Vol/RIT
+vertically, which allows it to extend to nearly the full screen width (confirmed on the device). It is integrated from
+`kazushinjo/Langstone-V2Modify` and includes fixes for the Pi 4 + DFRobot DFR0550 + ADALM-Pluto.
+
 `kazushinjo/Langstone-V2Modify`が更新された場合は、
 [`pi4/scripts/update_langstone_from_upstream.sh`](pi4/scripts/update_langstone_from_upstream.sh)
-で同梱コピーを更新できる。更新後はShonan切替用のマーカー削除・再起動処理など、
+で同梱コピーを更新できる。更新後はShonan切替用のマーカー処理・受信専用バンド(`bandRxOnly`)など、
 統合固有の差分を確認してから使用すること。
 
-## 関連ドキュメント
+When `kazushinjo/Langstone-V2Modify` is updated, the bundled copy can be updated with
+[`pi4/scripts/update_langstone_from_upstream.sh`](pi4/scripts/update_langstone_from_upstream.sh).
+After updating, check the integration-specific differences, such as the Shonan switching markers and the receive-only
+band (`bandRxOnly`), before use.
 
-- [`pi4/docs/install_script_guide.md`](pi4/docs/install_script_guide.md) — install.shの詳細ガイド
-- [`pi4/docs/qtvirtualkeyboard_ja_build.md`](pi4/docs/qtvirtualkeyboard_ja_build.md) — 日本語オンスクリーンキーボードのビルド手順・ハマりどころ
-- [`pi4/docs/shonan_pi4_operation_manual.docx`](pi4/docs/shonan_pi4_operation_manual.docx) / [`pi4/gui/manual_content.py`](pi4/gui/manual_content.py) — GUIの操作説明書(アプリ内Helpと同内容。英語のHelpは`pi4/gui/screens/manual.py`)
-- [`pi4/docs/build_operation_manual.py`](pi4/docs/build_operation_manual.py) — 操作説明書(DOCX)の生成スクリプト(`python pi4/docs/build_operation_manual.py`、python-docxが必要)
-- [`pi4/third_party/rpi-dvbs2-receiver-gui/`](pi4/third_party/rpi-dvbs2-receiver-gui/) — GNU Radio/gr-dvbs2rx受信フローグラフの参考実装(kazushinjo/rpi-dvbs2-receiver-guiより取り込み)
+### 10GHz受信(LNB) — Home画面の衛星をタップ / 10 GHz reception (LNB) — tap the satellite on the Home screen
+
+Home画面の背景右側の衛星をタップすると、Langstone V2Modifyを**10GHz受信用のバンド**で
+開く(普通の「Langstone」カードと同じく、Plutoは再起動しない)。アンテナ側で
+LNB(局部発振9750 MHz)を使い、10 GHz帯を486.5 MHzへ下げて受信する前提。
+
+Tapping the satellite on the right side of the Home screen background opens Langstone V2Modify on a
+**band for 10 GHz reception** (as with the normal "Langstone" card, the Pluto is not rebooted).
+This assumes an LNB (local oscillator 9750 MHz) on the antenna side that converts the 10 GHz band down to 486.5 MHz.
+
+| 項目<br>Item | 値<br>Value |
+| --- | --- |
+| 画面の表示周波数<br>Displayed frequency | 10236.500 MHz(10.2365 GHz)<br>10236.500 MHz (10.2365 GHz) |
+| Plutoの受信周波数<br>Pluto receive frequency | 486.5 MHz(= 10236.5 − 9750) |
+| 受信オフセット<br>Receive offset | −9750 MHz(LNB 局部発振 9750 MHz)<br>−9750 MHz (LNB local oscillator 9750 MHz) |
+| 送信<br>Transmit | **不可**(受信専用)<br>**Not possible** (receive only) |
+
+- Langstoneの24バンドのうち、通常使われない最後のバンド(番号23、画面上は24番目)を
+  このために使う。衛星をタップするたびに、Shonan_Liteが`~/Langstone/Langstone_Pluto.conf`
+  のこのバンドを上の値に設定し直してから開く([`pi4/gui/langstone_config.py`](pi4/gui/langstone_config.py))。
+- 486.5 MHzはアマチュアバンド外のため、このバンドは**受信専用**
+  (設定ファイルの`bandRxOnly23 1`、Langstone側の改造)。画面のPTT・ハードウェアPTT・
+  CWキー・ビーコンのいずれでも送信せず、PA_Power/PTTコントローラも送信に切り替えない。
+  PTTボタンは灰色の「RX ONLY」表示になり、Plutoの送信LOも停止させる。
+- 普通の「Langstone」カードで開いたときは、衛星から開く前に使っていたバンドに戻して開く
+  (Langstone上で別のバンドに切り替えていた場合は、そのバンドのまま)。
+- Shonan_Lite(DATV)で10GHzをLNB受信する場合は、衛星ではなく周波数画面の「10GHz帯」を押し、
+  「LNBを使用しますか?」で「はい」を選ぶ(表示10.2365 GHz、Pluto受信486.5 MHz、受信専用で送信不可。
+  受信画面・RSSI測定もPluto受信周波数で動作する)。他のバンドを選ぶとLNBは解除される。
+- LNBへの電源供給(同軸経由のバイアスT、12〜18 V)はShonan_Lite/Langstoneでは扱わない。
+  別途用意すること。
+
+<!-- English -->
+
+- Of Langstone's 24 bands, the last one, which is not normally used (number 23, the 24th on screen), is used for this.
+  Every time the satellite is tapped, Shonan_Lite resets this band in `~/Langstone/Langstone_Pluto.conf` to the values
+  above before opening ([`pi4/gui/langstone_config.py`](pi4/gui/langstone_config.py)).
+- Because 486.5 MHz is outside the amateur bands, this band is **receive only** (`bandRxOnly23 1` in the configuration
+  file, a modification on the Langstone side). It does not transmit from the on-screen PTT, hardware PTT, CW key or
+  beacon, and does not switch the PA_Power/PTT controller to transmit. The PTT button is shown grayed out as "RX ONLY",
+  and the Pluto's TX LO is also stopped.
+- When opened from the normal "Langstone" card, it returns to the band that was in use before opening from the
+  satellite (if you switched to another band in Langstone, it stays on that band).
+- To receive 10 GHz via an LNB in Shonan_Lite (DATV), press "10GHz Band" on the Frequency screen (not the satellite)
+  and answer "Yes" to "Use an LNB?" (displayed 10.2365 GHz, Pluto RX 486.5 MHz, receive only with no transmit; the RX
+  screen and RSSI measurement also use the Pluto RX frequency). Selecting another band cancels the LNB.
+- Power for the LNB (bias-T over the coax, 12–18 V) is not handled by Shonan_Lite/Langstone. Provide it separately.
+
+## 関連ドキュメント / Related documents
+
+- [`pi4/docs/install_script_guide.md`](pi4/docs/install_script_guide.md) — install.shの詳細ガイド / Detailed guide to install.sh
+- [`pi4/docs/qtvirtualkeyboard_ja_build.md`](pi4/docs/qtvirtualkeyboard_ja_build.md) — 日本語オンスクリーンキーボードのビルド手順・ハマりどころ / Build steps and pitfalls for the Japanese on-screen keyboard
+- [`pi4/docs/shonan_pi4_operation_manual.docx`](pi4/docs/shonan_pi4_operation_manual.docx) / [`pi4/gui/manual_content.py`](pi4/gui/manual_content.py) — GUIの操作説明書(アプリ内Helpと同内容。英語のHelpは`pi4/gui/screens/manual.py`) / Operation manual for the GUI (same content as the in-app Help; the English Help is in `pi4/gui/screens/manual.py`)
+- [`pi4/docs/build_operation_manual.py`](pi4/docs/build_operation_manual.py) — 操作説明書(DOCX)の生成スクリプト(`python pi4/docs/build_operation_manual.py`、python-docxが必要) / Script that generates the operation manual (DOCX) (requires python-docx)
+- [`hardware/W5500_PA_PTT_Control/docs/W5500_PA_PTT_Control_仕様書.md`](hardware/W5500_PA_PTT_Control/docs/W5500_PA_PTT_Control_仕様書.md) — ESP32 W5500(PA_Power/PTTコントローラ)の仕様書 / Specification of the ESP32 W5500 (PA_Power/PTT controller)
+- [`pi4/third_party/rpi-dvbs2-receiver-gui/`](pi4/third_party/rpi-dvbs2-receiver-gui/) — GNU Radio/gr-dvbs2rx受信フローグラフの参考実装(kazushinjo/rpi-dvbs2-receiver-guiより取り込み) / Reference implementation of the GNU Radio/gr-dvbs2rx receive flowgraph (imported from kazushinjo/rpi-dvbs2-receiver-gui)

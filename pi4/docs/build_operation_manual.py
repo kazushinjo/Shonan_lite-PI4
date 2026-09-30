@@ -10,7 +10,11 @@ from docx.shared import Inches, Pt, RGBColor
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'gui'))
-from manual_content import MANUAL_SCREENSHOTS, MANUAL_SECTIONS
+from manual_content import MANUAL_SCREENSHOTS, MANUAL_SECTIONS, MANUAL_SECTIONS_EN
+
+# ★操作説明書は日英併記。Pi4版は日本語章と英語章で項目数が異なる(日本語の方が
+# 詳しい)ため、日本語編のあとに英語編(English)を続けて載せる。アプリ内Helpは
+# 表示言語で切り替える(screens/manual.py)。
 
 OUT=Path(__file__).with_name('shonan_pi4_operation_manual.docx')
 IMAGE_DIR=ROOT/'docs'/'images'
@@ -33,16 +37,19 @@ for name,size,color,before,after in (
 p=d.add_paragraph();p.alignment=WD_ALIGN_PARAGRAPH.CENTER;p.paragraph_format.space_before=Pt(120)
 r=p.add_run('Shonan_Lite for RasPI4');r.bold=True;r.font.size=Pt(26);r.font.color.rgb=RGBColor(31,77,120)
 p=d.add_paragraph();p.alignment=WD_ALIGN_PARAGRAPH.CENTER
-r=p.add_run('DVB-S2 DATV送受信システム 操作説明書');r.bold=True;r.font.size=Pt(18)
+r=p.add_run('DVB-S2 DATV送受信システム 操作説明書\nOperation Manual');r.bold=True;r.font.size=Pt(18)
 p=d.add_paragraph();p.alignment=WD_ALIGN_PARAGRAPH.CENTER;p.paragraph_format.space_before=Pt(24)
-p.add_run('対象: Pi 4 + 無印ADALM-Pluto\n推奨運用: 500 kS/s / QPSK / FEC 3/5\n版: 2026-09-25').font.size=Pt(11)
+p.add_run('対象 / Target: Pi 4 + 無印ADALM-Pluto (plain ADALM-Pluto)\n推奨運用 / Recommended: 500 kS/s / QPSK / FEC 3/5\n版 / Edition: 2026-09-30\n日本語編のあとに英語編(English)があります。 / The English edition follows the Japanese edition.').font.size=Pt(11)
 d.add_page_break()
 
-d.add_heading('目次',level=1)
+d.add_heading('目次 / Contents',level=1)
 for title,items in MANUAL_SECTIONS:
     d.add_paragraph(title,style='List Number')
     for subtitle,_ in items:
         q=d.add_paragraph(subtitle,style='List Bullet 2');q.paragraph_format.space_after=Pt(2)
+d.add_paragraph('English',style='List Number')
+for title,_ in MANUAL_SECTIONS_EN:
+    q=d.add_paragraph(title,style='List Bullet 2');q.paragraph_format.space_after=Pt(2)
 d.add_page_break()
 
 d.add_heading('クイックスタート',level=1)
@@ -79,7 +86,15 @@ for title,items in MANUAL_SECTIONS:
         d.add_heading(subtitle,level=2)
         d.add_paragraph(text)
 
-d.add_heading('付録A 表示メッセージ早見表',level=1)
+d.add_page_break()
+d.add_heading('English',level=1)
+for title,items in MANUAL_SECTIONS_EN:
+    d.add_heading(title,level=2)
+    for subtitle,text in items:
+        d.add_heading(subtitle,level=3)
+        d.add_paragraph(text)
+
+d.add_heading('付録A 表示メッセージ早見表 / Appendix A: Messages',level=1)
 t=d.add_table(rows=1,cols=2);t.style='Table Grid';t.autofit=False
 t.columns[0].width=Inches(1.875);t.columns[1].width=Inches(4.625)
 for c,v in zip(t.rows[0].cells,('表示','意味・対処')):c.text=v
@@ -104,7 +119,7 @@ credit=first_footer.add_run(
 credit.font.size=Pt(10)
 credit.font.color.rgb=RGBColor(100,100,100)
 
-header=sec.header.paragraphs[0];header.text='Shonan_Lite for RasPI4 操作説明書';header.alignment=WD_ALIGN_PARAGRAPH.RIGHT
+header=sec.header.paragraphs[0];header.text='Shonan_Lite for RasPI4 操作説明書 / Operation Manual';header.alignment=WD_ALIGN_PARAGRAPH.RIGHT
 footer=sec.footer.paragraphs[0];footer.alignment=WD_ALIGN_PARAGRAPH.CENTER
 footer.add_run('Page ')
 field=OxmlElement('w:fldSimple');field.set(qn('w:instr'),'PAGE');footer._p.append(field)

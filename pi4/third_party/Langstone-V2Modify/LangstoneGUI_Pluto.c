@@ -162,6 +162,10 @@ float bandSmeterZero[numband]={-80,-80,-80,-80,-80,-80,-80,-80,-80,-80,-80,-80,-
 int bandSSBFiltLow[numband]={300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300,300};
 int bandSSBFiltHigh[numband]={3000,3000,3000,3000,3000,3000,3000,3000,3000,3000,3000,3000,3000,3000,3000,3000,3000,3000,3000,3000,3000,3000,3000,3000};
 int bandFFTBW[numband]={0};
+// ★Shonan_lite-PI4統合版パッチ(Pi5版から移植): 受信専用バンド(1のバンドでは送信しない)。
+// Shonan_LiteのHome画面の衛星をタップしたときに開く10GHz受信用バンド
+// (LNB等で周波数変換して受信する)で使う。設定ファイルのbandRxOnlyNNで持つ。
+int bandRxOnly[numband]={0};
 
 #define minFreq 0.0
 #define maxFreq 99999.99999
@@ -1361,23 +1365,9 @@ void notifyEspPtt(int state)
 {
   char cmd[160];
   if(pttControllerHost[0]=='\0') return;
+  if(state && bandRxOnly[band]) return;   // 受信専用バンドではPA/リレーを送信に切り替えない
   snprintf(cmd,sizeof(cmd),
     "curl -s -m 1 \"http://%s/tx?state=%s\" >/dev/null 2>&1 &",
-    pttControllerHost, state ? "on" : "off");
-  system(cmd);
-}
-
-// ★Shonan_lite-PI4統合版パッチ: PA_Power/PTTコントローラの12V電源チャンネル
-// (GPIO26、`GET /ch?idx=0&state=on|off`、Python版backend.pyの
-// _send_ptt_channel_state()と同じ経路)を直接ON/OFFする。Langstone V2自身は
-// 通常このチャンネルに触れない(notifyEspPtt()同様PTTのみ)ため、
-// Shonan_Lite-pi4との切替時にだけ明示的に呼ぶ。
-void notifyEspPower(int state)
-{
-  char cmd[160];
-  if(pttControllerHost[0]=='\0') return;
-  snprintf(cmd,sizeof(cmd),
-    "curl -s -m 1 \"http://%s/ch?idx=0&state=%s\" >/dev/null 2>&1 &",
     pttControllerHost, state ? "on" : "off");
   system(cmd);
 }
@@ -1836,6 +1826,14 @@ gotoXY(funcButtonsX,funcButtonsY);
     displayButton("BEACON");
     }
 
+  // ★Shonan_lite-PI4統合版パッチ(Pi5版から移植): 受信専用バンドではPTTボタンを
+  // 灰色の「RX ONLY」表示にする(押しても送信しない。setTx/setPtts参照)。
+  if(bandRxOnly[band])
+    {
+    setForeColour(128,128,128);
+    displayButton2x12("RX","ONLY");
+    return;
+    }
   if(ptt|ptts)
     {
     setForeColour(255,0,0);  
@@ -2276,23 +2274,23 @@ if(buttonTouched(funcButtonsX+buttonSpaceX*5,funcButtonsY))    //Button 6 = BEAC
          }
          clearScreen();
          writeConfig();
+         // ★Shonan_lite-PI4統合版パッチ(切替時間の短縮、Pi5版から移植): 以前はここで
+         // Pluto+をrebootし、PA_Power/PTTコントローラの12V電源(Pluto+を含む)も
+         // OFFにしていたが、切替のたびに数十秒かかるためやめた。Pluto+を再起動
+         // しなくてもDATV側は正常に動作する。ただしLangstoneは受信中に送信LO
+         // (altvoltage1)をpowerdownしたまま終了し、そのままではDATV送信の電波が
+         // 出ないため、送信LOだけを元に戻してから切り替える(Shonan_Lite側main.pyも
+         // 起動時に同じ復元を行う)。
+         PlutoTxEnable(1);
          iio_context_destroy(plutoctx);
-         // Shonan_Liteへ戻る場合はPi5版と同じくPi自体を再起動せず、
-         // Plutoを再起動してから排他的なShonan GUIサービスへ切り替える。
-         {
-           char cmd[320];
-           snprintf(cmd, sizeof(cmd),
-             "sshpass -p analog ssh -o StrictHostKeyChecking=accept-new "
-             "-o ConnectTimeout=6 -o PreferredAuthentications=password "
-             "-o PubkeyAuthentication=no root@%s reboot", plutoip+3);
-           system(cmd);
-         }
+         // 「Langstoneからの切替」であることを伝える印(/tmp配下なのでPiの再起動で
+         // 消える)。shonan_switch_from_langstoneはShonan_Lite(main.py)用で、あれば
+         // 起動時のPluto+再起動を省く(使ったらShonan_Liteが消す)。
+         // langstone_goto_shonanはrun_pluto用で、あればGUI終了後のPluto+再起動を
+         // 省く(次にLangstoneを起動するときにShonan_Liteのhome.pyが消す)。
+         system("touch /tmp/shonan_switch_from_langstone /tmp/langstone_goto_shonan");
          system("rm -f /home/pi/.pi4_boot_mode_langstone");
          sync();
-         // ★Shonan_Lite-pi4へ切り替わるタイミングで12V電源をOFFにしておく
-         // (Shonan_Lite側main.pyが自身の起動時に改めてONを送るまでの間、
-         // Langstone終了直後にPAへ電源が入りっぱなしにならないようにする)。
-         notifyEspPower(0);
          system("sudo /bin/systemctl start --no-block shonan-gui.service");
          sleep(1);
          exit(0);
@@ -2457,6 +2455,9 @@ void setBand(int b)
 
 void setPtts(int p)
 {
+ // ★Shonan_lite-PI4統合版パッチ(Pi5版から移植): 受信専用バンドでは画面のPTTを
+ // 受け付けない(PTTボタンは「RX ONLY」表示。displayMenu参照)。
+ if((p==1) && bandRxOnly[band]) return;
  // ★Shonan_lite-PI4統合版パッチ: 画面上のソフトウェアPTTボタンも、ハードウェア
  // PTTスイッチ(processGPIO側)と同様にESP32 PTTコントローラへ中継する。
  notifyEspPtt(p);
@@ -2496,6 +2497,8 @@ void setPtts(int p)
 
 void setBeacon(int b)
 {
+ // ★Shonan_lite-PI4統合版パッチ(Pi5版から移植): 受信専用バンドではビーコンを送信しない。
+ if((b > 0) && bandRxOnly[band]) return;
  if(b > 0)
    {
       sendBeacon=b;
@@ -2858,6 +2861,16 @@ void setTxPin(int v)
 
 void setTx(int pt)
 {
+  // ★Shonan_lite-PI4統合版パッチ(Pi5版から移植): 受信専用バンドでは送信しない。
+  // ハードウェアPTT・CWキー・ビーコン・起動直後の初期化を含め、送信はすべてここを通る。
+  // 起動直後の初期化(setTx(1)→setTx(0))の受信側で行われる送信LOの停止も
+  // 行われなくなるため、ここで送信LOを止めておく(止めないと、Shonan_Liteから
+  // 戻ったときに有効にした送信LOがそのまま残り、漏れ電波が出るおそれがある)。
+  if((pt==1) && bandRxOnly[band])
+    {
+      PlutoTxEnable(0);
+      return;
+    }
   if((pt==1)&&(transmitting==0))
     {
     if(firstpass == 0)                                      //don't set the Output pins if we are still initialising
@@ -4166,6 +4179,8 @@ while(fscanf(conffile,"%49s %99s [^\n]\n",variable,value) !=EOF)
     if(strstr(variable,vname)) sscanf(value,"%d",&bandSSBFiltHigh[b]); 
     sprintf(vname,"bandFFTBW%02d",b);
     if(strstr(variable,vname)) sscanf(value,"%d",&bandFFTBW[b]);    
+    sprintf(vname,"bandRxOnly%02d",b);
+    if(strstr(variable,vname)) sscanf(value,"%d",&bandRxOnly[b]);
     }
 
     
@@ -4243,6 +4258,7 @@ for(int b=0;b<numband;b++)
   fprintf(conffile,"bandSSBFiltLow%02d %d\n",b,bandSSBFiltLow[b]);
   fprintf(conffile,"bandSSBFiltHigh%02d %d\n",b,bandSSBFiltHigh[b]);
   fprintf(conffile,"bandFFTBW%02d %d\n",b,bandFFTBW[b]);    
+  fprintf(conffile,"bandRxOnly%02d %d\n",b,bandRxOnly[b]);
 }
 
 fprintf(conffile,"currentBand %d\n",band);
