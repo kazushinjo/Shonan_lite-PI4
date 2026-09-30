@@ -204,7 +204,7 @@ For a detailed explanation of each step and troubleshooting, see
 ESP32とW5500(有線LAN)で、PA等の12 V電源とPTTをLAN経由でON/OFFするオプションの制御基板。
 使わなくてもShonan_Liteは動作する(PTTだけなら下記のPi 4 GPIO21で切替できる)。
 ファームウェアは[`hardware/W5500_PA_PTT_Control/W5500_PA_PTT_Control.ino`](hardware/W5500_PA_PTT_Control/W5500_PA_PTT_Control.ino)、
-基板は[`hardware/W5500_PA_PTT_Control/kicad/`](hardware/W5500_PA_PTT_Control/kicad/)(KiCad、Rev.2.6)。基板とファームウェアはShonan_Lite-RasPI5版と共通。
+基板は[`hardware/W5500_PA_PTT_Control/kicad/`](hardware/W5500_PA_PTT_Control/kicad/)(KiCad、Rev.1.0)。基板とファームウェアはShonan_Lite-RasPI5版と共通。
 
 | 基板の3D表示 / 3D view of the board | 基板レイアウト(KiCad) / PCB layout (KiCad) | ケース(OpenSCAD) / Case (OpenSCAD) |
 | --- | --- | --- |
@@ -240,7 +240,7 @@ Shonan_Liteでの使い方:
 An optional control board that uses an ESP32 and a W5500 (wired LAN) to switch the 12 V power for the PA etc.
 and the PTT ON/OFF over the LAN. Shonan_Lite works without it (PTT alone can be switched with the Pi 4 GPIO21 below).
 The firmware is [`hardware/W5500_PA_PTT_Control/W5500_PA_PTT_Control.ino`](hardware/W5500_PA_PTT_Control/W5500_PA_PTT_Control.ino)
-and the board is in [`hardware/W5500_PA_PTT_Control/kicad/`](hardware/W5500_PA_PTT_Control/kicad/) (KiCad, Rev.2.6). The board and firmware are shared with the
+and the board is in [`hardware/W5500_PA_PTT_Control/kicad/`](hardware/W5500_PA_PTT_Control/kicad/) (KiCad, Rev.1.0). The board and firmware are shared with the
 Shonan_Lite-RasPI5 edition.
 
 How to use it with Shonan_Lite:

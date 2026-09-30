@@ -1,4 +1,6 @@
-# JLCPCB 発注データ (W5500 PA/PTT 制御基板 Rev.2.6)
+# JLCPCB 発注データ (W5500 PA/PTT 制御基板 Rev.1.0)
+
+基板 Rev.1.0 は仕様書 Rev.2.6 に対応する(版数の対応表は `docs/W5500_PA_PTT_Control_仕様書.md` を参照)。
 
 KiCad 10 の `kicad/w5500-esp32.kicad_pcb` から出力した JLCPCB 向けの製造データ。
 部品はスルーホールだけなので、基板のみを発注して手はんだで組み立てる想定(PCBA は使わない)。

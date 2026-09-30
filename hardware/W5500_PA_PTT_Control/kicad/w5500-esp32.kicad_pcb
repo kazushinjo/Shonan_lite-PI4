@@ -9403,7 +9403,7 @@
 			)
 		)
 	)
-	(gr_text "W5500 PA/PTT Control Rev.2.6"
+	(gr_text "W5500 PA/PTT Control Rev.1.0"
 		(at 120 151.5 0)
 		(layer "F.SilkS")
 		(uuid "480a3024-e1f3-4bbc-9495-963aeb9cb412")
