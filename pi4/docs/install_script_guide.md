@@ -1,5 +1,7 @@
 # pi4/scripts/install.sh 詳細ガイド
 
+英語版 / English version: [`install_script_guide_en.md`](install_script_guide_en.md)
+
 `install.sh`は、まっさらなRaspberry Pi OS(Debian trixie系)にshonan-pi4一式を
 セットアップするための単一スクリプトである。本ドキュメントは各処理の内容と、
 なぜその手順が必要かを詳しく説明する。手順そのものの一次情報は

@@ -4,6 +4,8 @@ title: ESP32+W5500 PA/PTT/LNA シーケンス制御 開発仕様書
 
 # ESP32+W5500 PA/PTT/LNA シーケンス制御 開発仕様書
 
+英語版 / English version: [`W5500_PA_PTT_Control_spec_en.md`](W5500_PA_PTT_Control_spec_en.md)
+
 | 項目 | 内容 |
 |---|---|
 | 版数 | Rev.1.0 |
