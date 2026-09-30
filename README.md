@@ -432,8 +432,8 @@ This assumes an LNB (local oscillator 9750 MHz) on the antenna side that convert
    PlutoのTXとRXの接続、外部アンプ(PA)・アッテネータ・アンテナの接続、送信出力の設定、GPIO21やPA_Power/PTTコントローラ(ESP32 W5500)の12 V電源・PTTの配線を誤ると、機器を破損したり、他の無線局へ障害を与えたりするおそれがあります。機器の仕様を確認し、使用者の責任で行ってください。特に、TXをRXへ直接接続せず、40 dB以上の減衰器を介してください。  
    Wrong connections between the Pluto's TX and RX, wrong external amplifier (PA), attenuator or antenna connections, wrong transmit power settings, or wrong wiring of GPIO21 or of the 12 V power/PTT of the PA_Power/PTT controller (ESP32 W5500) may damage equipment or interfere with other stations. Check the specifications of your equipment and do this at your own responsibility. In particular, never connect TX directly to RX; use an attenuator of 40 dB or more.
 4. **第三者ソフトウェアとライセンス / Third-party software and license**  
-   本ソフトウェアは、GNU Radio、gr-dvbs2rx、libiio、FFmpeg、Qt(PyQt5・Qt Virtual Keyboard)、Langstone V2(Langstone-V2Modify)などの第三者ソフトウェアを利用・同梱します。それぞれのライセンスに従います。  
-   This software uses and bundles third-party software such as GNU Radio, gr-dvbs2rx, libiio, FFmpeg, Qt (PyQt5, Qt Virtual Keyboard) and Langstone V2 (Langstone-V2Modify), each under its own license.
+   本ソフトウェアは、GNU Radio、gr-dvbs2rx、libiio、FFmpeg、Qt(PyQt5・Qt Virtual Keyboard)、Langstone V2(Langstone-V2Modify)などの第三者ソフトウェアを利用・同梱します。それぞれのライセンスに従います。本ソフトウェア自体は GNU General Public License v3.0(GPLv3)の下で提供されます(下記「License」参照)。  
+   This software uses and bundles third-party software such as GNU Radio, gr-dvbs2rx, libiio, FFmpeg, Qt (PyQt5, Qt Virtual Keyboard) and Langstone V2 (Langstone-V2Modify), each under its own license. This software itself is provided under the GNU General Public License v3.0 (GPLv3); see "License" below.
 5. **動作について / About behavior**  
    ご使用のRaspberry Pi・環境によって動作が異なる場合や、未発見の不具合が含まれる可能性があります。  
    Behavior may differ depending on your Raspberry Pi and environment, and undiscovered defects may remain.
@@ -457,3 +457,15 @@ This assumes an LNB (local oscillator 9750 MHz) on the antenna side that convert
 - Langstone V2 (SDR transceiver): [g4eml/Langstone-V2](https://github.com/g4eml/Langstone-V2) by Colin Durbridge (G4EML)
   ([kazushinjo/Langstone-V2Modify](https://github.com/kazushinjo/Langstone-V2Modify), modified for the Pi 4 + DFRobot DFR0550 +
   ADALM-Pluto, is bundled in [`pi4/third_party/Langstone-V2Modify/`](pi4/third_party/Langstone-V2Modify/))
+
+## License
+
+本ソフトウェアはGNU General Public License v3.0(GPLv3)の下で提供されます。
+ライセンス全文: [LICENSE](LICENSE)
+
+This software is licensed under the GNU General Public License v3.0 (GPLv3).
+Full license text: [LICENSE](LICENSE)
+
+- Langstone V2 (SDR transceiver, [g4eml/Langstone-V2](https://github.com/g4eml/Langstone-V2); bundled as [kazushinjo/Langstone-V2Modify](https://github.com/kazushinjo/Langstone-V2Modify)): GPLv3
+- Reception subsystem design (Shinji Yamazaki, JE1BTA): GPLv3
+- Application development, reception stability fixes (Kazuichi Shinjo): GPLv3
