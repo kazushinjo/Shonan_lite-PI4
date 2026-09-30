@@ -90,7 +90,7 @@
 	(footprint "project_footprints:W5500_Lite_2x06_P2.54mm_15.24mm"
 		(layer "F.Cu")
 		(uuid "0796206d-85f2-4c2c-8206-e5a06a5eb69d")
-		(at 76.38 96.65)
+		(at 139 104)
 		(descr "W5500 Lite breakout, 6+6 THT pins, 2.54mm pitch, ~15.24mm row spacing (APPROXIMATE - verify against real board before fab)")
 		(tags "W5500 Lite ethernet APPROXIMATE")
 		(property "Reference" "A1"
@@ -344,7 +344,7 @@
 	(footprint "Capacitor_THT:CP_Radial_D5.0mm_P2.00mm"
 		(layer "F.Cu")
 		(uuid "0c300403-0ee6-4446-a2e1-4c55aa766138")
-		(at 141.494775 179.465)
+		(at 145 140)
 		(descr "CP, Radial series, Radial, pin pitch=2.00mm, diameter=5mm, height=7mm, Electrolytic Capacitor")
 		(tags "CP Radial series Radial pin pitch 2.00mm diameter 5mm height 7mm Electrolytic Capacitor")
 		(property "Reference" "C2"
@@ -1706,7 +1706,7 @@
 	(footprint "Capacitor_THT:CP_Radial_D5.0mm_P2.00mm"
 		(layer "F.Cu")
 		(uuid "1609eb2e-8669-4393-9e58-93530aba7792")
-		(at 141.494775 186.015)
+		(at 178 140)
 		(descr "CP, Radial series, Radial, pin pitch=2.00mm, diameter=5mm, height=7mm, Electrolytic Capacitor")
 		(tags "CP Radial series Radial pin pitch 2.00mm diameter 5mm height 7mm Electrolytic Capacitor")
 		(property "Reference" "C3"
@@ -3068,7 +3068,7 @@
 	(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical"
 		(layer "F.Cu")
 		(uuid "3cf9bc52-3be0-4cd0-942c-b2d663902177")
-		(at 132.475 165.965)
+		(at 140 122)
 		(descr "Resistor, Axial_DIN0207 series, Axial, Vertical, pin pitch=5.08mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Vertical pin pitch 5.08mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R9"
@@ -3239,11 +3239,11 @@
 	(footprint "Package_TO_SOT_THT:TO-220-3_Vertical"
 		(layer "F.Cu")
 		(uuid "4e539d15-98b1-4ba8-83de-5e330203164a")
-		(at 225.0 160.0)
+		(at 175.54 146 180)
 		(descr "TO-220-3, Vertical, RM 2.54mm, see https://www.vishay.com/docs/66542/to-220-1.pdf")
 		(tags "TO-220-3 Vertical RM 2.54mm")
 		(property "Reference" "U2"
-			(at 2.54 -4.1 0)
+			(at 2.54 -4.1 180)
 			(layer "F.SilkS")
 			(uuid "29e66f0f-0d68-49cc-82c2-a37355f330bc")
 			(effects
@@ -3254,7 +3254,7 @@
 			)
 		)
 		(property "Value" "L7805"
-			(at 2.54 2.2 0)
+			(at 2.54 2.2 180)
 			(layer "F.Fab")
 			(uuid "d63ef799-faa9-486b-8016-8291d98a3862")
 			(effects
@@ -3265,7 +3265,7 @@
 			)
 		)
 		(property "Datasheet" "http://www.st.com/content/ccc/resource/technical/document/datasheet/41/4f/b3/b0/12/d4/47/88/CD00000444.pdf/files/CD00000444.pdf/jcr:content/translations/en.CD00000444.pdf"
-			(at 0 0 0)
+			(at 0 0 180)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "05ac875a-8106-4f88-873c-2a97e466c234")
@@ -3276,7 +3276,7 @@
 			)
 		)
 		(property "Description" "Positive 1.5A 35V Linear Regulator, Fixed Output 5V, TO-220/TO-263/TO-252"
-			(at 0 0 0)
+			(at 0 0 180)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "c0fdb0d0-955a-41d1-b936-6e121d14c280")
@@ -3287,7 +3287,7 @@
 			)
 		)
 		(property "KiLib_Generator" "package/TO_SOT/THT"
-			(at 0 0 0)
+			(at 0 0 180)
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "29df62a4-4a1a-4a0a-a910-e6b8091e5da9")
@@ -3433,7 +3433,7 @@
 			(uuid "9dc77d43-f6cb-4aeb-8c46-2e790b2436af")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 2.54 -0.95 0)
+			(at 2.54 -0.95 180)
 			(layer "F.Fab")
 			(uuid "3c1f26f4-6ffb-4f40-99f2-9ba546bede39")
 			(effects
@@ -3444,7 +3444,7 @@
 			)
 		)
 		(pad "1" thru_hole rect
-			(at 0 0)
+			(at 0 0 180)
 			(size 1.905 2)
 			(drill 1.1)
 			(layers "*.Cu" "*.Mask")
@@ -3455,7 +3455,7 @@
 			(uuid "289c2f14-df68-43b7-9c74-e1eda57d8f3f")
 		)
 		(pad "2" thru_hole oval
-			(at 2.54 0)
+			(at 2.54 0 180)
 			(size 1.905 2)
 			(drill 1.1)
 			(layers "*.Cu" "*.Mask")
@@ -3466,7 +3466,7 @@
 			(uuid "0575a976-98d7-4e72-bf3f-d41b96bad565")
 		)
 		(pad "3" thru_hole oval
-			(at 5.08 0)
+			(at 5.08 0 180)
 			(size 1.905 2)
 			(drill 1.1)
 			(layers "*.Cu" "*.Mask")
@@ -3492,11 +3492,11 @@
 	(footprint "Package_TO_SOT_THT:TO-220-3_Vertical"
 		(layer "F.Cu")
 		(uuid "5061ea6b-3c1e-41ae-a55e-0c4730b06744")
-		(at 175.0 160.0)
+		(at 198.54 146 180)
 		(descr "TO-220-3, Vertical, RM 2.54mm, see https://www.vishay.com/docs/66542/to-220-1.pdf")
 		(tags "TO-220-3 Vertical RM 2.54mm")
 		(property "Reference" "Q5"
-			(at 2.54 -4.1 0)
+			(at 2.54 -4.1 180)
 			(layer "F.SilkS")
 			(uuid "adfd720c-df34-4e6e-988d-6bc8a83196a9")
 			(effects
@@ -3507,7 +3507,7 @@
 			)
 		)
 		(property "Value" "2SJ334"
-			(at 2.54 2.2 0)
+			(at 2.54 2.2 180)
 			(layer "F.Fab")
 			(uuid "73903b0b-5b09-48b9-9025-6368de230756")
 			(effects
@@ -3518,7 +3518,7 @@
 			)
 		)
 		(property "Datasheet" "https://akizukidenshi.com/catalog/g/g102846/"
-			(at 0 0 0)
+			(at 0 0 180)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "c5fc8ddf-3321-4f12-80ca-2a32d45f91a6")
@@ -3529,7 +3529,7 @@
 			)
 		)
 		(property "Description" "P-ch Power MOSFET, VDSS=-60V, ID=-30A, RDS(ON)=29mOhm(typ)/38mOhm(max)@Vgs=-10V (high-side PA power switch, replaces relay K3)"
-			(at 0 0 0)
+			(at 0 0 180)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "cc0e9b6a-d1c4-4e40-b9aa-b67d1bf9ad60")
@@ -3540,7 +3540,7 @@
 			)
 		)
 		(property "KiLib_Generator" "package/TO_SOT/THT"
-			(at 0 0 0)
+			(at 0 0 180)
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "507c1042-0cf7-483d-af67-d21eb82d3e19")
@@ -3685,7 +3685,7 @@
 			(uuid "af35d288-8f5b-4273-a5aa-85c4a69dd931")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 2.54 -0.95 0)
+			(at 2.54 -0.95 180)
 			(layer "F.Fab")
 			(uuid "8985c6f1-461b-4dbb-b39b-6d4c60f0f469")
 			(effects
@@ -3696,7 +3696,7 @@
 			)
 		)
 		(pad "1" thru_hole rect
-			(at 0 0)
+			(at 0 0 180)
 			(size 1.905 2)
 			(drill 1.1)
 			(layers "*.Cu" "*.Mask")
@@ -3707,7 +3707,7 @@
 			(uuid "a7d60253-01d4-49b4-9a9d-891c53633cfc")
 		)
 		(pad "2" thru_hole oval
-			(at 2.54 0)
+			(at 2.54 0 180)
 			(size 1.905 2)
 			(drill 1.1)
 			(layers "*.Cu" "*.Mask")
@@ -3718,7 +3718,7 @@
 			(uuid "a4435a02-203e-4d37-84d3-1458360f2a9a")
 		)
 		(pad "3" thru_hole oval
-			(at 5.08 0)
+			(at 5.08 0 180)
 			(size 1.905 2)
 			(drill 1.1)
 			(layers "*.Cu" "*.Mask")
@@ -3744,7 +3744,7 @@
 	(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical"
 		(layer "F.Cu")
 		(uuid "5d5f498d-5a7c-46a4-82a5-d55a76db2bf5")
-		(at 132.475 170.015)
+		(at 162 120)
 		(descr "Resistor, Axial_DIN0207 series, Axial, Vertical, pin pitch=5.08mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Vertical pin pitch 5.08mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R10"
@@ -3915,7 +3915,7 @@
 	(footprint "LED_THT:LED_D3.0mm"
 		(layer "F.Cu")
 		(uuid "679cfd09-1524-497d-bc5a-c533dd73a834")
-		(at 152.355 154.525)
+		(at 183 104)
 		(descr "LED, diameter 3.0mm, 2 pins, generated by kicad-footprint-generator")
 		(tags "LED")
 		(property "Reference" "D1"
@@ -4148,7 +4148,7 @@
 	(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical"
 		(layer "F.Cu")
 		(uuid "6a290613-45ed-4fae-a943-91251b979f56")
-		(at 132.475 153.815)
+		(at 162 104)
 		(descr "Resistor, Axial_DIN0207 series, Axial, Vertical, pin pitch=5.08mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Vertical pin pitch 5.08mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R6"
@@ -4319,7 +4319,7 @@
 	(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical"
 		(layer "F.Cu")
 		(uuid "27da16de-1b2c-416f-8268-fc07975f6518")
-		(at 132.475 178.115)
+		(at 162 116)
 		(descr "Resistor, Axial_DIN0207 series, Axial, Vertical, pin pitch=5.08mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Vertical pin pitch 5.08mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R12"
@@ -4490,7 +4490,7 @@
 	(footprint "project_footprints:Socket_2x20_P2.54mm_25.4mm_DevKitC"
 		(layer "F.Cu")
 		(uuid "6e7a76d5-dac7-460b-a139-409dccf3ea49")
-		(at 73.5 132.34)
+		(at 104 108)
 		(descr "Dual-row 40-pin female socket, 2.54mm pitch, 25.4mm row spacing, for ESP32 DevKitC-style 40pin wide boards")
 		(tags "ESP32 DevKitC socket 40pin 25.4mm")
 		(property "Reference" "J1"
@@ -5019,11 +5019,11 @@
 	(footprint "Package_TO_SOT_THT:TO-220-3_Vertical"
 		(layer "F.Cu")
 		(uuid "74e61936-3648-4a55-a715-832e38ff7287")
-		(at 200.0 160.0)
+		(at 152.54 146 180)
 		(descr "TO-220-3, Vertical, RM 2.54mm, see https://www.vishay.com/docs/66542/to-220-1.pdf")
 		(tags "TO-220-3 Vertical RM 2.54mm")
 		(property "Reference" "U1"
-			(at 2.54 -4.1 0)
+			(at 2.54 -4.1 180)
 			(layer "F.SilkS")
 			(uuid "b9de3354-0a7b-46b2-8f97-36ce09367ac9")
 			(effects
@@ -5034,7 +5034,7 @@
 			)
 		)
 		(property "Value" "TA48033S"
-			(at 2.54 2.2 0)
+			(at 2.54 2.2 180)
 			(layer "F.Fab")
 			(uuid "a6b9f0db-35d4-4942-a8dc-3efc7097f73a")
 			(effects
@@ -5045,7 +5045,7 @@
 			)
 		)
 		(property "Datasheet" "https://akizukidenshi.com/catalog/g/g100534/"
-			(at 0 0 0)
+			(at 0 0 180)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "35a362be-4044-4bbf-b3e2-700f6debefd7")
@@ -5056,7 +5056,7 @@
 			)
 		)
 		(property "Description" "Low dropout 3-terminal positive regulator, 3.3V 1A. IN=+12V(13.8V), OUT=+3V3_A (W5500 only). Pinout 1=IN 2=OUT 3=GND. Heatsink required (~2.1W dissipation)."
-			(at 0 0 0)
+			(at 0 0 180)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "5aa31682-708b-48ca-be66-bbf7ddd11824")
@@ -5067,7 +5067,7 @@
 			)
 		)
 		(property "KiLib_Generator" "package/TO_SOT/THT"
-			(at 0 0 0)
+			(at 0 0 180)
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "2235ca51-8716-43f7-9147-d9dfc3734b0a")
@@ -5213,7 +5213,7 @@
 			(uuid "ba126ecc-6732-4fd2-b3cf-0b591f6dd4a9")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 2.54 -0.95 0)
+			(at 2.54 -0.95 180)
 			(layer "F.Fab")
 			(uuid "f6fdb965-a974-4ca7-826c-76d0cdf0d8db")
 			(effects
@@ -5224,7 +5224,7 @@
 			)
 		)
 		(pad "1" thru_hole rect
-			(at 0 0)
+			(at 0 0 180)
 			(size 1.905 2)
 			(drill 1.1)
 			(layers "*.Cu" "*.Mask")
@@ -5235,7 +5235,7 @@
 			(uuid "33a8ac93-54c0-4067-a7f9-44efd8dbaa81")
 		)
 		(pad "2" thru_hole oval
-			(at 2.54 0)
+			(at 2.54 0 180)
 			(size 1.905 2)
 			(drill 1.1)
 			(layers "*.Cu" "*.Mask")
@@ -5246,7 +5246,7 @@
 			(uuid "712f5e8e-c160-425a-9709-a187ef919e06")
 		)
 		(pad "3" thru_hole oval
-			(at 5.08 0)
+			(at 5.08 0 180)
 			(size 1.905 2)
 			(drill 1.1)
 			(layers "*.Cu" "*.Mask")
@@ -5272,7 +5272,7 @@
 	(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical"
 		(layer "F.Cu")
 		(uuid "7b1993ac-32ca-4655-bfe7-4a705f1b3ad8")
-		(at 132.475 161.915)
+		(at 162 112)
 		(descr "Resistor, Axial_DIN0207 series, Axial, Vertical, pin pitch=5.08mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Vertical pin pitch 5.08mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R8"
@@ -5443,7 +5443,7 @@
 	(footprint "Package_TO_SOT_THT:TO-92_Inline"
 		(layer "F.Cu")
 		(uuid "984384f6-adab-48ba-8d3e-ae202e880d4e")
-		(at 147.745 172.895)
+		(at 174 112)
 		(descr "TO-92 leads in-line, narrow, oval pads, drill 0.75mm (see NXP sot054_po.pdf)")
 		(tags "to-92 sc-43 sc-43a sot54 PA33 transistor")
 		(property "Reference" "Q1"
@@ -5696,7 +5696,7 @@
 	(footprint "Capacitor_THT:CP_Radial_D5.0mm_P2.00mm"
 		(layer "F.Cu")
 		(uuid "a7664167-9da3-4d66-ac2b-29c9c6b29579")
-		(at 141.494775 172.915)
+		(at 160 140)
 		(descr "CP, Radial series, Radial, pin pitch=2.00mm, diameter=5mm, height=7mm, Electrolytic Capacitor")
 		(tags "CP Radial series Radial pin pitch 2.00mm diameter 5mm height 7mm Electrolytic Capacitor")
 		(property "Reference" "C1"
@@ -7058,7 +7058,7 @@
 	(footprint "LED_THT:LED_D3.0mm"
 		(layer "F.Cu")
 		(uuid "bc5260d1-e97b-476f-b799-9974bc7d864b")
-		(at 152.355 159.995)
+		(at 183 112)
 		(descr "LED, diameter 3.0mm, 2 pins, generated by kicad-footprint-generator")
 		(tags "LED")
 		(property "Reference" "D2"
@@ -7291,7 +7291,7 @@
 	(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical"
 		(layer "F.Cu")
 		(uuid "bea2ab61-576e-4ca4-a29c-e28b7c95c16c")
-		(at 132.475 157.865)
+		(at 162 108)
 		(descr "Resistor, Axial_DIN0207 series, Axial, Vertical, pin pitch=5.08mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Vertical pin pitch 5.08mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R7"
@@ -7462,7 +7462,7 @@
 	(footprint "Package_TO_SOT_THT:TO-92_Inline"
 		(layer "F.Cu")
 		(uuid "d5d58255-4db4-47cc-a5ca-f73ce36ca55e")
-		(at 147.745 178.685)
+		(at 174 120)
 		(descr "TO-92 leads in-line, narrow, oval pads, drill 0.75mm (see NXP sot054_po.pdf)")
 		(tags "to-92 sc-43 sc-43a sot54 PA33 transistor")
 		(property "Reference" "Q3"
@@ -7715,7 +7715,7 @@
 	(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical"
 		(layer "F.Cu")
 		(uuid "f4928235-155d-4298-9e69-0d898893eac7")
-		(at 132.475 174.065)
+		(at 162 124)
 		(descr "Resistor, Axial_DIN0207 series, Axial, Vertical, pin pitch=5.08mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Vertical pin pitch 5.08mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R11"
@@ -7880,6 +7880,105 @@
 			)
 			(rotate
 				(xyz 0 0 0)
+			)
+		)
+	)
+	(gr_rect
+		(start 100 100)
+		(end 215 172)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Edge.Cuts")
+		(uuid "3d9551fe-2b3d-45da-aa3d-ed8dc3fc4664")
+	)
+	(gr_rect
+		(start 140 149.5)
+		(end 160 169.5)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "572a29b7-ffee-4b70-9ef4-cdc11869430b")
+	)
+	(gr_text "放熱器 U1 20x20"
+		(at 150 159.5 0)
+		(layer "Dwgs.User")
+		(uuid "6271204d-ffe3-4962-8249-84538cd89a7d")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_rect
+		(start 163 149.5)
+		(end 183 169.5)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "ab85ee0c-f421-4e6b-9b04-dd63f47761fc")
+	)
+	(gr_text "放熱器 U2 20x20"
+		(at 173 159.5 0)
+		(layer "Dwgs.User")
+		(uuid "5e4f46b3-43c1-478e-8c01-f65a79f9d223")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_rect
+		(start 186 149.5)
+		(end 206 169.5)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "88107403-e474-4b9b-8ba7-8e84c3bfd2f1")
+	)
+	(gr_text "放熱器 Q5 20x20"
+		(at 196 159.5 0)
+		(layer "Dwgs.User")
+		(uuid "9d8895f3-3479-4477-8c63-9fbfde7bc68e")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(gr_rect
+		(start 195 102)
+		(end 213 140)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "0e1fcd7d-e28b-413c-bab5-f211b18aa08b")
+	)
+	(gr_text "J2/J5/J6"
+		(at 204 121 0)
+		(layer "Dwgs.User")
+		(uuid "9c1c1406-8068-4504-8990-49bde5eba453")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
 			)
 		)
 	)

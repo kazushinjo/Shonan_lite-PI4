@@ -112,7 +112,7 @@ A heatsink is attached to each of U2 (L7805), U1 (TA48033S) and Q5 (2SJ334).
 | Heatsink | Akizuki Denshi [105054] heatsink 20×20×25 mm (part number 20PB020-01025) |
 | Dimensions | 20×20 mm, 25 mm high. With pins for PCB mounting; the part's tab is fixed with an M3 screw |
 | Thermal resistance | 15.8 °C/W |
-| Placement on the PCB | So that the heatsinks do not overlap, the three TO-220 parts are placed at 25 mm pitch in the KiCad PCB data (the board outline and routing are not designed yet, so the heatsink mounting pin holes are to be added when designing the board) |
+| Placement on the PCB | The board outline is 115×72 mm. The three TO-220 parts (U1, U2, Q5) are lined up along the bottom edge of the board at 23 mm pitch with their tabs facing the bottom edge, and the heatsinks (20×20 mm) are placed on the bottom-edge side (the heatsink areas are drawn on the Dwgs.User layer of the KiCad PCB data). Routing and the heatsink mounting pin holes are not designed yet |
 
 Rough heat estimate (at 14 V input):
 
