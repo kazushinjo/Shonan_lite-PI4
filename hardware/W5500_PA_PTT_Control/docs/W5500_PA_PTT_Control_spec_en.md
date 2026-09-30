@@ -112,7 +112,7 @@ A heatsink is attached to each of U2 (L7805), U1 (TA48033S) and Q5 (2SJ334).
 | Heatsink | Akizuki Denshi [105054] heatsink 20×20×25 mm (part number 20PB020-01025) |
 | Dimensions | 20×20 mm, 25 mm high. With pins for PCB mounting; the part's tab is fixed with an M3 screw |
 | Thermal resistance | 15.8 °C/W |
-| Placement on the PCB | The board outline is 115×72 mm. The three TO-220 parts (U1, U2, Q5) are lined up along the bottom edge of the board at 23 mm pitch with their tabs facing the bottom edge, and the heatsinks (20×20 mm) are placed on the bottom-edge side (the heatsink areas are drawn on the Dwgs.User layer of the KiCad PCB data). Routing and the heatsink mounting pin holes are not designed yet |
+| Placement on the PCB | The board outline is 72 mm wide × 115 mm tall (the previous hand-wired 95×72 mm board extended by 20 mm vertically). The W5500 module is at the top left (RJ45 toward the top edge), the ESP32 DevKitC (J1, USB toward the bottom edge) below it, and the three TO-220 parts (U1, U2, Q5) are stacked vertically on the right at 23 mm pitch with their tabs facing the right edge and the heatsinks (20×20 mm) on the right-edge side. The resistors, transistors, LEDs and space for J2/J5/J6 are at the bottom right (each area is drawn on the Dwgs.User layer of the KiCad PCB data; the dimensions of the W5500 module, etc. will be updated with data from the actual parts). Routing and the heatsink mounting pin holes are not designed yet |
 
 Rough heat estimate (at 14 V input):
 
