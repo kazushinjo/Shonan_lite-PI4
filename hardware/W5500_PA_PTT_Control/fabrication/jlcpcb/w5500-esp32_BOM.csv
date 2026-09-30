@@ -1,0 +1,17 @@
+﻿Comment,Designator,Footprint,Qty,Note
+W5500_Lite,A1,W5500_Lite_USR-ES1_2x06_P2.54mm_20.32mm,1,W5500 Lite (USR-ES1互換) 2x6ピン
+0.33uF,"C1,C3",CP_Radial_D5.0mm_P2.00mm,2,C1: 0.33µF 16V以上 / C3: 0.33µF 25V以上(フィルムまたはセラミック、電解でも可)
+33uF,C2,CP_Radial_D5.0mm_P2.00mm,1,33µF 10V以上 電解(極性あり、+側=+3.3V)
+ESP32_DevKitC_Socket_40P_25.4mm,J1,Socket_2x20_P2.54mm_25.4mm_DevKitC,1,2.54mm 1x20 ピンソケット×2(列間隔25.4mm)でFreenove ESP32 WROOMを挿す
+DC_IN_13V8,J2,SolderWire-1sqmm_1x02_P5.4mm_D1.4mm_OD2.7mm,1,電線直付け(1mm²)
+Power,J5,SolderWire-1sqmm_1x02_P5.4mm_D1.4mm_OD2.7mm,1,電線直付け(1mm²)
+PTT_ON,J6,JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical,1,JST B2B-XH-A
+LED_PWR,J7,JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical,1,JST B2B-XH-A(外付け赤LED)
+LED_12V,J8,JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical,1,JST B2B-XH-A(外付け緑LED)
+2SC1815,"Q1,Q3",TO-92_Inline_Wide,2,
+2SJ334,Q5,TO-220-3_Vertical,1,放熱器 秋月105054(TO-220NIS)
+510,"R6,R7",R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical,2,
+1k,R8,R_Axial_DIN0309_L9.0mm_D3.2mm_P5.08mm_Vertical,1,1/2W
+10k,"R9,R10,R11,R12,R13",R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical,5,
+TA48033S,U1,TO-220-3_Vertical,1,放熱器 秋月105054
+L7805,U2,TO-220-3_Vertical,1,放熱器 秋月105054
