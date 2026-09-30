@@ -11,8 +11,8 @@ This document is the same-named document of Shonan_Lite-RasPI5 (same board, same
 
 | Item | Details |
 |---|---|
-| Revision | Rev.2.3 |
-| Created | 2026-08-07 (Rev.2.0 update: 2026-08-30, fully revised to match the actual circuit (KiCad) / Rev.2.1 update: 2026-08-30, power system corrected: J3 (external DC-DC buck converter) removed, and the +5 V from U2 (L7805) now feeds both MCU1 and U1 (TA48033S) as a single system / Rev.2.2 update: 2026-08-31, J1 corrected to the pinout of the actual Freenove 40-pin DevKitC socket and MCU1 unified with J1's pin numbers and signal names; indicator circuits added: a red LED (D1) on the Power (switched 12 V) line and a green LED (D2) on the +12 V (input side) line / Rev.2.3 update: 2026-09-30, R8 changed to 100 Ω (to match the KiCad schematic) and R9 added, IP address description unified to the fixed-IP method, the delay until the 12 V power turns ON corrected to the implemented value (5 seconds), and the "Use ESP32 W5500" setting and PTT output via Pi 4 GPIO21 on the Shonan_lite-PI4 side added) |
+| Revision | Rev.2.4 |
+| Created | 2026-08-07 (Rev.2.0 update: 2026-08-30, fully revised to match the actual circuit (KiCad) / Rev.2.1 update: 2026-08-30, power system corrected: J3 (external DC-DC buck converter) removed, and the +5 V from U2 (L7805) now feeds both MCU1 and U1 (TA48033S) as a single system / Rev.2.2 update: 2026-08-31, J1 corrected to the pinout of the actual Freenove 40-pin DevKitC socket and MCU1 unified with J1's pin numbers and signal names; indicator circuits added: a red LED (D1) on the Power (switched 12 V) line and a green LED (D2) on the +12 V (input side) line / Rev.2.3 update: 2026-09-30, R8 changed to 100 Ω (to match the KiCad schematic) and R9 added, IP address description unified to the fixed-IP method, the delay until the 12 V power turns ON corrected to the implemented value (5 seconds), and the "Use ESP32 W5500" setting and PTT output via Pi 4 GPIO21 on the Shonan_lite-PI4 side added / Rev.2.4 update: 2026-09-30, R8 changed to 1 kΩ (1/2 W recommended), R12 (10 kΩ) added to pull Q1's base down to GND, the KiCad symbol of Q5 corrected to the 2SJ334 pinout (1 = G, 2 = D, 3 = S), and heatsinks added to U1, U2 and Q5) |
 | Target board | ESP32 (WROVER family, plain ESP32) + W5500 Ethernet module |
 | Target sketch | `hardware/W5500_PA_PTT_Control/W5500_PA_PTT_Control.ino` |
 | Connected apps | shonan-android (DATV transmit app), Shonan_lite-PI4 (pi4/gui; linked to TX start/stop on the transmit screen and to app start/exit) |
@@ -48,7 +48,8 @@ Up to Rev.1.1, 3-channel LNA/PTT/PA sequence control was assumed (e.g. disconnec
 | W5500 Ethernet module | SPI connection. Has no built-in MAC address, so it is set arbitrarily in the sketch |
 | Q5 (2SJ334) | P-channel power MOSFET. High-side switch for the 12 V power (replaces the former relay K3) |
 | Q1 (2SC1815) | NPN transistor driving Q5's gate (switched by GPIO26) |
-| R8 (100 Ω) | Pull-up resistor from Q5's gate to +12 V (keeps Q5 OFF while Q1 is OFF) |
+| R8 (1 kΩ, 1/2 W recommended) | Pull-up resistor from Q5's gate to +12 V (keeps Q5 OFF while Q1 is OFF). About 12–14 mA flows while Q1 is ON, dissipating about 0.14–0.2 W |
+| R12 (10 kΩ) | Pull-down resistor from Q1's base to GND (keeps Q1 reliably OFF even while GPIO26 is undetermined, e.g. during ESP32 startup) |
 | Q3 (2SC1815) | NPN transistor driving the PTT_ON signal (switched by GPIO27; pulls down to GND like an open collector) |
 | R9 (10 kΩ) | Pull-up resistor from the W5500 (A1) RST (same net as GPIO21) to +3V3_A |
 | J2 (DC_IN_13V8) | Input connector for the external power supply (13.8 V/12 V) |
@@ -74,7 +75,7 @@ Up to Rev.1.1, 3-channel LNA/PTT/PA sequence control was assumed (e.g. disconnec
 
 | Channel | ESP32 GPIO | Logic | State at startup | Drive circuit | Output |
 |---|---|---|---|---|---|
-| POWER (12 V power) | GPIO 26 | active-HIGH | OFF | R6 → Q1 (2SC1815) → Q5 (2SJ334, PMOS high-side switch) | J5 (Power) |
+| POWER (12 V power) | GPIO 26 | active-HIGH | OFF | R6 → Q1 (2SC1815, base pulled down to GND by R12) → Q5 (2SJ334, PMOS high-side switch, gate pulled up to +12 V by R8) | J5 (Power) |
 | PTT | GPIO 27 | active-HIGH | OFF | R7 → Q3 (2SC1815) | J6 (PTT_ON; pulls the radio's PTT terminal to GND) |
 
 > GPIO25 was reserved for LNA control in the old specification (Rev.1.1), but the actual circuit has no drive circuit for it and it is unconnected. It is not handled by the current sketch or this document.
@@ -101,6 +102,25 @@ J2 (+12 V, 13.8 V)
 | W5500 | +12 V → U2 (L7805, 12 V → 5 V) → U1 (TA48033S, 5 V → 3.3 V) → A1 (VCC) | U1 further steps the `+5v0` output of U2 down to 3.3 V for the W5500 (A1) VCC |
 
 Both the MCU1 and W5500 supplies start from the +5 V output of U2 (L7805); no external DC-DC buck converter module is used (J3, which existed in the old Rev.2.0, has been removed). For detailed connections, see "Power System Connection Details" in [`MCU1_J1_W5500_connections_en.md`](MCU1_J1_W5500_connections_en.md).
+
+### 2.5 Heatsinks
+
+A heatsink is attached to each of U2 (L7805), U1 (TA48033S) and Q5 (2SJ334).
+
+| Item | Details |
+|---|---|
+| Heatsink | Akizuki Denshi [105054] heatsink 20×20×25 mm (part number 20PB020-01025) |
+| Dimensions | 20×20 mm, 25 mm high. With pins for PCB mounting; the part's tab is fixed with an M3 screw |
+| Thermal resistance | 15.8 °C/W |
+| Placement on the PCB | So that the heatsinks do not overlap, the three TO-220 parts are placed at 25 mm pitch in the KiCad PCB data (the board outline and routing are not designed yet, so the heatsink mounting pin holes are to be added when designing the board) |
+
+Rough heat estimate (at 14 V input):
+
+- U2 (L7805): with a maximum output current of about 0.25 A (rough total of the ESP32 DevKitC and the W5500), the loss is
+  (14 V − 5 V) × 0.25 A ≈ 2.3 W. With the heatsink's 15.8 °C/W plus junction-to-case (about 5 °C/W), the temperature rise is about 50 °C.
+- U1 (TA48033S): (5 V − 3.3 V) × about 0.13 A (W5500) ≈ 0.2 W, which is small.
+- Q5 (2SJ334): the loss is on-resistance (max 38 mΩ at VGS = −10 V) × current². Taking about 19 °C/W (heatsink 15.8 °C/W plus junction-to-case 2.78 °C/W),
+  for example about 1 W at 5 A (rise about 18 °C) and about 3.8 W at 10 A (about 70 °C). Check against the actual load current of the PA, etc.
 
 ---
 

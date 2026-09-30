@@ -3239,7 +3239,7 @@
 	(footprint "Package_TO_SOT_THT:TO-220-3_Vertical"
 		(layer "F.Cu")
 		(uuid "4e539d15-98b1-4ba8-83de-5e330203164a")
-		(at 142.365 167.615)
+		(at 225.0 160.0)
 		(descr "TO-220-3, Vertical, RM 2.54mm, see https://www.vishay.com/docs/66542/to-220-1.pdf")
 		(tags "TO-220-3 Vertical RM 2.54mm")
 		(property "Reference" "U2"
@@ -3492,7 +3492,7 @@
 	(footprint "Package_TO_SOT_THT:TO-220-3_Vertical"
 		(layer "F.Cu")
 		(uuid "5061ea6b-3c1e-41ae-a55e-0c4730b06744")
-		(at 142.365 155.715)
+		(at 175.0 160.0)
 		(descr "TO-220-3, Vertical, RM 2.54mm, see https://www.vishay.com/docs/66542/to-220-1.pdf")
 		(tags "TO-220-3 Vertical RM 2.54mm")
 		(property "Reference" "Q5"
@@ -3701,6 +3701,9 @@
 			(drill 1.1)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
+			(net "Net-(Q1-C)")
+			(pinfunction "G")
+			(pintype "input")
 			(uuid "a7d60253-01d4-49b4-9a9d-891c53633cfc")
 		)
 		(pad "2" thru_hole oval
@@ -3709,6 +3712,9 @@
 			(drill 1.1)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
+			(net "/Power")
+			(pinfunction "D")
+			(pintype "passive")
 			(uuid "a4435a02-203e-4d37-84d3-1458360f2a9a")
 		)
 		(pad "3" thru_hole oval
@@ -3717,6 +3723,9 @@
 			(drill 1.1)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
+			(net "+12V")
+			(pinfunction "S")
+			(pintype "passive")
 			(uuid "6a73ff10-a8ad-437d-982e-be5af7b5732f")
 		)
 		(embedded_fonts no)
@@ -4307,6 +4316,177 @@
 			)
 		)
 	)
+	(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical"
+		(layer "F.Cu")
+		(uuid "27da16de-1b2c-416f-8268-fc07975f6518")
+		(at 132.475 178.115)
+		(descr "Resistor, Axial_DIN0207 series, Axial, Vertical, pin pitch=5.08mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
+		(tags "Resistor Axial_DIN0207 series Axial Vertical pin pitch 5.08mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
+		(property "Reference" "R12"
+			(at 2.54 -2.37 0)
+			(layer "F.SilkS")
+			(uuid "5595aa2e-dfba-40c1-a097-08840a7b0164")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Value" "10k"
+			(at 2.54 2.37 0)
+			(layer "F.Fab")
+			(uuid "950d92de-a385-4087-9bd3-f58b73610de8")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 0)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "47b9496b-403f-4a29-a740-f8cea2d69877")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 0)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "6dbca250-82d3-4794-b0c7-f0ce8dce1c7d")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "KiLib_Generator" "resistor/THT"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "7b8d367d-415c-469e-b498-06a32953443c")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property ki_fp_filters "R_*")
+		(path "/2ebc0cc1-3eae-4c62-8abf-cf2f04dd6da3")
+		(sheetname "/")
+		(sheetfile "w5500-esp32.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
+		(attr through_hole)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_line
+			(start 1.37 0)
+			(end 3.98 0)
+			(stroke
+				(width 0.12)
+				(type solid)
+			)
+			(layer "F.SilkS")
+			(uuid "ed70d179-28bd-447d-afc2-7d9c9a5126e7")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 1.37 0)
+			(stroke
+				(width 0.12)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.SilkS")
+			(uuid "55c529f8-a579-4ee2-8405-07cd04896023")
+		)
+		(fp_rect
+			(start -1.5 -1.5)
+			(end 6.13 1.5)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.CrtYd")
+			(uuid "0caf964c-8d0d-48da-a2e3-d66957dde3fe")
+		)
+		(fp_line
+			(start 0 0)
+			(end 5.08 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(layer "F.Fab")
+			(uuid "f510ccf1-86aa-4b26-953f-a82444fb7d92")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 1.25 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.Fab")
+			(uuid "0d00398d-c99e-476b-adad-8a31fc57bdfa")
+		)
+		(fp_text user "${REFERENCE}"
+			(at 2.54 -2.37 0)
+			(layer "F.Fab")
+			(uuid "d5f05359-905a-437b-a437-7384fd8ba8db")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(pad "1" thru_hole circle
+			(at 0 0)
+			(size 1.6 1.6)
+			(drill 0.8)
+			(layers "*.Cu" "*.Mask")
+			(remove_unused_layers no)
+			(net "Net-(Q1-B)")
+			(pintype "passive")
+			(uuid "cee8d89c-21af-4632-8e55-14f94bb488cb")
+		)
+		(pad "2" thru_hole circle
+			(at 5.08 0)
+			(size 1.6 1.6)
+			(drill 0.8)
+			(layers "*.Cu" "*.Mask")
+			(remove_unused_layers no)
+			(net "GND")
+			(pintype "passive")
+			(uuid "0692c1e2-5b6c-48cc-a0b1-b0da9ffdd1d8")
+		)
+		(embedded_fonts no)
+		(model "${KICAD10_3DMODEL_DIR}/Resistor_THT.3dshapes/R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
+	)
 	(footprint "project_footprints:Socket_2x20_P2.54mm_25.4mm_DevKitC"
 		(layer "F.Cu")
 		(uuid "6e7a76d5-dac7-460b-a139-409dccf3ea49")
@@ -4839,7 +5019,7 @@
 	(footprint "Package_TO_SOT_THT:TO-220-3_Vertical"
 		(layer "F.Cu")
 		(uuid "74e61936-3648-4a55-a715-832e38ff7287")
-		(at 142.365 161.665)
+		(at 200.0 160.0)
 		(descr "TO-220-3, Vertical, RM 2.54mm, see https://www.vishay.com/docs/66542/to-220-1.pdf")
 		(tags "TO-220-3 Vertical RM 2.54mm")
 		(property "Reference" "U1"
@@ -5106,7 +5286,7 @@
 				)
 			)
 		)
-		(property "Value" "10k"
+		(property "Value" "1k"
 			(at 2.54 2.37 0)
 			(layer "F.Fab")
 			(uuid "519103f5-9180-4583-a9a8-1378a04811c6")

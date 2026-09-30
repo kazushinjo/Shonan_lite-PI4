@@ -64,8 +64,8 @@ the W5500.
 
 | GPIO | Path | Parts | Notes |
 |---|---|---|---|
-| GPIO26 (POWER) | GPIO26 → R6 → Q1 (B) | R6: 510 Ω, Q1: 2SC1815 (NPN) | When GPIO26 is HIGH, Q1 turns ON and pulls Q5's gate toward GND |
-| ↳ | Q1 (C) → Q5 (G), pulled up by R8 | R8: 100 Ω (pull-up to +12 V), Q5: 2SJ334 (PMOS, TO-220) | When Q1 is OFF, R8 pulls the gate up to +12 V and Q5 (high-side switch) is OFF |
+| GPIO26 (POWER) | GPIO26 → R6 → Q1 (B), pulled down to GND by R12 | R6: 510 Ω, R12: 10 kΩ, Q1: 2SC1815 (NPN) | When GPIO26 is HIGH, Q1 turns ON and pulls Q5's gate toward GND. While GPIO26 is undetermined, R12 keeps Q1 OFF |
+| ↳ | Q1 (C) → Q5 (G), pulled up by R8 | R8: 1 kΩ (pull-up to +12 V, 1/2 W recommended), Q5: 2SJ334 (PMOS, TO-220, pins 1 = G, 2 = D, 3 = S, with heatsink) | When Q1 is OFF, R8 pulls the gate up to +12 V and Q5 (high-side switch) is OFF |
 | ↳ | Q5 (S) = +12 V, Q5 (D) → J5 (Power) | J5: Power output connector | When Q5 is ON, +12 V conducts to J5 (Power) (replaces the former relay K3) |
 | GPIO27 (PTT) | GPIO27 → R7 → Q3 (B) | R7: 510 Ω, Q3: 2SC1815 (NPN) | When GPIO27 is HIGH, Q3 turns ON |
 | ↳ | Q3 (C) → J6 (PTT_ON) | — | When Q3 (acting like an open collector) is ON, it pulls J6 (PTT_ON) to GND (intended for connection to the radio's PTT terminal; high impedance when Q3 is OFF) |

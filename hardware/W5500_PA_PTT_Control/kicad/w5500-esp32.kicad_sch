@@ -2283,7 +2283,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "Device:Q_PMOS"
+		(symbol "project_symbols:2SJ334"
 			(pin_names
 				(offset 0)
 			)
@@ -2303,7 +2303,7 @@
 					(justify left)
 				)
 			)
-			(property "Value" "Q_PMOS"
+			(property "Value" "2SJ334"
 				(at 5.08 -1.27 0)
 				(show_name yes)
 				(do_not_autoplace no)
@@ -2314,7 +2314,7 @@
 					(justify left)
 				)
 			)
-			(property "Footprint" ""
+			(property "Footprint" "Package_TO_SOT_THT:TO-220-3_Vertical"
 				(at 5.08 2.54 0)
 				(show_name yes)
 				(do_not_autoplace no)
@@ -2355,7 +2355,7 @@
 					)
 				)
 			)
-			(symbol "Q_PMOS_0_1"
+			(symbol "2SJ334_0_1"
 				(polyline
 					(pts
 						(xy 0.254 1.905) (xy 0.254 -1.905)
@@ -2522,7 +2522,7 @@
 					)
 				)
 			)
-			(symbol "Q_PMOS_1_1"
+			(symbol "2SJ334_1_1"
 				(pin passive line
 					(at 2.54 5.08 270)
 					(length 2.54)
@@ -2533,7 +2533,7 @@
 							)
 						)
 					)
-					(number "D"
+					(number "2"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2551,7 +2551,7 @@
 							)
 						)
 					)
-					(number "G"
+					(number "1"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2569,7 +2569,7 @@
 							)
 						)
 					)
-					(number "S"
+					(number "3"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -6760,7 +6760,7 @@
 		)
 		(uuid "8186fdbd-6633-4f74-b61e-8b3a29c18140")
 	)
-	(text "U2: 13.8V(+12V)を5VへLDO変換(L7805)。発熱(13.8V-5V)*0.2A=約1.76Wのためヒートシンク推奨。\nU1: 上記5VをさらにW5500(A1)専用の+3V3_Aへ変換(TA48033S)。発熱(5V-3.3V)*0.2A=約0.34W。\nESP32側(J1の3V3、DevKitC基板のオンボードLDO経由)とは完全に独立した系統。"
+	(text "U2: 13.8V(+12V)を5VへLDO変換(L7805)。発熱(13.8V-5V)*0.2A=約1.76Wのため放熱器を使用。\nU1: 上記5VをさらにW5500(A1)専用の+3V3_Aへ変換(TA48033S)。発熱(5V-3.3V)*0.2A=約0.34W。放熱器を使用。\n放熱器: U1・U2・Q5とも秋月[105054] 20×20×25mm(20PB020-01025、15.8℃/W)。\nESP32側(J1の3V3、DevKitC基板のオンボードLDO経由)とは完全に独立した系統。"
 		(exclude_from_sim no)
 		(at 256.794 139.954 0)
 		(effects
@@ -9793,7 +9793,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:Q_PMOS")
+		(lib_id "project_symbols:2SJ334")
 		(at 322.58 58.42 270)
 		(mirror x)
 		(unit 1)
@@ -9861,13 +9861,13 @@
 				)
 			)
 		)
-		(pin "D"
+		(pin "2"
 			(uuid "09be2b4a-d485-4a7e-ab1e-af4598691980")
 		)
-		(pin "G"
+		(pin "1"
 			(uuid "4a81df51-1575-4e8b-930d-6547f0a817d0")
 		)
-		(pin "S"
+		(pin "3"
 			(uuid "f364b940-5040-45f7-b373-9ac3ac205ee4")
 		)
 		(instances
@@ -11307,7 +11307,7 @@
 				)
 			)
 		)
-		(property "Value" "100"
+		(property "Value" "1k"
 			(at 313.69 63.5 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11994,6 +11994,179 @@
 			(project "w5500-esp32"
 				(path "/0100d23c-65ba-4b48-9527-fff8f2d69db1"
 					(reference "J6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 309.88 90.17) (xy 309.88 91.44)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7c87f695-bdfa-4b35-9b6b-e1f07ce5da1e")
+	)
+	(junction
+		(at 309.88 90.17)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "74415ce6-b00e-4ebf-8d95-8fbd8d564e84")
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 309.88 95.25 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "2ebc0cc1-3eae-4c62-8abf-cf2f04dd6da3")
+		(property "Reference" "R12"
+			(at 311.912 94.0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10k"
+			(at 311.912 96.52 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical"
+			(at 308.102 95.25 90)
+			(hide yes)
+			(show_name yes)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 309.88 95.25 0)
+			(hide yes)
+			(show_name yes)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 309.88 95.25 0)
+			(hide yes)
+			(show_name yes)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "69215e1b-47a0-471c-9da7-775a13368ead")
+		)
+		(pin "2"
+			(uuid "5061b3b8-4ec3-449a-93ae-ff74c9050790")
+		)
+		(instances
+			(project "w5500-esp32"
+				(path "/0100d23c-65ba-4b48-9527-fff8f2d69db1"
+					(reference "R12")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 309.88 99.06 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "d6b3f253-4bbc-44b8-adee-b123c49733e0")
+		(property "Reference" "#PWR0301"
+			(at 309.88 105.41 0)
+			(hide yes)
+			(show_name yes)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" ""
+			(at 322.58 102.87 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 322.58 97.79 0)
+			(hide yes)
+			(show_name yes)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 322.58 97.79 0)
+			(hide yes)
+			(show_name yes)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 322.58 97.79 0)
+			(hide yes)
+			(show_name yes)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "fd8a12fd-7da6-4eff-8880-fadd75f927fa")
+		)
+		(instances
+			(project "w5500-esp32"
+				(path "/0100d23c-65ba-4b48-9527-fff8f2d69db1"
+					(reference "#PWR0301")
 					(unit 1)
 				)
 			)
