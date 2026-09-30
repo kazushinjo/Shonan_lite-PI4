@@ -1,63 +1,42 @@
 // ============================================================
-//  W5500_PA_PTT_Control.ino
-//  ESP32 + W5500 イーサネット経由 GPIO26/27 電源制御
-//  - 12V電源(2SJ334ハイサイドスイッチ)とPTTのON/OFFをブラウザから制御（ラッチ式）
-//  - 固定IPアドレス方式（初期値 192.168.0.100/24）。Web/APIから変更可能
-//  - 12V電源ON要求・PTT ON要求は、それぞれ設定した遅延時間の後に実際にONへ
-//    遷移する（OFF要求は安全のため常に即時反映）
-//  - 遅延時間・IPアドレスの設定はNVS(Preferences)に保存され、電源断後も保持
-//  - Arduino公式 Ethernet ライブラリ（W5500対応）を使用
+//  W5500_PA_PTT_WiFiTest.ino
+//  【一時テスト用】W5500(イーサネット)未実装の段階でHTTPロジックだけを
+//  検証するためのWiFi APモード版。
 //
-//  【配線】
-//  W5500      ESP32 (VSPI)
-//  --------   ------------
-//  SCK        GPIO 18
-//  MISO       GPIO 19
-//  MOSI       GPIO 23
-//  CS(SS)     GPIO 5
-//  RST        GPIO 21（active-LOW。起動時にパルスを出してハードリセットする）
-//  VCC        3.3V
-//  GND        GND
+//  本番ファームウェア
+//  (Shonan_Lite-RasPI5/hardware/W5500_PA_PTT_Control/W5500_PA_PTT_Control.ino)
+//  のGPIO制御・HTTPハンドラ・遅延設定・IP設定のロジックはそのまま踏襲し、
+//  通信層のみ Ethernet(W5500) → WiFi(ESP32内蔵AP) に置き換えている。
+//  W5500実装後は本番版を使うこと。本ファイルは削除して構わない。
 //
-//  出力（ラッチ式ON/OFF、いずれもactive-HIGH想定）
-//  POWER: GPIO 26 （Q1/Q5(2SJ334)経由の12V電源ハイサイドスイッチ。起動時はOFF）
-//  PTT  : GPIO 27 （Q3経由でPTT_ON信号をGNDへ落とす。起動時はOFF）
+//  【使い方】
+//  1) 本スケッチを書き込むとESP32がWiFiアクセスポイントになる
+//       SSID: PA-PTT-Test / PASS: ptttest123
+//       既定IP: 192.168.4.1（/configで変更可）
+//  2) MacのWiFi設定で上記SSIDに接続する
+//  3) ブラウザで http://<IP>/ にアクセス
 //
-//  ※GPIO25(旧LNA制御)は現行回路では未接続のため廃止。
+//  出力（ラッチ式ON/OFF、いずれもactive-HIGH想定。本番と同一）
+//  POWER: GPIO 26
+//  PTT  : GPIO 27
 //
-//  【shonan-android / Shonan_Lite-RasPI5(pi5/gui) 連携】
-//  送信ボタンON  : GET /tx?state=on  → 設定ms後にPTT on
-//  送信ボタンOFF : GET /tx?state=off → PTT即時off
-//  （12V電源はPi5アプリの起動/終了に連動して /ch?idx=0 で独立に制御する。
-//    TX/RXシーケンスでは電源には触れない）
-//
-//  【個別チャンネル制御】
-//  GET /ch?idx=0&state=on   … 12V電源ON要求（設定秒数後にON）
-//  GET /ch?idx=0&state=off  … 12V電源即時OFF（保留中のON要求もキャンセル）
-//  GET /ch?idx=1&state=on   … PTT ON要求（設定ms後にON）
-//  GET /ch?idx=1&state=off  … PTT即時OFF（保留中のON要求もキャンセル）
-//
-//  【設定変更】
-//    GET /config                                          設定画面(HTML)
-//    GET /config/delay?power_delay_sec=3&ptt_delay_ms=50   遅延時間を保存
-//    GET /config/network?ip=192.168.0.100&gateway=192.168.0.1&subnet=255.255.255.0
-//                                                           IP設定を保存し自動再起動
+//  対応パス（本番版と同一仕様）:
+//    GET /                          ステータスページ
+//    GET /toggle?ch=0..1            指定チャンネルをトグルして / へリダイレクト（ON側は遅延あり、OFF側は即時。/chと同一ロジック）
+//    GET /tx?state=on|off           PTTのみ切替（on要求は設定ms後にON、offは即時）
+//    GET /ch?idx=0|1&state=on|off   個別チャンネル明示ON/OFF（idx0=POWER, idx1=PTT。
+//                                   on要求は遅延後にON、offは即時）
+//    GET /api/status                JSON形式で現在状態を返す
+//    GET /config                                        設定画面(HTML)
+//    GET /config/delay?power_delay_sec=3&ptt_delay_ms=50 遅延時間を保存
+//    GET /config/network?ip=...&gateway=...&subnet=...   AP自身のIP設定を保存し自動再起動
 // ============================================================
 
-#include <SPI.h>
-#include <Ethernet.h>
+#include <WiFi.h>
 #include <Preferences.h>
 
-// ============================================================
-//  設定
-// ============================================================
-
-// W5500にはMACアドレスが内蔵されていないため任意の値を設定
-// （同一ネットワーク内で他機器と重複しないこと）
-static byte mac[] = { 0x02, 0xAA, 0xBB, 0xCC, 0xDE, 0x01 };
-
-const int PIN_CS  = 5;
-const int PIN_RST = 21;  // W5500 RST（active-LOW）
+const char* AP_SSID = "PA-PTT-Test";
+const char* AP_PASS = "ptttest123";
 
 const int IDX_POWER = 0;
 const int IDX_PTT   = 1;
@@ -65,12 +44,9 @@ const int IDX_PTT   = 1;
 const int PIN_OUT[2] = { 26, 27 };
 const char* OUT_LABEL[2] = { "POWER 12V (GPIO26)", "PTT (GPIO27)" };
 
-// 基板搭載LED（PTT ON中に点灯）
 const int PIN_ONBOARD_LED = 2;
 
-// 起動時は両方OFF（POWERはPi5アプリ起動後に/ch?idx=0で明示的にON）
 bool outState[2] = { false, false };
-
 bool txActive = false;
 
 Preferences prefs;
@@ -80,8 +56,8 @@ const char* PREFS_NS = "w5500cfg";
 uint32_t powerDelayMs = 3000;   // 12V電源ON要求からONまでの遅延[ms]（既定3秒）
 uint32_t pttDelayMs   = 50;     // PTT ON要求からONまでの遅延[ms]（既定50ms）
 
-IPAddress currentIP(192, 168, 0, 100);
-IPAddress currentGateway(192, 168, 0, 1);
+IPAddress currentIP(192, 168, 4, 1);
+IPAddress currentGateway(192, 168, 4, 1);
 IPAddress currentSubnet(255, 255, 255, 0);
 
 // --- 遅延実行の保留状態（非ブロッキング） ---
@@ -91,8 +67,7 @@ unsigned long pwrOnRequestAt = 0;
 bool pttOnPending = false;
 unsigned long pttOnRequestAt = 0;
 
-EthernetServer server(80);
-bool linkUp = false;
+WiFiServer server(80);
 
 // ============================================================
 //  設定の読み書き（NVS）
@@ -103,13 +78,13 @@ void loadConfig() {
     powerDelayMs = prefs.getULong("pwr_delay_ms", 3000);
     pttDelayMs   = prefs.getULong("ptt_delay_ms", 50);
 
-    String ipStr   = prefs.getString("ip",   "192.168.0.100");
-    String gwStr   = prefs.getString("gw",   "192.168.0.1");
+    String ipStr   = prefs.getString("ip",   "192.168.4.1");
+    String gwStr   = prefs.getString("gw",   "192.168.4.1");
     String maskStr = prefs.getString("mask", "255.255.255.0");
     prefs.end();
 
-    if (!currentIP.fromString(ipStr))       currentIP = IPAddress(192, 168, 0, 100);
-    if (!currentGateway.fromString(gwStr))  currentGateway = IPAddress(192, 168, 0, 1);
+    if (!currentIP.fromString(ipStr))       currentIP = IPAddress(192, 168, 4, 1);
+    if (!currentGateway.fromString(gwStr))  currentGateway = IPAddress(192, 168, 4, 1);
     if (!currentSubnet.fromString(maskStr)) currentSubnet = IPAddress(255, 255, 255, 0);
 }
 
@@ -131,7 +106,7 @@ void saveNetworkConfig(const String& ipStr, const String& gwStr, const String& m
 }
 
 // ============================================================
-//  出力制御
+//  出力制御（本番版と同一ロジック）
 // ============================================================
 
 void applyOutput(int idx) {
@@ -149,9 +124,7 @@ void setOutput(int idx, bool on) {
 }
 
 // ============================================================
-//  12V電源 / PTT の遅延付き制御（非ブロッキング）
-//  - ON要求: 設定した遅延の後にONへ遷移する予約を行う
-//  - OFF要求: 安全のため即時OFF。予約中のON要求はキャンセルする
+//  12V電源 / PTT の遅延付き制御（非ブロッキング、本番版と同一ロジック）
 // ============================================================
 
 void requestPowerOn() {
@@ -192,8 +165,7 @@ void servicePendingOutputs() {
 }
 
 // ============================================================
-//  TX/RX 切替（shonan-android 連携）
-//  ※12V電源はここでは触らない。Pi5アプリの起動/終了連動(/ch?idx=0)でのみ制御する。
+//  TX/RX 切替（本番版と同一。12V電源はここでは触らない）
 // ============================================================
 
 void txStart() {
@@ -211,7 +183,7 @@ void txStop() {
 }
 
 // ============================================================
-//  クエリパラメータ簡易パーサ
+//  クエリパラメータ簡易パーサ（本番版と同一）
 // ============================================================
 
 static String extractQuery(const String& line) {
@@ -246,7 +218,7 @@ bool getQueryLong(const String& line, const String& key, long& outVal) {
 //  HTTPレスポンス補助
 // ============================================================
 
-void sendPlain(EthernetClient& client, const String& body) {
+void sendPlain(WiFiClient& client, const String& body) {
     client.println("HTTP/1.1 200 OK");
     client.println("Content-Type: text/plain; charset=UTF-8");
     client.println("Connection: close");
@@ -254,7 +226,7 @@ void sendPlain(EthernetClient& client, const String& body) {
     client.println(body);
 }
 
-void sendRedirect(EthernetClient& client, const char* location) {
+void sendRedirect(WiFiClient& client, const char* location) {
     client.println("HTTP/1.1 303 See Other");
     client.print("Location: ");
     client.println(location);
@@ -264,13 +236,9 @@ void sendRedirect(EthernetClient& client, const char* location) {
 
 // ============================================================
 //  HTMLページ
-//  対応パス:
-//    GET /               ステータスページ
-//    GET /toggle?ch=0..1 指定チャンネルをトグルして / へリダイレクト（ON側は遅延あり、OFF側は即時。/chと同一ロジック）
-//    GET /api/status     JSON形式で現在状態を返す
 // ============================================================
 
-void sendStatusPage(EthernetClient& client) {
+void sendStatusPage(WiFiClient& client) {
     client.println("HTTP/1.1 200 OK");
     client.println("Content-Type: text/html; charset=UTF-8");
     client.println("Connection: close");
@@ -281,7 +249,7 @@ void sendStatusPage(EthernetClient& client) {
     if (pwrOnPending || pttOnPending) {
         client.println("<meta http-equiv='refresh' content='1'>");
     }
-    client.println("<title>12V電源/PTT 制御</title>");
+    client.println("<title>[TEST] 12V電源/PTT 制御</title>");
     client.println("<style>");
     client.println("body{margin:0;font-family:sans-serif;background:#000;color:#eee;text-align:center;padding-top:30px}");
     client.println("h1{color:#aaa;font-size:1.3em}");
@@ -293,7 +261,7 @@ void sendStatusPage(EthernetClient& client) {
     client.println(".btn-on{background:#1a4;color:#fff}.btn-off{background:#a11;color:#fff}");
     client.println("a.cfg{display:inline-block;margin-top:10px;color:#8cf;text-decoration:none}");
     client.println("</style></head><body>");
-    client.println("<h1>&#9889; 12V電源/PTT 制御</h1>");
+    client.println("<h1>&#9889; [WiFiテスト版] 12V電源/PTT 制御</h1>");
     client.print("<p style='font-size:1.1em'>状態: <b style='color:");
     client.print(txActive ? "#f66'>送信中(TX)" : "#6c9'>受信中(RX)");
     client.println("</b></p>");
@@ -318,13 +286,13 @@ void sendStatusPage(EthernetClient& client) {
     }
 
     client.print("<p style='color:#555;margin-top:10px;font-size:.8em'>IP: ");
-    client.print(Ethernet.localIP());
+    client.print(WiFi.softAPIP());
     client.println("</p>");
     client.println("<div><a class='cfg' href='/config'>&#9881; 遅延時間・IPアドレス設定</a></div>");
     client.println("</body></html>");
 }
 
-void sendConfigPage(EthernetClient& client) {
+void sendConfigPage(WiFiClient& client) {
     client.println("HTTP/1.1 200 OK");
     client.println("Content-Type: text/html; charset=UTF-8");
     client.println("Connection: close");
@@ -359,7 +327,7 @@ void sendConfigPage(EthernetClient& client) {
     client.println("</fieldset></form>");
 
     client.println("<form action='/config/network' method='GET'>");
-    client.println("<fieldset><legend>ネットワーク設定（保存後に自動再起動します）</legend>");
+    client.println("<fieldset><legend>ネットワーク設定（AP自身のIP。保存後に自動再起動します）</legend>");
     client.print("<label>IPアドレス</label><input type='text' name='ip' value='");
     client.print(currentIP);
     client.println("'>");
@@ -376,7 +344,7 @@ void sendConfigPage(EthernetClient& client) {
     client.println("</body></html>");
 }
 
-void sendRestartingPage(EthernetClient& client) {
+void sendRestartingPage(WiFiClient& client) {
     client.println("HTTP/1.1 200 OK");
     client.println("Content-Type: text/html; charset=UTF-8");
     client.println("Connection: close");
@@ -387,7 +355,7 @@ void sendRestartingPage(EthernetClient& client) {
     client.println("</body></html>");
 }
 
-void sendStatusJson(EthernetClient& client) {
+void sendStatusJson(WiFiClient& client) {
     client.println("HTTP/1.1 200 OK");
     client.println("Content-Type: application/json");
     client.println("Connection: close");
@@ -407,21 +375,20 @@ void sendStatusJson(EthernetClient& client) {
     client.print(",\"ptt_delay_ms\":");
     client.print(pttDelayMs);
     client.print(",\"ip\":\"");
-    client.print(Ethernet.localIP());
+    client.print(WiFi.softAPIP());
     client.println("\"}");
 }
 
 // ============================================================
-//  HTTPリクエスト処理（簡易パーサ）
+//  HTTPリクエスト処理（本番版と同一の簡易パーサ）
 // ============================================================
 
-void handleClient(EthernetClient& client) {
+void handleClient(WiFiClient& client) {
     String reqLine;
     while (client.connected() && client.available() == 0) delay(1);
     if (client.available()) {
         reqLine = client.readStringUntil('\n');
     }
-    // ヘッダー残りを読み捨てる
     while (client.connected()) {
         String line = client.readStringUntil('\n');
         if (line == "\r" || line.length() == 0) break;
@@ -430,7 +397,6 @@ void handleClient(EthernetClient& client) {
     Serial.println("[HTTP] " + reqLine);
 
     if (reqLine.startsWith("GET /tx")) {
-        // shonan-android からのTX開始/終了通知（PTTのみ切り替える）
         if (reqLine.indexOf("state=on") >= 0) {
             txStart();
         } else if (reqLine.indexOf("state=off") >= 0) {
@@ -453,8 +419,6 @@ void handleClient(EthernetClient& client) {
         sendRedirect(client, "/");
 
     } else if (reqLine.startsWith("GET /ch")) {
-        // 個別チャンネルの明示的ON/OFF指定（Shonan_Lite-RasPI5 GUI起動/終了時の
-        // GPIO26(idx=0, POWER)制御用。ON要求は遅延後に反映、OFFは即時）
         long ch = -1;
         getQueryLong(reqLine, "idx", ch);
         if (ch == IDX_POWER) {
@@ -526,8 +490,8 @@ void handleClient(EthernetClient& client) {
 
 void setup() {
     Serial.begin(115200);
-    delay(3000);
-    Serial.println("=== W5500_PA_PTT_Control 起動 ===");
+    delay(1000);
+    Serial.println("=== W5500_PA_PTT_Control [WiFiテスト版] 起動 ===");
 
     loadConfig();
     Serial.printf("[CFG] 12V電源ON遅延=%lums, PTT ON遅延=%lums\n",
@@ -538,51 +502,26 @@ void setup() {
 
     for (int i = 0; i < 2; i++) {
         pinMode(PIN_OUT[i], OUTPUT);
-        applyOutput(i);   // 起動時状態を反映（POWER/PTTともOFF、LED=OFF）
+        applyOutput(i);
     }
 
-    // W5500ハードリセット（データシート上は最小500us Lowで足りるが、
-    // 電源投入直後のRCランプアップと余裕を見て10ms Low→50ms待機とする）。
-    pinMode(PIN_RST, OUTPUT);
-    digitalWrite(PIN_RST, LOW);
-    delay(10);
-    digitalWrite(PIN_RST, HIGH);
-    delay(50);
-
-    Ethernet.init(PIN_CS);
-
-    Serial.print("固定IPで初期化中... IP=");
-    Serial.print(currentIP);
-    Serial.print(" GW=");
-    Serial.print(currentGateway);
-    Serial.print(" MASK=");
-    Serial.println(currentSubnet);
-
-    Ethernet.begin(mac, currentIP, currentGateway, currentGateway, currentSubnet);
-
-    if (Ethernet.hardwareStatus() == EthernetNoHardware) {
-        Serial.println("W5500が検出できません。配線を確認してください。");
-    }
-
+    WiFi.softAPConfig(currentIP, currentGateway, currentSubnet);
+    WiFi.softAP(AP_SSID, AP_PASS);
+    Serial.print("APモードで起動しました。SSID=");
+    Serial.print(AP_SSID);
+    Serial.print(" PASS=");
+    Serial.println(AP_PASS);
     Serial.print("IPアドレス: ");
-    Serial.println(Ethernet.localIP());
+    Serial.println(WiFi.softAPIP());
 
     server.begin();
     Serial.println("Webサーバー起動 (port 80)");
 }
 
 void loop() {
-    // リンク状態の監視
-    bool nowUp = (Ethernet.linkStatus() != LinkOFF);
-    if (nowUp != linkUp) {
-        linkUp = nowUp;
-        Serial.println(linkUp ? "[LINK] イーサネット接続" : "[LINK] イーサネット切断");
-    }
-
-    // 12V電源/PTTの遅延ON予約を処理（非ブロッキング）
     servicePendingOutputs();
 
-    EthernetClient client = server.available();
+    WiFiClient client = server.available();
     if (client) {
         handleClient(client);
     }

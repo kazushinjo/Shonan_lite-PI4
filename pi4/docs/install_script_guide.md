@@ -2,14 +2,16 @@
 
 英語版 / English version: [`install_script_guide_en.md`](install_script_guide_en.md)
 
-`install.sh`は、まっさらなRaspberry Pi OS(Debian trixie系)にshonan-pi4一式を
+`install.sh`は、まっさらなRaspberry Pi OS(Debian trixie系)にshonan-pi4一式
+(Shonan_Lite本体・受信用GNU Radio・Langstone V2Modify・起動メニュー)を
 セットアップするための単一スクリプトである。本ドキュメントは各処理の内容と、
 なぜその手順が必要かを詳しく説明する。手順そのものの一次情報は
 `docs/qtvirtualkeyboard_ja_build.md`(Qt Virtual Keyboardのビルド部分)も参照。
 
 ## 想定環境
 
-- Raspberry Pi 4 + Raspberry Pi OS(Debian trixie相当、apt/systemd/eglfs前提)
+- Raspberry Pi 4 + Raspberry Pi OS 64bit(Debian trixie相当、apt/systemd前提)
+- 表示はDFRobot DFR0550(5インチDSI、800x480)。`linuxfb`(`/dev/fb0`直描画)で表示する
 - ADALM-Pluto+(DATVファームウェア)がEthernet同一ネットワークに接続済み
 - `pi`ユーザーなど、`sudo`が使えるユーザーで実行する(スクリプト自体は`sudo`を
   個別コマンドの前に付けて実行するので、スクリプト自体をrootで起動する必要はない)
@@ -23,24 +25,22 @@
 1. **Raspberry Pi OS 64bit(aarch64)であること** — スクリプト内でQtライブラリの
    差し替え先を`/usr/lib/aarch64-linux-gnu/`に決め打ちしているため、32bit
    (armhf)版OSでは動作しない。
-2. **`git`が事前にインストール済み** — 1/6のソース取得(`git clone`/`git pull`)
-   自体が`git`コマンドに依存しており、これは2/6のapt導入対象に含まれていない
-   (導入前に使うため)。無ければ先に`sudo apt-get install -y git`が必要。
-3. **インターネット到達性** — GitHub(ソース取得・Qt Virtual Keyboardのclone)と
-   Debianのapt配布ミラー両方に到達できること。
+2. **`git`が事前にインストール済み** — リポジトリをcloneするのに必要(pi4版の
+   `install.sh`はgitを自動導入しない)。無ければ先に`sudo apt-get install -y git`を実行する。
+3. **インターネット到達性** — GitHub(Qt Virtual Keyboard・gr-dvbs2rx・Langstone用の
+   各ライブラリのclone)とDebianのapt配布ミラー両方に到達できること。
 4. **sudoが使える対話的な実行** — apt/tee/systemctl等で何度も`sudo`を呼ぶため、
    パスワード入力を求められた際に応答できるttyでの実行が前提(SSH経由でも
-   対話ttyがあれば問題ない)。完全無人実行にしたい場合は事前に
-   `/etc/sudoers.d/`へNOPASSWDルールを用意しておく必要がある
-   (スクリプト自体はsudoers設定を変更しない)。
-5. **`patch`コマンドが使えること** — ダークテーマパッチ適用に使用する。
-   Raspberry Pi OSには通常プリインストールされているが、最小構成イメージでは
-   無い場合がある。
+   対話ttyがあれば問題ない)。
+5. **`patch`コマンドが使えること** — 3/9のダークテーマパッチ適用に使用する。
+
+リポジトリはpublicのため、GitHubの認証は不要(SSHでcloneしたい場合は`install_ssh.sh`を使う)。
 
 **時間・リソース**
 
-6. 日本語入力ビルド(既定、`SKIP_JA_KEYBOARD=1`未指定時)は実測10〜20分程度
-   かかるため、途中で通信・電源が切れない環境であること。
+6. 日本語入力ビルド(`SKIP_JA_KEYBOARD=1`未指定時)・gr-dvbs2rxビルド・Langstone V2Modifyの
+   ビルド(LimeSuite・libiioを含む)はそれぞれ数分〜数十分かかるため、途中で通信・電源が
+   切れない環境であること。
 
 **不要な条件**
 
@@ -51,30 +51,36 @@
 ## 実行方法
 
 ```sh
+git clone https://github.com/kazushinjo/Shonan_lite-PI4.git
+cd Shonan_lite-PI4
 ./pi4/scripts/install.sh          # HTTPSでclone/pull(既定)
 ./pi4/scripts/install_ssh.sh      # SSHでclone/pull(GitHubにSSH鍵を登録済みの場合)
 ```
 
-`install_ssh.sh`は`REPO_URL`を`git@github.com:kazushinjo/Shonan_lite-PI4.git`に
-設定してから`install.sh`を呼び出すだけの薄いラッパーで、それ以外の処理は
-完全に同一である。
+- `install_ssh.sh`は`REPO_URL`を`git@github.com:kazushinjo/Shonan_lite-PI4.git`に
+  設定してから`install.sh`を呼び出すだけの薄いラッパーで、それ以外の処理は完全に同一である。
+- インストール先は、既定では**スクリプトが置かれているクローン自身**(上の例なら
+  `~/Shonan_lite-PI4`)。サービスもこのクローン内の`pi4/gui`を直接起動する。
 
 環境変数で挙動を変更できる。
 
 | 変数 | 既定値 | 効果 |
 | --- | --- | --- |
-| `SHONAN_INSTALL_DIR` | `$HOME/shonan-pi4` | リポジトリのclone/pull先ディレクトリ |
+| `REPO_URL` | `https://github.com/kazushinjo/Shonan_lite-PI4.git` | インストール先にソースが無い場合のclone元 |
+| `SHONAN_INSTALL_DIR` | スクリプトが置かれたクローン | インストール先ディレクトリ |
 | `QTVK_BUILD_DIR` | `/tmp/qtvirtualkeyboard-src` | Qt Virtual Keyboardのビルド作業ディレクトリ |
 | `GR_DVBS2RX_BUILD_DIR` | `$HOME/gr-dvbs2rx` | gr-dvbs2rxのビルド作業ディレクトリ |
-| `SKIP_JA_KEYBOARD` | `0` | `1`にすると日本語入力ビルド(3/6)を丸ごとスキップする |
-| `SKIP_GNURADIO_BUILD` | `0` | `1`にすると受信(RX)用GNU Radio/gr-dvbs2rxビルド(4/6)を丸ごとスキップする(受信機能は動作しなくなる) |
+| `LANGSTONE_INSTALL_DIR` | `$HOME/Langstone` | Langstone V2Modifyの配置先 |
+| `SKIP_JA_KEYBOARD` | `0` | `1`にすると日本語入力ビルド(3/9)を丸ごとスキップする |
+| `SKIP_GNURADIO_BUILD` | `0` | `1`にすると受信(RX)用GNU Radio/gr-dvbs2rxビルド(4/9)を丸ごとスキップする(受信機能は動作しなくなる) |
+| `SKIP_LANGSTONE_BUILD` | `0` | `1`にするとLangstone V2Modifyのビルド(5/9)と`langstone.service`の作成をスキップする(Home画面のLangstoneは動作しなくなる) |
 
 `set -euo pipefail`が先頭にあるため、いずれかのコマンドが失敗した時点でスクリプトは
 即座に停止する(中途半端な状態のまま先へ進まない)。
 
 ---
 
-## 0/6 Raspberry Pi OSのインストール
+## 事前準備: Raspberry Pi OSのインストール
 
 `install.sh`実行対象のPi4に、あらかじめRaspberry Pi OSをインストールしておく
 必要がある(このインストール自体は`install.sh`の範囲外)。
@@ -106,54 +112,67 @@
 8. PCから`ssh <ユーザー名>@<ホスト名>.local`(またはPi4に割り当てられた
    IPアドレス)で接続できることを確認する。
 
-以降の手順(1/6〜6/6)は、この時点でSSH接続できているPi4上で実行する。
+以降の手順(表示設定の確認〜9/9)は、この時点でSSH接続できているPi4上で実行する。
 
-## 1/6 ソース取得
+## 表示設定の確認(DFRobot DFR0550)
+
+2026-09版Raspberry Pi OSの既定の`/boot/firmware/config.txt`(`dtoverlay=vc4-kms-v3d`・
+`display_auto_detect=1`・`disable_fw_kms_setup=1`)のままだと、DFR0550ではKMS側のパネル
+初期化(バックライト・タッチのI2C)がタイムアウトし、`/dev/fb0`もタッチ(`raspberrypi-ts`)も
+使えないことを実機で確認した。さらにこの状態でビルドの高負荷をかけると実機が再起動し、
+書き込み途中のパッケージ(libcairo2等)が破損した。
+
+そのため最初に、これら3行をコメントアウトし、`dtparam=i2c_arm=on`が無ければ追記して、
+firmwareのレガシーDSI表示(BCM2708 FB 800x480)を使う設定にそろえる。**設定を変更した場合は
+「Pi4を再起動してから再実行してください」と表示して終了する**ので、`sudo reboot`後に
+同じコマンドを再実行する(2回目は変更が無いので1/9へ進む)。
+
+## 1/9 ソース取得
 
 ```sh
 if [ -d "$INSTALL_DIR/.git" ]; then
   git -C "$INSTALL_DIR" pull --ff-only
+elif [ -f "$INSTALL_DIR/pi4/gui/main.py" ]; then
+  echo "ローカル転送済みソースを使用します: $INSTALL_DIR"
 else
   git clone "$REPO_URL" "$INSTALL_DIR"
 fi
 ```
 
-- `$INSTALL_DIR/.git`が既に存在するか(＝既にcloneされているか)で分岐する。
-  - 存在しない場合: GitHub(`kazushinjo/Shonan_lite-PI4`)から新規clone。これにより、
-    このスクリプト単体を(まだリポジトリを持っていない)新品のPi4へ`curl`等で
-    転送して実行するだけでセットアップを開始できる。
-  - 存在する場合: `git pull --ff-only`で最新化する。`--ff-only`はfast-forward
-    できない(ローカルに独自コミットがある等の)場合にエラーで止まり、意図せず
-    ローカルの変更を上書き・マージしてしまうことを防ぐ安全策。
+- インストール先がgitのクローンなら`git pull --ff-only`で最新化する。`--ff-only`は
+  fast-forwardできない(ローカルに独自コミットがある等の)場合にエラーで止まり、
+  意図せずローカルの変更を上書き・マージしてしまうことを防ぐ安全策。
+- `.git`は無いが`pi4/gui/main.py`がある場合は、scp等で転送済みのソースとしてそのまま使う。
+- どちらでもなければ`REPO_URL`から新規cloneする。
 
-## 2/6 実行時依存パッケージ
+## 2/9 実行時依存パッケージ
 
 GUI本体(`pi4/gui/main.py`)を動かすために必要な、Debianパッケージ一式を`apt`で
 導入する。
 
 | パッケージ | 用途 |
 | --- | --- |
-| `git`, `curl` | ソース取得・HTTP通信(Pluto+への設定送信等)に使用 |
+| `git`, `curl` | ソース取得・HTTP通信に使用 |
 | `python3-pyqt5` | GUI本体のQtバインディング |
 | `python3-pyqt5.qtquick` | `QQuickWidget`(オンスクリーンキーボードの埋め込みに使用) |
 | `python3-pyqt5.sip` | PyQt5の内部依存 |
 | `python3-pil` | Pillow。カメラ映像へのコールサイン・備考オーバーレイ合成に使用 |
-| `ffmpeg` | 映像/音声のエンコード・多重化・オーバーレイ合成・受信映像デコード全般 |
+| `ffmpeg` | 映像のエンコード(Pi 4内蔵のH.264ハードウェアエンコーダ`h264_v4l2m2m`)・多重化・オーバーレイ合成・受信映像デコード全般 |
 | `v4l-utils` | USBカメラの解像度・フォーマット確認(`v4l2-ctl`) |
 | `alsa-utils` | 音声デバイス列挙・音量調整(`aplay`/`arecord`/`amixer`) |
-| `sshpass` | Home画面の「Pluto再起動」ボタンがPluto+へパスワード付きSSHするために使用 |
+| `sshpass` | Plutoの再起動や設定ファイルの書き込みでPluto+へパスワード付きSSHするために使用 |
 | `fonts-droid-fallback` | オーバーレイの日本語グリフ描画用フォント(DroidSansFallbackFull) |
 | `fonts-dejavu-core` | オーバーレイの英数字グリフ描画用フォント(DejaVuSans-Bold) |
-| `qtvirtualkeyboard-plugin`, `qml-module-qtquick-virtualkeyboard` | オンスクリーンキーボード本体(apt版。3/6で日本語対応版に差し替える) |
+| `qtvirtualkeyboard-plugin`, `qml-module-qtquick-virtualkeyboard` | オンスクリーンキーボード本体(apt版。3/9で日本語対応版に差し替える) |
 | `qml-module-qt-labs-folderlistmodel`, `qml-module-qtquick-window2`, `qml-module-qtquick-layouts`, `qml-module-qtquick-controls2`, `qml-module-qtquick2` | オンスクリーンキーボードのQML実装が依存する補助モジュール群(不足しているとキーボードパネルのQML読み込みに失敗する) |
 
-★`SKIP_JA_KEYBOARD=1`でも2/6は必ず実行される(英語キーボード自体はここで
+★`SKIP_JA_KEYBOARD=1`でも2/9は必ず実行される(英語キーボード自体はここで
 入るapt版で動作するため)。
 
-## 3/6 日本語入力(OpenWnn)対応版Qt Virtual Keyboardのビルド
+## 3/9 日本語入力(OpenWnn)対応版Qt Virtual Keyboardのビルド
 
 `SKIP_JA_KEYBOARD=1`の場合はこのブロック全体をスキップし、「英語配列のみ利用可」
-というメッセージだけ表示して5/6へ進む。
+というメッセージだけ表示して4/9へ進む。
 
 ### なぜソースからビルドする必要があるのか
 
@@ -277,7 +296,7 @@ sudo cp -a "$QT5_LIB_DIR"/libQt5VirtualKeyboard.so* "$BACKUP_DIR/" 2>/dev/null |
 ...
 ```
 
-差し替え前に、2/6でaptインストールされた既存ファイル一式を
+差し替え前に、2/9でaptインストールされた既存ファイル一式を
 `~/qtvk_backup_<タイムスタンプ>/`へコピーしておく。`|| true`が付いているのは、
 (通常発生しないはずだが)コピー元ファイルが万一存在しない場合でも
 `set -e`によってスクリプト全体が止まらないようにするため。
@@ -317,13 +336,13 @@ sudo systemctl restart shonan-gui.service
 qml-module-qtquick-virtualkeyboard libqt5virtualkeyboard5`でもapt版へ戻せる
 (この場合は日本語入力ができなくなる)。
 
-## 4/6 受信(RX)用GNU Radio + gr-dvbs2rxの導入
+## 4/9 受信(RX)用GNU Radio + gr-dvbs2rxの導入
 
 `SKIP_GNURADIO_BUILD=1`の場合はこのブロック全体をスキップする(受信機能は動作しない)。
 
 ```sh
 sudo apt-get install -y gnuradio gnuradio-dev cmake pkg-config
-git clone https://github.com/igorauad/gr-dvbs2rx.git "$GR_DVBS2RX_BUILD_DIR"
+git clone https://github.com/igorauad/gr-dvbs2rx.git "$GR_DVBS2RX_BUILD_DIR"   # 既にあればpull --ff-only
 git -C "$GR_DVBS2RX_BUILD_DIR" submodule update --init --recursive
 git -C "$GR_DVBS2RX_BUILD_DIR" apply "$RX_PATCH"   # 存在し未適用の場合のみ
 cmake .. -DCMAKE_BUILD_TYPE=Release && make -j"$(nproc)" && sudo make install
@@ -342,7 +361,49 @@ Debianのaptで導入できるが、`dvbs2rx`(DVB-S2復調のOOT module、
 `ImportError: cannot import name 'dvbs2rx'`で受信が失敗する(実機の新規インストール
 で発見・修正)。
 
-## 5/6 電源電圧警告(稲妻アイコン)表示の抑制
+## 5/9 Langstone V2Modify(SDRトランシーバー)のビルド
+
+`SKIP_LANGSTONE_BUILD=1`の場合はこのブロック全体をスキップする。
+
+- `pi4/third_party/Langstone-V2Modify/`(kazushinjo/Langstone-V2Modifyに
+  Shonan_Lite連携の改造を加えたもの)を`~/Langstone`へコピーし、同梱の
+  Pi 4/DFR0550/ADALM-Pluto向けインストーラ`install_dfr0550.sh`を
+  `SHONAN_INTEGRATION=1`で実行する。
+- `install_dfr0550.sh`は、ビルドに必要なaptパッケージ、wiringPi、LimeSuite、libiio 0.25の
+  導入、I2Cの有効化、Langstoneが使う一部コマンドのsudoers設定(`/etc/sudoers.d/langstone`)を
+  行ってから`GUI_Pluto`をビルドする。`SHONAN_INTEGRATION=1`のときは、ログイン時に
+  Langstoneを自動起動する設定(`.bashrc`への追記)を行わない(起動は起動メニューと
+  `langstone.service`が担う)。
+- ★`~/Langstone`は丸ごと上書きされる。Langstoneの設定ファイル
+  (`~/Langstone/Langstone_Pluto.conf`)はLangstoneが終了時に書き出すもので、
+  リポジトリには含まれないため上書きされない。
+
+## 6/9 起動時コンソール表示の抑制
+
+素のRaspberry Pi OSのままだと、Pi4の起動時にカーネルの起動ログやログインプロンプトが
+実機LCDに映り込む(実機で確認)。次の3つを行う(いずれも反映には再起動が必要)。
+
+- `getty@tty1`を無効化する。
+- `/boot/firmware/cmdline.txt`に`quiet loglevel=3 logo.nologo vt.global_cursor_default=0`を
+  追記する(既に`quiet`があれば何もしない)。
+- `cmdline.txt`の`console=tty1`を`console=tty3`に変える。KMS無効(`linuxfb`)環境では
+  systemdの起動ログがフレームバッファへ直接書き込まれ、Shonan_Lite/Langstoneの画面に
+  文字が重なって映り込む不具合を実機で確認したため、実機LCD(tty1)には何も出さない。
+
+## 7/9 reboot/shutdown/起動アプリ切替のパスワード無し実行を許可
+
+Home画面の「電源オフ」、起動メニューでのアプリ選択、Shonan_Lite⇔Langstoneの切替は、
+TTYの無いsystemdサービスから`sudo`を実行する。標準のsudo設定ではパスワード入力を
+求められてPAM会話が成立せず(`pam_unix: conversation failed`)、処理が実行されない
+不具合を実機で確認した。そこで`/etc/sudoers.d/shonan-pi4-reboot`に、実行ユーザーが
+次のコマンドだけをパスワード無しで実行できるルールを書き込み、`visudo -c`で検証する。
+
+- `/sbin/reboot`、`/sbin/shutdown`
+- `/bin/systemctl start --no-block shonan-gui.service`
+- `/bin/systemctl start --no-block langstone.service`
+- `/bin/systemctl stop shonan-display-off.service`
+
+## 8/9 電源電圧警告(稲妻アイコン)表示の抑制
 
 ```sh
 if [ -f "$BOOT_CONFIG" ] && ! grep -q '^avoid_warnings=' "$BOOT_CONFIG"; then
@@ -356,68 +417,56 @@ fi
 (恒久対策は正規の27W USB-C PD電源・良質なUSBケーブルの使用。
 `vcgencmd get_throttled`で実際のスロットリング有無を確認できる)。
 
-## 6/6 systemdサービス登録
+## 9/9 systemdサービス登録
 
-```sh
-sudo tee "$SERVICE_FILE" > /dev/null <<EOF
-[Unit]
-Description=Shonan Pi4 Touch GUI
-...
-User=${USER}
-WorkingDirectory=${GUI_DIR}
-Environment=QT_QPA_PLATFORM=eglfs
-ExecStart=/usr/bin/python3 ${GUI_DIR}/main.py
-Restart=on-failure
-RestartSec=3
-...
-EOF
-```
+次の4つのサービスを`/etc/systemd/system/`に作成する(`sudo tee`を使うのは、
+リダイレクト`>`自体は`sudo`の権限を引き継がないため)。
 
-`/etc/systemd/system/shonan-gui.service`をヒアドキュメントで生成する
-(`sudo tee`を使うのは、リダイレクト`>`自体は`sudo`の権限を引き継がない
-ため。`sudo bash -c "... > file"`と同様の目的)。
+| サービス | 内容 | 自動起動 |
+| --- | --- | --- |
+| `shonan-boot-menu.service` | 起動時に「Shonan_Lite / Langstone」を選ぶ全画面メニュー(`pi4/gui/boot_menu.py`)。選んだ側のサービスを`systemctl start`で起動する | 有効 |
+| `shonan-gui.service` | Shonan_Lite本体(`pi4/gui/main.py`)。異常終了時は3秒後に再起動 | 無効(起動メニューから起動) |
+| `langstone.service` | Langstone V2Modify(`~/Langstone/run_pluto`)。`SKIP_LANGSTONE_BUILD=1`なら作らない | 無効(起動メニュー・切替から起動) |
+| `shonan-display-off.service` | シャットダウン時にDSI画面とバックライトを消灯する(DSI液晶はOS停止後も最後のフレームを保持するため) | 有効 |
 
-- `User=${USER}`: スクリプトを実行したユーザー名をそのまま使う(決め打ちで
-  `pi`等にしていない)。
-- `Environment=QT_QPA_PLATFORM=eglfs`: X11/Waylandなしで、Pi4のDSI接続LCDへ
-  直接描画するQtプラットフォームプラグインを指定する。
-- `Restart=on-failure` / `RestartSec=3`: GUIプロセスが異常終了した場合、
-  3秒後に自動再起動する。
-
-続けて`daemon-reload`(新規/変更されたユニットファイルをsystemdに認識させる)
-→`enable`(次回起動時の自動起動を有効化)→`restart`(今すぐ反映)を実行する。
+- `shonan-gui.service`と`shonan-boot-menu.service`は、`QT_QPA_PLATFORM=linuxfb:fb=/dev/fb0:nocursor`
+  (`/dev/fb0`への直接描画)で動かす。eglfs(KMS/DRM)ではDFR0550のDSIパネルでLangstone
+  (レガシーフレームバッファ)との組み合わせ次第でパネル初期化が競合し、バックライト初期化の
+  タイムアウトや画面の色化け、`no screens available`等で起動できなくなる不具合を実機で確認したため。
+- `shonan-gui.service`・`langstone.service`・`shonan-boot-menu.service`は`Conflicts=`で
+  互いに排他制御される。画面は1つのプロセスしか使えないため、どれか1つを`systemctl start`すると
+  他は自動的に停止する。アプリの切替はこの仕組みで行い、Pi4自体は再起動しない。
+- マーカーファイル`~/.pi4_boot_mode_langstone`の有無を`ConditionPathExists`で見て、
+  起動すべきでない側は何もせず正常終了(skipped)扱いになる。
+- `langstone.service`は`Environment=HOME=...`を実際の値で埋め込み、`run_pluto`を
+  `/bin/bash`経由で起動する(`run_pluto`の先頭行がシェバングでないため。実機で確認)。
+- 最後に`daemon-reload`し、稼働中の`shonan-gui.service`/`langstone.service`を`stop`してから、
+  `shonan-boot-menu.service`と`shonan-display-off.service`を`enable`・`restart`する。
 
 ## 完了後の表示
 
-```sh
-sudo systemctl status "$SERVICE_NAME" --no-pager || true
-```
+`shonan-boot-menu.service`の状態を表示し、続けて次の注意書きを表示する。
 
-でサービスの起動状態を表示する(失敗してもスクリプト自体は正常終了として
-扱うよう`|| true`を付けている、ステータス表示はあくまで確認用のため)。
-
-続けて次の2点を注意書きとして表示する。
-
-1. **パスワードなしsudo/sshの前提**: Home画面の「Pluto再起動」ボタン
-   (`sshpass`でPluto+へSSH)、設定画面の「システム日時」設定
-   (`timedatectl`)、および開発時に使う`kmsgrab`による実機画面キャプチャ等は、
-   `sudo`をパスワードなしで実行できることを前提にしている。このスクリプトは
-   `/etc/sudoers.d/`への変更は一切行わない(セキュリティに関わる設定を
-   スクリプトが無断で行うべきではないため)。必要であれば運用者が判断して
-   個別に設定する。
+1. **パスワードなしsudo/sshの前提**: 設定画面の「システム日時」設定(`timedatectl`)や、
+   実機LCDのスクリーンショット取得等は、`sudo`をパスワードなしで実行できることを前提に
+   している。7/9で許可するのは上記のコマンドだけで、それ以外の`/etc/sudoers.d/`への変更は
+   行わない(Langstone用の`/etc/sudoers.d/langstone`は5/9の`install_dfr0550.sh`が作る)。
+   必要であれば運用者が判断して個別に設定する。
 2. **日本語入力の既定言語**: オンスクリーンキーボードは起動直後は英語配列で、
    globeアイコンをタップすることで日本語(ローマ字入力)へ切り替えられる
    (自動では切り替わらない、既知の仕様)。
+3. **avoid_warnings**: 8/9で新規に追記した場合、反映には`sudo reboot`が必要。
 
 ## 関連ドキュメント
 
-- `pi4/docs/qtvirtualkeyboard_ja_build.md` — 3/6のビルド手順の一次情報、
+- `pi4/docs/qtvirtualkeyboard_ja_build.md` — 3/9のビルド手順の一次情報、
   実機で遭遇したハマりどころの詳細
 - `pi4/docs/patches/qtvirtualkeyboard_style_dark_language_popup.patch` —
-  3/6で適用されるダークテーマパッチの実体(unified diff形式、`git diff`相当)
+  3/9で適用されるダークテーマパッチの実体(unified diff形式、`git diff`相当)
+- `pi4/docs/patches/gr-dvbs2rx_pi4_bringup.patch` — 4/9で適用される受信安定化
+  パッチの実体
+- `pi4/third_party/Langstone-V2Modify/install_dfr0550.sh` — 5/9で実行するLangstone V2Modifyのインストーラ
 - `pi4/docs/shonan_pi4_operation_manual.docx` / `pi4/gui/manual_content.py` —
   GUIの操作方法そのもの(インストール後の使い方)
-- `pi4/docs/patches/gr-dvbs2rx_pi4_bringup.patch` — 4/6で適用される受信安定化
-  パッチの実体
 - `pi4/third_party/rpi-dvbs2-receiver-gui/` — GNU Radio/gr-dvbs2rx受信フロー
   グラフの参考実装(kazushinjo/rpi-dvbs2-receiver-guiより取り込み)

@@ -58,7 +58,7 @@ p.paragraph_format.space_before = Pt(24)
 p.add_run(
     "対象: pi4/scripts/install.sh\n"
     "新規Pi4への一括セットアップ手順(README.md相当)\n"
-    "版: 2026-08-15"
+    "版: 2026-09-30"
 ).font.size = Pt(11)
 d.add_page_break()
 
@@ -151,7 +151,7 @@ def add_numbered(items: list[str]) -> None:
 d.add_heading("概要", level=1)
 add_para(
     "Raspberry Pi 4 + ADALM-Pluto+によるDVB-S2 DATV送受信タッチGUIシステム。"
-    "本体はpi4/配下(Python/PyQt5、eglfs直描画)。同系統の別プラットフォーム"
+    "本体はpi4/配下(Python/PyQt5、DFR0550はlinuxfb直描画)。同系統の別プラットフォーム"
     "移植版(Android/iOS)は別リポジトリ(Shonan_Lite-android/Shonan_Lite-iPad等)"
     "で管理している。"
 )
@@ -175,19 +175,27 @@ add_para("SSH接続したPi4上で:")
 add_code_block([
     "git clone https://github.com/kazushinjo/Shonan_lite-PI4.git",
     "cd Shonan_lite-PI4",
-    "./pi4/scripts/install.sh          # HTTPSでclone(既定)",
+    "./pi4/scripts/install.sh          # HTTPSでclone/pull(既定)",
     "# ./pi4/scripts/install_ssh.sh    # GitHubにSSH鍵を登録済みならこちらでも可",
 ])
 add_para(
-    "日本語入力ビルド・受信(RX)用GNU Radio/gr-dvbs2rxビルドはそれぞれ省略して"
-    "時間短縮できる(RX用を省略すると受信機能は使えなくなる):"
+    "日本語入力ビルド・受信(RX)用GNU Radio/gr-dvbs2rxビルド・Langstone V2Modifyビルドは"
+    "それぞれ省略して時間短縮できる(省略した機能は使えなくなる):"
 )
 add_code_block([
-    "SKIP_JA_KEYBOARD=1 SKIP_GNURADIO_BUILD=1 ./pi4/scripts/install.sh",
+    "SKIP_JA_KEYBOARD=1 SKIP_GNURADIO_BUILD=1 SKIP_LANGSTONE_BUILD=1 ./pi4/scripts/install.sh",
 ])
 add_para(
-    "完了後、shonan-gui.serviceがsystemdに登録されGUIが自動起動する。あわせて"
-    "/boot/firmware/config.txtへavoid_warnings=1(電源電圧警告アイコンの表示抑制)"
+    "★OSを新規インストールした直後の初回実行では、DFR0550をfirmwareのレガシーDSI表示で"
+    "動かすため、install.shが/boot/firmware/config.txtの表示設定を書き換えて終了する。"
+    "案内に従ってPi4を再起動(sudo reboot)し、同じコマンドを再実行するとビルドへ進む。"
+)
+add_para(
+    "処理は表示設定の確認と1/9〜9/9(ソース取得、依存パッケージ、日本語入力、"
+    "受信用GNU Radio、Langstone V2Modify、起動時コンソール表示の抑制、sudoers設定、"
+    "電源電圧警告の抑制、systemdサービス登録)。完了後は起動メニュー"
+    "(shonan-boot-menu.service)が自動起動し、Shonan_LiteかLangstoneを選んで起動する。"
+    "あわせて/boot/firmware/config.txtへavoid_warnings=1(電源電圧警告アイコンの表示抑制)"
     "を未設定なら自動で追記する(反映には再起動が必要)。"
 )
 
@@ -201,8 +209,8 @@ add_bullets([
     "patchコマンドが使えること",
 ])
 add_para(
-    "詳細な各手順の解説・トラブルシュートはpi4/docs/install_script_guide.mdを"
-    "参照。"
+    "詳細な各手順の解説・トラブルシュートはpi4/docs/install_script_guide.md"
+    "(英語版: install_script_guide_en.md)を参照。"
 )
 
 d.add_heading("関連ドキュメント", level=1)
