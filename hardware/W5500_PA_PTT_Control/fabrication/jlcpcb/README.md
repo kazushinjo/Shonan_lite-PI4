@@ -13,7 +13,7 @@ KiCad 10 の `kicad/w5500-esp32.kicad_pcb` から出力した JLCPCB 向けの�
 | `gerber/*.gts` / `*.gbs` | レジスト 表 / 裏 |
 | `gerber/*.gto` / `*.gbo` | シルク 表 / 裏 |
 | `gerber/*.gm1` | 基板外形(Edge.Cuts) |
-| `gerber/*-PTH.drl` / `*-NPTH.drl` | ドリル(Excellon、mm)。スルーホール105穴(部品99+ビア6) / 取付穴(φ3.2、めっきなし)4穴 |
+| `gerber/*-PTH.drl` / `*-NPTH.drl` | ドリル(Excellon、mm)。スルーホール103穴(部品99+ビア4) / 取付穴(φ3.2、めっきなし)4穴 |
 | `w5500-esp32_BOM.csv` | 部品表(手配用。JLCPCB の部品実装には使わない) |
 
 ## 発注時の設定
@@ -35,7 +35,7 @@ KiCad 10 の `kicad/w5500-esp32.kicad_pcb` から出力した JLCPCB 向けの�
 | Inner Copper Weight | 0.5 oz(標準)。+12V/GND は全面ベタなので標準で足りる。余裕を持たせるなら 1 oz |
 | Impedance Control | 不要 |
 | Layer Stackup | 標準(JLC04161H-7628 など、既定のもの) |
-| Via Covering | Tented(ビアは6個だけ、すべて信号・電源の細い配線用) |
+| Via Covering | Tented(ビアは4個だけ、すべて信号・電源の細い配線用) |
 | Min via hole size/diameter | 0.3mm/(0.4/0.45mm)(設計のビアは穴0.4mm・外径0.8mm) |
 | Board Outline Tolerance | ±0.2mm(標準) |
 | Confirm Production file | 任意 |
@@ -46,7 +46,7 @@ KiCad 10 の `kicad/w5500-esp32.kicad_pcb` から出力した JLCPCB 向けの�
 
 - 配線幅 最小 0.3mm(信号) / 0.8mm(+5V・+3.3V) / 2〜4mm(12V出力)
 - クリアランス 最小 0.25mm、ベタとのクリアランス 0.4mm
-- ビア 穴0.4mm / 外径0.8mm(6個)、最小の部品穴 0.8mm(抵抗・トランジスタ等)
+- ビア 穴0.4mm / 外径0.8mm(4個)、最小の部品穴 0.8mm(抵抗・トランジスタ等)
 - 基板端から銅箔まで 0.5mm以上
 - KiCad の DRC(回路図との照合を含む)で違反0件・未接続0件を確認済み
 

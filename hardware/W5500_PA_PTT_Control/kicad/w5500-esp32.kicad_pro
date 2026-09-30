@@ -549,6 +549,25 @@
         "via_diameter": 0.8,
         "via_drill": 0.4,
         "wire_width": 6
+      },
+      {
+        "bus_width": 12,
+        "clearance": 0.5,
+        "diff_pair_gap": 0.25,
+        "diff_pair_via_gap": 0.25,
+        "diff_pair_width": 0.2,
+        "line_style": 0,
+        "microvia_diameter": 0.3,
+        "microvia_drill": 0.1,
+        "name": "Supply5V",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 1,
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "track_width": 0.6,
+        "tuning_profile": "",
+        "via_diameter": 0.8,
+        "via_drill": 0.4,
+        "wire_width": 6
       }
     ],
     "meta": {
@@ -570,7 +589,7 @@
         "pattern": "/Power"
       },
       {
-        "netclass": "Supply",
+        "netclass": "Supply5V",
         "pattern": "/+5v0"
       },
       {
@@ -669,7 +688,7 @@
       "include_excluded_from_bom": true,
       "name": "Default Editing",
       "sort_asc": true,
-      "sort_field": "リファレンス"
+      "sort_field": "\u30ea\u30d5\u30a1\u30ec\u30f3\u30b9"
     },
     "bus_aliases": {},
     "connection_grid_size": 50.0,
@@ -708,7 +727,7 @@
     "top_level_sheets": [
       {
         "filename": "w5500-esp32.kicad_sch",
-        "name": "ルート",
+        "name": "\u30eb\u30fc\u30c8",
         "uuid": "0100d23c-65ba-4b48-9527-fff8f2d69db1"
       }
     ],
@@ -718,7 +737,7 @@
   "sheets": [
     [
       "0100d23c-65ba-4b48-9527-fff8f2d69db1",
-      "ルート"
+      "\u30eb\u30fc\u30c8"
     ]
   ],
   "text_variables": {},

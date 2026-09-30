@@ -6847,6 +6847,14 @@
 		(uuid "02c299b9-1020-4e54-bdb1-b9bf7377a7f7")
 	)
 	(no_connect
+		(at 195.58 92.71)
+		(uuid "08aae93a-254f-455b-9170-a9eaabdb42c7")
+	)
+	(no_connect
+		(at 64.77 213.36)
+		(uuid "7aae0f9b-3103-4843-b082-9d97e41ef19d")
+	)
+	(no_connect
 		(at 195.58 107.95)
 		(uuid "189e094d-5ba9-4b65-b5bf-e23277944019")
 	)
@@ -7469,16 +7477,6 @@
 			(type default)
 		)
 		(uuid "43deae2b-26bf-41b8-99b1-76ae3e304a18")
-	)
-	(wire
-		(pts
-			(xy 64.77 213.36) (xy 49.53 213.36)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "441b4afa-b90c-429d-8b38-4e913f9a61ec")
 	)
 	(wire
 		(pts
@@ -8257,15 +8255,6 @@
 			)
 		)
 		(uuid "a1b2c3d4-1008-4a00-8000-000000000018")
-	)
-	(label "GPIO25_LNA"
-		(at 49.53 213.36 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-		)
-		(uuid "b32a838e-4422-4697-8ee3-991dd91d5172")
 	)
 	(label "+5v0"
 		(at 207.01 64.77 0)

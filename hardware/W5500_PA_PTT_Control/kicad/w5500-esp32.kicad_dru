@@ -1,0 +1,6 @@
+(version 1)
+# +5V(/+5v0)は信号線から0.5mm離す(ネットクラス Supply5V)。
+# C1(0.33µF)自身の足の間(+5V とGND)は部品の寸法で0.4mmしかないので、従来どおり0.25mmで判定する。
+(rule "C1 pads"
+  (condition "A.memberOfFootprint('C1') && B.memberOfFootprint('C1')")
+  (constraint clearance (min 0.25mm)))
