@@ -9,6 +9,8 @@
 	(paper "A4")
 	(layers
 		(0 "F.Cu" signal)
+		(4 "In1.Cu" signal "In1.GND")
+		(6 "In2.Cu" signal "In2.PWR")
 		(2 "B.Cu" signal)
 		(9 "F.Adhes" user "F.Adhesive")
 		(11 "B.Adhes" user "B.Adhesive")
@@ -173,53 +175,176 @@
 			)
 		)
 		(attr through_hole)
+		(duplicate_pad_numbers_are_jumpers no)
 		(fp_rect
-			(start -1.84 -9.4) (end 22.16 19)
-			(stroke (width 0.05) (type solid))
+			(start -1.34 -6.4)
+			(end 21.66 18.5)
+			(stroke
+				(width 0.12)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.SilkS")
+			(uuid "2890728e-548a-4044-b498-07d535cd7e3f")
+		)
+		(fp_rect
+			(start -1.84 -9.4)
+			(end 22.16 19)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
 			(fill no)
 			(layer "F.CrtYd")
+			(uuid "33f6fb47-877c-479a-af55-2992b8825099")
 		)
 		(fp_rect
-			(start -1.34 -6.4) (end 21.66 18.5)
-			(stroke (width 0.1) (type solid))
+			(start -1.34 -6.4)
+			(end 21.66 18.5)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
 			(fill no)
 			(layer "F.Fab")
+			(uuid "720f7041-d6e1-4fd2-b56a-283e33145436")
 		)
 		(fp_rect
-			(start 2.11 -8.9) (end 18.21 12.7)
-			(stroke (width 0.1) (type solid))
+			(start 2.11 -8.9)
+			(end 18.21 12.7)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
 			(fill no)
 			(layer "F.Fab")
+			(uuid "368b7c22-4f8a-44cb-9a78-77d22e4d60b4")
 		)
 		(fp_text user "RJ45 (HR961160C)"
 			(at 10.16 -7.5 0)
 			(layer "F.Fab")
-			(effects (font (size 0.8 0.8) (thickness 0.12)))
+			(uuid "9b03aeff-aa7c-4db2-b7da-ce6a44a83661")
+			(effects
+				(font
+					(size 0.8 0.8)
+					(thickness 0.12)
+				)
+			)
 		)
-		(fp_rect
-			(start -1.34 -6.4) (end 21.66 18.5)
-			(stroke (width 0.12) (type solid))
-			(fill no)
-			(layer "F.SilkS")
+		(pad "1" thru_hole rect
+			(at 0 0)
+			(size 1.7 1.7)
+			(drill 1)
+			(layers "*.Cu" "*.Mask")
+			(remove_unused_layers no)
+			(net "GND")
+			(uuid "52bccc74-2414-4891-9101-d5d6cf176ef1")
 		)
-		(pad "1" thru_hole rect (at 0 0) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net "GND"))
-		(pad "2" thru_hole circle (at 0 2.54) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net "GND"))
-		(pad "3" thru_hole circle (at 0 5.08) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net "Net-(A1-MOSI)"))
-		(pad "4" thru_hole circle (at 0 7.62) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net "Net-(A1-SCK)"))
-		(pad "5" thru_hole circle (at 0 10.16) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net "Net-(A1-CS)"))
-		(pad "6" thru_hole circle (at 0 12.7) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net "unconnected-(A1-INT-Pad6)"))
-		(pad "7" thru_hole circle (at 20.32 0) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net "GND"))
-		(pad "8" thru_hole circle (at 20.32 2.54) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net "/+3V3_A"))
-		(pad "9" thru_hole circle (at 20.32 5.08) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net "/+3V3_A"))
-		(pad "10" thru_hole circle (at 20.32 7.62) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net "unconnected-(A1-NC-Pad10)"))
-		(pad "11" thru_hole circle (at 20.32 10.16) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net "/GPIO21_W5500_RST"))
-		(pad "12" thru_hole circle (at 20.32 12.7) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net "Net-(A1-MISO)"))
+		(pad "2" thru_hole circle
+			(at 0 2.54)
+			(size 1.7 1.7)
+			(drill 1)
+			(layers "*.Cu" "*.Mask")
+			(remove_unused_layers no)
+			(net "GND")
+			(uuid "4fbefd35-b57c-4967-8efd-81207b7e8eb1")
+		)
+		(pad "3" thru_hole circle
+			(at 0 5.08)
+			(size 1.7 1.7)
+			(drill 1)
+			(layers "*.Cu" "*.Mask")
+			(remove_unused_layers no)
+			(net "Net-(A1-MOSI)")
+			(uuid "0d1c6b48-b86c-4bfa-b782-a11145afc59d")
+		)
+		(pad "4" thru_hole circle
+			(at 0 7.62)
+			(size 1.7 1.7)
+			(drill 1)
+			(layers "*.Cu" "*.Mask")
+			(remove_unused_layers no)
+			(net "Net-(A1-SCK)")
+			(uuid "7f371496-0a76-4790-8118-0072c09f7d4b")
+		)
+		(pad "5" thru_hole circle
+			(at 0 10.16)
+			(size 1.7 1.7)
+			(drill 1)
+			(layers "*.Cu" "*.Mask")
+			(remove_unused_layers no)
+			(net "Net-(A1-CS)")
+			(uuid "a3075d83-06fd-4a53-95d4-d611053d60c4")
+		)
+		(pad "6" thru_hole circle
+			(at 0 12.7)
+			(size 1.7 1.7)
+			(drill 1)
+			(layers "*.Cu" "*.Mask")
+			(remove_unused_layers no)
+			(net "unconnected-(A1-INT-Pad6)")
+			(uuid "d3f52d2b-40e1-46d0-9810-945fd2adb82c")
+		)
+		(pad "7" thru_hole circle
+			(at 20.32 0)
+			(size 1.7 1.7)
+			(drill 1)
+			(layers "*.Cu" "*.Mask")
+			(remove_unused_layers no)
+			(net "GND")
+			(uuid "7f07bb30-24d8-4d7b-9601-692983e96fc8")
+		)
+		(pad "8" thru_hole circle
+			(at 20.32 2.54)
+			(size 1.7 1.7)
+			(drill 1)
+			(layers "*.Cu" "*.Mask")
+			(remove_unused_layers no)
+			(net "/+3V3_A")
+			(uuid "96acfeaa-9142-4c92-8066-6b089977119b")
+		)
+		(pad "9" thru_hole circle
+			(at 20.32 5.08)
+			(size 1.7 1.7)
+			(drill 1)
+			(layers "*.Cu" "*.Mask")
+			(remove_unused_layers no)
+			(net "/+3V3_A")
+			(uuid "18f92f32-849f-487b-b0c8-083cdc24873a")
+		)
+		(pad "10" thru_hole circle
+			(at 20.32 7.62)
+			(size 1.7 1.7)
+			(drill 1)
+			(layers "*.Cu" "*.Mask")
+			(remove_unused_layers no)
+			(net "unconnected-(A1-NC-Pad10)")
+			(uuid "4cd6cd3c-9ef4-491d-ad98-310be94c5017")
+		)
+		(pad "11" thru_hole circle
+			(at 20.32 10.16)
+			(size 1.7 1.7)
+			(drill 1)
+			(layers "*.Cu" "*.Mask")
+			(remove_unused_layers no)
+			(net "/GPIO21_W5500_RST")
+			(uuid "5a7e5a7e-3201-4348-8a7c-a7b1ac6d99cb")
+		)
+		(pad "12" thru_hole circle
+			(at 20.32 12.7)
+			(size 1.7 1.7)
+			(drill 1)
+			(layers "*.Cu" "*.Mask")
+			(remove_unused_layers no)
+			(net "Net-(A1-MISO)")
+			(uuid "6a9f39bb-93e5-4728-9711-2f47a67e0252")
+		)
 		(embedded_fonts no)
 	)
 	(footprint "Capacitor_THT:CP_Radial_D5.0mm_P2.00mm"
 		(layer "F.Cu")
 		(uuid "0c300403-0ee6-4446-a2e1-4c55aa766138")
-		(at 146.5 131)
+		(at 146.5 139.5)
 		(descr "CP, Radial series, Radial, pin pitch=2.00mm, diameter=5mm, height=7mm, Electrolytic Capacitor")
 		(tags "CP Radial series Radial pin pitch 2.00mm diameter 5mm height 7mm Electrolytic Capacitor")
 		(property "Reference" "C2"
@@ -1581,11 +1706,11 @@
 	(footprint "Capacitor_THT:CP_Radial_D5.0mm_P2.00mm"
 		(layer "F.Cu")
 		(uuid "1609eb2e-8669-4393-9e58-93530aba7792")
-		(at 146.5 176)
+		(at 146.5 181.8)
 		(descr "CP, Radial series, Radial, pin pitch=2.00mm, diameter=5mm, height=7mm, Electrolytic Capacitor")
 		(tags "CP Radial series Radial pin pitch 2.00mm diameter 5mm height 7mm Electrolytic Capacitor")
 		(property "Reference" "C3"
-			(at 1 -3.75 0)
+			(at -4 0 90)
 			(layer "F.SilkS")
 			(uuid "b46b131c-76e3-4401-9de2-12db0b861dcf")
 			(effects
@@ -2942,6 +3067,283 @@
 	)
 	(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical"
 		(layer "F.Cu")
+		(uuid "27da16de-1b2c-416f-8268-fc07975f6518")
+		(at 104 145 90)
+		(descr "Resistor, Axial_DIN0207 series, Axial, Vertical, pin pitch=5.08mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
+		(tags "Resistor Axial_DIN0207 series Axial Vertical pin pitch 5.08mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
+		(property "Reference" "R12"
+			(at 2.54 -2.37 90)
+			(layer "F.SilkS")
+			(uuid "5595aa2e-dfba-40c1-a097-08840a7b0164")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Value" "10k"
+			(at 2.54 2.37 90)
+			(layer "F.Fab")
+			(uuid "950d92de-a385-4087-9bd3-f58b73610de8")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 90)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "47b9496b-403f-4a29-a740-f8cea2d69877")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 90)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "6dbca250-82d3-4794-b0c7-f0ce8dce1c7d")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "KiLib_Generator" "resistor/THT"
+			(at 0 0 90)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "7b8d367d-415c-469e-b498-06a32953443c")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property ki_fp_filters "R_*")
+		(path "/2ebc0cc1-3eae-4c62-8abf-cf2f04dd6da3")
+		(sheetname "/")
+		(sheetfile "w5500-esp32.kicad_sch")
+		(units
+			(unit
+				(name "A")
+				(pins "1" "2")
+			)
+		)
+		(attr through_hole)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_line
+			(start 1.37 0)
+			(end 3.98 0)
+			(stroke
+				(width 0.12)
+				(type solid)
+			)
+			(layer "F.SilkS")
+			(uuid "ed70d179-28bd-447d-afc2-7d9c9a5126e7")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 1.37 0)
+			(stroke
+				(width 0.12)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.SilkS")
+			(uuid "55c529f8-a579-4ee2-8405-07cd04896023")
+		)
+		(fp_rect
+			(start -1.5 -1.5)
+			(end 6.13 1.5)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.CrtYd")
+			(uuid "0caf964c-8d0d-48da-a2e3-d66957dde3fe")
+		)
+		(fp_line
+			(start 0 0)
+			(end 5.08 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(layer "F.Fab")
+			(uuid "f510ccf1-86aa-4b26-953f-a82444fb7d92")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 1.25 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.Fab")
+			(uuid "0d00398d-c99e-476b-adad-8a31fc57bdfa")
+		)
+		(fp_text user "${REFERENCE}"
+			(at 2.54 -2.37 90)
+			(layer "F.Fab")
+			(uuid "d5f05359-905a-437b-a437-7384fd8ba8db")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(pad "1" thru_hole circle
+			(at 0 0 90)
+			(size 1.6 1.6)
+			(drill 0.8)
+			(layers "*.Cu" "*.Mask")
+			(remove_unused_layers no)
+			(net "Net-(Q1-B)")
+			(pintype "passive")
+			(uuid "cee8d89c-21af-4632-8e55-14f94bb488cb")
+		)
+		(pad "2" thru_hole circle
+			(at 5.08 0 90)
+			(size 1.6 1.6)
+			(drill 0.8)
+			(layers "*.Cu" "*.Mask")
+			(remove_unused_layers no)
+			(net "GND")
+			(pintype "passive")
+			(uuid "0692c1e2-5b6c-48cc-a0b1-b0da9ffdd1d8")
+		)
+		(embedded_fonts no)
+		(model "${KICAD10_3DMODEL_DIR}/Resistor_THT.3dshapes/R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
+	)
+	(footprint "MountingHole:MountingHole_3.2mm_M3"
+		(layer "F.Cu")
+		(uuid "364825dd-3009-4e4b-acb3-3e0599f72ad8")
+		(at 169 103)
+		(descr "Mounting Hole 3.2mm, M3, no annular, generated by kicad-footprint-generator mountinghole.py")
+		(tags "mountinghole M3")
+		(property "Reference" "H2"
+			(at 0 -4.15 0)
+			(layer "F.SilkS")
+			(uuid "dd13c72a-bdc4-4052-afef-3dc9a84b9626")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Value" "MountingHole_3.2mm_M3"
+			(at 0 4.15 0)
+			(layer "F.Fab")
+			(uuid "d19c3cfb-31de-4697-a227-dfde7d1884c5")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 0)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "633bb57b-dc1b-41bf-ae22-c286ce99790f")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 0)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "c7d9fb5d-a5b9-48dd-b57a-0f9c5dd3c151")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "KiLib_Generator" "mounting_hardware/mounting_hole"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "299e522a-2b47-4e2f-b6fb-3e063244f816")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(attr board_only exclude_from_pos_files exclude_from_bom)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 3.2 0)
+			(stroke
+				(width 0.15)
+				(type solid)
+			)
+			(fill no)
+			(layer "Cmts.User")
+			(uuid "6fa8a66a-09da-48fd-a1bf-dad4c945b538")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 3.45 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.CrtYd")
+			(uuid "4e4f03c2-cf25-4109-8bd1-e0c03551aa27")
+		)
+		(fp_text user "${REFERENCE}"
+			(at 0 0 0)
+			(layer "F.Fab")
+			(uuid "58ae3d07-6580-43c8-9f76-70a6f4caab0b")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(pad "" np_thru_hole circle
+			(at 0 0)
+			(size 3.2 3.2)
+			(drill 3.2)
+			(layers "*.Cu" "*.Mask")
+			(uuid "294f0f9a-2a73-4fbd-809e-806be5e4e99e")
+		)
+		(embedded_fonts no)
+	)
+	(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical"
+		(layer "F.Cu")
 		(uuid "3cf9bc52-3be0-4cd0-942c-b2d663902177")
 		(at 107.5 172 90)
 		(descr "Resistor, Axial_DIN0207 series, Axial, Vertical, pin pitch=5.08mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
@@ -3114,7 +3516,7 @@
 	(footprint "Package_TO_SOT_THT:TO-220-3_Vertical"
 		(layer "F.Cu")
 		(uuid "4e539d15-98b1-4ba8-83de-5e330203164a")
-		(at 148 140.46 270)
+		(at 148 147.96 -90)
 		(descr "TO-220-3, Vertical, RM 2.54mm, see https://www.vishay.com/docs/66542/to-220-1.pdf")
 		(tags "TO-220-3 Vertical RM 2.54mm")
 		(property "Reference" "U2"
@@ -3186,14 +3588,24 @@
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
-			(start -2.57 -3.26)
-			(end 7.65 -3.26)
+			(start -2.57 1.36)
+			(end -2.57 -3.26)
 			(stroke
 				(width 0.12)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "e4cbf619-e841-4017-b9d9-75c0bb2d1e6b")
+			(uuid "ada97ad7-90aa-44be-95e0-854aaaee9654")
+		)
+		(fp_line
+			(start 7.65 1.36)
+			(end -2.57 1.36)
+			(stroke
+				(width 0.12)
+				(type solid)
+			)
+			(layer "F.SilkS")
+			(uuid "ef45cf36-674a-4a64-8d63-d37d84041ab6")
 		)
 		(fp_line
 			(start -2.57 -1.88)
@@ -3206,14 +3618,14 @@
 			(uuid "d6540843-cdea-4b85-9565-204f7b92fafc")
 		)
 		(fp_line
-			(start -2.57 1.36)
-			(end -2.57 -3.26)
+			(start -2.57 -3.26)
+			(end 7.65 -3.26)
 			(stroke
 				(width 0.12)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "ada97ad7-90aa-44be-95e0-854aaaee9654")
+			(uuid "e4cbf619-e841-4017-b9d9-75c0bb2d1e6b")
 		)
 		(fp_line
 			(start 0.69 -3.26)
@@ -3244,16 +3656,6 @@
 			)
 			(layer "F.SilkS")
 			(uuid "b5cfed18-47b0-4416-8f27-1302a910c7e9")
-		)
-		(fp_line
-			(start 7.65 1.36)
-			(end -2.57 1.36)
-			(stroke
-				(width 0.12)
-				(type solid)
-			)
-			(layer "F.SilkS")
-			(uuid "ef45cf36-674a-4a64-8d63-d37d84041ab6")
 		)
 		(fp_rect
 			(start -2.71 -3.4)
@@ -3367,7 +3769,7 @@
 	(footprint "Package_TO_SOT_THT:TO-220-3_Vertical"
 		(layer "F.Cu")
 		(uuid "5061ea6b-3c1e-41ae-a55e-0c4730b06744")
-		(at 148 163.46 270)
+		(at 148 169.96 -90)
 		(descr "TO-220-3, Vertical, RM 2.54mm, see https://www.vishay.com/docs/66542/to-220-1.pdf")
 		(tags "TO-220-3 Vertical RM 2.54mm")
 		(property "Reference" "Q5"
@@ -3438,14 +3840,24 @@
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
-			(start -2.57 -3.26)
-			(end 7.65 -3.26)
+			(start -2.57 1.36)
+			(end -2.57 -3.26)
 			(stroke
 				(width 0.12)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "97297c07-32d5-4608-a965-1f8fa1e054d4")
+			(uuid "43d43453-18f6-446f-811b-76f1fceba851")
+		)
+		(fp_line
+			(start 7.65 1.36)
+			(end -2.57 1.36)
+			(stroke
+				(width 0.12)
+				(type solid)
+			)
+			(layer "F.SilkS")
+			(uuid "e21ca89f-138a-4120-a32c-2ea0008614dd")
 		)
 		(fp_line
 			(start -2.57 -1.88)
@@ -3458,14 +3870,14 @@
 			(uuid "46c9f823-bcbb-4e6f-80f6-5186764d929e")
 		)
 		(fp_line
-			(start -2.57 1.36)
-			(end -2.57 -3.26)
+			(start -2.57 -3.26)
+			(end 7.65 -3.26)
 			(stroke
 				(width 0.12)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "43d43453-18f6-446f-811b-76f1fceba851")
+			(uuid "97297c07-32d5-4608-a965-1f8fa1e054d4")
 		)
 		(fp_line
 			(start 0.69 -3.26)
@@ -3496,16 +3908,6 @@
 			)
 			(layer "F.SilkS")
 			(uuid "dd6afd90-a3fe-4e0f-96bf-b81bc4c50cab")
-		)
-		(fp_line
-			(start 7.65 1.36)
-			(end -2.57 1.36)
-			(stroke
-				(width 0.12)
-				(type solid)
-			)
-			(layer "F.SilkS")
-			(uuid "e21ca89f-138a-4120-a32c-2ea0008614dd")
 		)
 		(fp_rect
 			(start -2.71 -3.4)
@@ -3615,6 +4017,112 @@
 				(xyz 0 0 0)
 			)
 		)
+	)
+	(footprint "MountingHole:MountingHole_3.2mm_M3"
+		(layer "F.Cu")
+		(uuid "5115a502-1e46-47c9-954c-2883091b0cda")
+		(at 103 103)
+		(descr "Mounting Hole 3.2mm, M3, no annular, generated by kicad-footprint-generator mountinghole.py")
+		(tags "mountinghole M3")
+		(property "Reference" "H1"
+			(at 0 -4.15 0)
+			(layer "F.SilkS")
+			(uuid "5c22dd0e-72e2-4c56-940d-6bea6449ca89")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Value" "MountingHole_3.2mm_M3"
+			(at 0 4.15 0)
+			(layer "F.Fab")
+			(uuid "e9bd65a3-6253-4fbb-abba-911acb743259")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 0)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "2a63bf5f-78b3-4348-99ad-0f4b62d5dd31")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 0)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "edbb8601-209a-46dc-8676-2d642b7694a2")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "KiLib_Generator" "mounting_hardware/mounting_hole"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "5bee0cb8-2597-44c2-86e9-2e3365931fc3")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(attr board_only exclude_from_pos_files exclude_from_bom)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 3.2 0)
+			(stroke
+				(width 0.15)
+				(type solid)
+			)
+			(fill no)
+			(layer "Cmts.User")
+			(uuid "128b1916-5b0b-4183-8a4a-bdea9821ef97")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 3.45 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.CrtYd")
+			(uuid "d30aa1c9-dfdf-42cf-8d79-87d108073175")
+		)
+		(fp_text user "${REFERENCE}"
+			(at 0 0 0)
+			(layer "F.Fab")
+			(uuid "5084d8c4-0a05-46fa-b3bc-4039038aff9e")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(pad "" np_thru_hole circle
+			(at 0 0)
+			(size 3.2 3.2)
+			(drill 3.2)
+			(layers "*.Cu" "*.Mask")
+			(uuid "1fb452bb-ec1d-4bb7-a106-155821a0e933")
+		)
+		(embedded_fonts no)
 	)
 	(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical"
 		(layer "F.Cu")
@@ -3790,7 +4298,7 @@
 	(footprint "LED_THT:LED_D3.0mm"
 		(layer "F.Cu")
 		(uuid "679cfd09-1524-497d-bc5a-c533dd73a834")
-		(at 147 198)
+		(at 159 189)
 		(descr "LED, diameter 3.0mm, 2 pins, generated by kicad-footprint-generator")
 		(tags "LED")
 		(property "Reference" "D1"
@@ -3980,7 +4488,7 @@
 			)
 		)
 		(point
-			(at 153.625 154.525)
+			(at 165.625 145.525)
 			(size 2)
 			(layer "F.Fab")
 			(uuid "dd51adbd-b1d0-4812-b647-6c13dfe592b7")
@@ -4191,16 +4699,16 @@
 			)
 		)
 	)
-	(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical"
+	(footprint "Connector_Wire:SolderWire-1sqmm_1x02_P5.4mm_D1.4mm_OD2.7mm"
 		(layer "F.Cu")
-		(uuid "27da16de-1b2c-416f-8268-fc07975f6518")
-		(at 104 145 90)
-		(descr "Resistor, Axial_DIN0207 series, Axial, Vertical, pin pitch=5.08mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
-		(tags "Resistor Axial_DIN0207 series Axial Vertical pin pitch 5.08mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
-		(property "Reference" "R12"
-			(at 2.54 -2.37 90)
+		(uuid "6a3aa9df-3895-4cb0-88d6-dc3fed024637")
+		(at 145 195.2)
+		(descr "Soldered wire connection, for 2 times 1 mm² wires, basic insulation, conductor diameter 1.4mm, outer diameter 2.7mm, size source Multi-Contact FLEXI-E 1.0 (https://www.staubli.com/content/dam/ecs/catalogs-brochures/TM/CAB-Main-11014119-en.pdf#page=9), bend radius 3 times outer diameter")
+		(tags "connector wire 1sqmm")
+		(property "Reference" "J5"
+			(at 2.7 -2.58 0)
 			(layer "F.SilkS")
-			(uuid "5595aa2e-dfba-40c1-a097-08840a7b0164")
+			(uuid "55a9ac4c-4821-4502-864a-36b6a6ec25dd")
 			(effects
 				(font
 					(size 1 1)
@@ -4208,10 +4716,10 @@
 				)
 			)
 		)
-		(property "Value" "10k"
-			(at 2.54 2.37 90)
+		(property "Value" "Power"
+			(at 2.7 2.58 0)
 			(layer "F.Fab")
-			(uuid "950d92de-a385-4087-9bd3-f58b73610de8")
+			(uuid "6f67d9fc-8bc3-4b4c-8029-3b8eb7edb14b")
 			(effects
 				(font
 					(size 1 1)
@@ -4220,10 +4728,10 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 0 0 90)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "47b9496b-403f-4a29-a740-f8cea2d69877")
+			(uuid "9d7c92d0-2834-472b-900b-34e954ab5ae8")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4231,21 +4739,21 @@
 			)
 		)
 		(property "Description" ""
-			(at 0 0 90)
+			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
-			(uuid "6dbca250-82d3-4794-b0c7-f0ce8dce1c7d")
+			(uuid "fe25fe7e-1fc1-4e12-bf67-75d5d3c438a0")
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "KiLib_Generator" "resistor/THT"
-			(at 0 0 90)
+		(property "KiLib_Generator" "connector/wire"
+			(at 0 0 0)
 			(layer "F.SilkS")
 			(hide yes)
-			(uuid "7b8d367d-415c-469e-b498-06a32953443c")
+			(uuid "2464a118-a628-4434-9738-d5bd4145668d")
 			(effects
 				(font
 					(size 1 1)
@@ -4253,104 +4761,87 @@
 				)
 			)
 		)
-		(property ki_fp_filters "R_*")
-		(path "/2ebc0cc1-3eae-4c62-8abf-cf2f04dd6da3")
+		(path "/95161a7c-835f-4cb3-8f57-7be52d8578dd")
 		(sheetname "/")
 		(sheetfile "w5500-esp32.kicad_sch")
-		(units
-			(unit
-				(name "A")
-				(pins "1" "2")
-			)
-		)
-		(attr through_hole)
+		(attr exclude_from_pos_files)
 		(duplicate_pad_numbers_are_jumpers no)
-		(fp_line
-			(start 1.37 0)
-			(end 3.98 0)
-			(stroke
-				(width 0.12)
-				(type solid)
-			)
-			(layer "F.SilkS")
-			(uuid "ed70d179-28bd-447d-afc2-7d9c9a5126e7")
-		)
-		(fp_circle
-			(center 0 0)
-			(end 1.37 0)
-			(stroke
-				(width 0.12)
-				(type solid)
-			)
-			(fill no)
-			(layer "F.SilkS")
-			(uuid "55c529f8-a579-4ee2-8405-07cd04896023")
-		)
 		(fp_rect
-			(start -1.5 -1.5)
-			(end 6.13 1.5)
+			(start -2.1 -1.88)
+			(end 2.1 1.88)
 			(stroke
 				(width 0.05)
 				(type solid)
 			)
 			(fill no)
 			(layer "F.CrtYd")
-			(uuid "0caf964c-8d0d-48da-a2e3-d66957dde3fe")
+			(uuid "73ea4d2d-1fec-4c85-9337-a6cc7ee82ee3")
 		)
-		(fp_line
-			(start 0 0)
-			(end 5.08 0)
+		(fp_rect
+			(start 3.3 -1.88)
+			(end 7.5 1.88)
 			(stroke
-				(width 0.1)
+				(width 0.05)
 				(type solid)
 			)
-			(layer "F.Fab")
-			(uuid "f510ccf1-86aa-4b26-953f-a82444fb7d92")
+			(fill no)
+			(layer "F.CrtYd")
+			(uuid "10c41f1f-be4b-42a3-b0d7-90d836f314f8")
 		)
 		(fp_circle
 			(center 0 0)
-			(end 1.25 0)
+			(end 1.35 0)
 			(stroke
 				(width 0.1)
 				(type solid)
 			)
 			(fill no)
 			(layer "F.Fab")
-			(uuid "0d00398d-c99e-476b-adad-8a31fc57bdfa")
+			(uuid "d8b6e471-fc5a-4cfc-8f29-0170a0ed09ec")
+		)
+		(fp_circle
+			(center 5.4 0)
+			(end 6.75 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.Fab")
+			(uuid "71101625-3ecb-4dc2-90b9-5190eed7b1a8")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 2.54 -2.37 90)
+			(at 2.7 0 90)
 			(layer "F.Fab")
-			(uuid "d5f05359-905a-437b-a437-7384fd8ba8db")
+			(uuid "e6404d37-760c-4e65-9a45-164e6c4b8119")
 			(effects
 				(font
-					(size 1 1)
-					(thickness 0.15)
+					(size 0.94 0.94)
+					(thickness 0.14)
 				)
 			)
 		)
-		(pad "1" thru_hole circle
-			(at 0 0 90)
-			(size 1.6 1.6)
-			(drill 0.8)
+		(pad "1" thru_hole roundrect
+			(at 0 0)
+			(size 2.75 2.75)
+			(drill 1.75)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
-			(net "Net-(Q1-B)")
-			(pintype "passive")
-			(uuid "cee8d89c-21af-4632-8e55-14f94bb488cb")
+			(roundrect_rratio 0.090909)
+			(net "/Power")
+			(uuid "e1e9b0fd-70c6-4945-8c00-7af4d0541f5a")
 		)
 		(pad "2" thru_hole circle
-			(at 5.08 0 90)
-			(size 1.6 1.6)
-			(drill 0.8)
+			(at 5.4 0)
+			(size 2.75 2.75)
+			(drill 1.75)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(net "GND")
-			(pintype "passive")
-			(uuid "0692c1e2-5b6c-48cc-a0b1-b0da9ffdd1d8")
+			(uuid "0768bf61-0a15-4e32-89e7-bc06a726143f")
 		)
 		(embedded_fonts no)
-		(model "${KICAD10_3DMODEL_DIR}/Resistor_THT.3dshapes/R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical.step"
+		(model "${KICAD10_3DMODEL_DIR}/Connector_Wire.3dshapes/SolderWire-1sqmm_1x02_P5.4mm_D1.4mm_OD2.7mm.step"
 			(offset
 				(xyz 0 0 0)
 			)
@@ -4894,7 +5385,7 @@
 	(footprint "Package_TO_SOT_THT:TO-220-3_Vertical"
 		(layer "F.Cu")
 		(uuid "74e61936-3648-4a55-a715-832e38ff7287")
-		(at 148 117.46 270)
+		(at 148 125.96 -90)
 		(descr "TO-220-3, Vertical, RM 2.54mm, see https://www.vishay.com/docs/66542/to-220-1.pdf")
 		(tags "TO-220-3 Vertical RM 2.54mm")
 		(property "Reference" "U1"
@@ -4966,14 +5457,24 @@
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_line
-			(start -2.57 -3.26)
-			(end 7.65 -3.26)
+			(start -2.57 1.36)
+			(end -2.57 -3.26)
 			(stroke
 				(width 0.12)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "49914a62-2b87-4166-adec-b1075ea04221")
+			(uuid "24e3e8da-2e39-4792-9e0e-fece74a21db8")
+		)
+		(fp_line
+			(start 7.65 1.36)
+			(end -2.57 1.36)
+			(stroke
+				(width 0.12)
+				(type solid)
+			)
+			(layer "F.SilkS")
+			(uuid "75c63344-c8eb-4cc5-b9a1-ab358220a4d5")
 		)
 		(fp_line
 			(start -2.57 -1.88)
@@ -4986,14 +5487,14 @@
 			(uuid "8c2d202e-7e0b-4d17-934e-814553940a5c")
 		)
 		(fp_line
-			(start -2.57 1.36)
-			(end -2.57 -3.26)
+			(start -2.57 -3.26)
+			(end 7.65 -3.26)
 			(stroke
 				(width 0.12)
 				(type solid)
 			)
 			(layer "F.SilkS")
-			(uuid "24e3e8da-2e39-4792-9e0e-fece74a21db8")
+			(uuid "49914a62-2b87-4166-adec-b1075ea04221")
 		)
 		(fp_line
 			(start 0.69 -3.26)
@@ -5024,16 +5525,6 @@
 			)
 			(layer "F.SilkS")
 			(uuid "b2553860-40dc-4f7a-b3fd-32d7fbd6f13e")
-		)
-		(fp_line
-			(start 7.65 1.36)
-			(end -2.57 1.36)
-			(stroke
-				(width 0.12)
-				(type solid)
-			)
-			(layer "F.SilkS")
-			(uuid "75c63344-c8eb-4cc5-b9a1-ab358220a4d5")
 		)
 		(fp_rect
 			(start -2.71 -3.4)
@@ -5143,6 +5634,112 @@
 				(xyz 0 0 0)
 			)
 		)
+	)
+	(footprint "MountingHole:MountingHole_3.2mm_M3"
+		(layer "F.Cu")
+		(uuid "78061073-ba91-43da-8b7c-7224e6b46196")
+		(at 169 212)
+		(descr "Mounting Hole 3.2mm, M3, no annular, generated by kicad-footprint-generator mountinghole.py")
+		(tags "mountinghole M3")
+		(property "Reference" "H4"
+			(at 0 -4.15 0)
+			(layer "F.SilkS")
+			(uuid "3655865b-f4bc-4313-9ad6-b7b3ff9c1669")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Value" "MountingHole_3.2mm_M3"
+			(at 0 4.15 0)
+			(layer "F.Fab")
+			(uuid "ff60954c-199e-447e-bcef-bd1fa37f703f")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 0)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "38e3cf28-e3d9-45bb-8af9-afed2083518b")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 0)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "f05ba9c3-b763-4087-ba4b-2dc180b42074")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "KiLib_Generator" "mounting_hardware/mounting_hole"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "a2bbf005-929c-47ca-bfb0-8081814d3180")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(attr board_only exclude_from_pos_files exclude_from_bom)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 3.2 0)
+			(stroke
+				(width 0.15)
+				(type solid)
+			)
+			(fill no)
+			(layer "Cmts.User")
+			(uuid "3b106fcb-139c-4174-8d14-d452effcb1f0")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 3.45 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.CrtYd")
+			(uuid "59367e90-5ea1-4477-9f3d-a076b1127f7a")
+		)
+		(fp_text user "${REFERENCE}"
+			(at 0 0 0)
+			(layer "F.Fab")
+			(uuid "ce94a223-d439-4646-8851-925bb5710d42")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(pad "" np_thru_hole circle
+			(at 0 0)
+			(size 3.2 3.2)
+			(drill 3.2)
+			(layers "*.Cu" "*.Mask")
+			(uuid "1ce712c1-6b20-4d47-bb2c-b57cce88e058")
+		)
+		(embedded_fonts no)
 	)
 	(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical"
 		(layer "F.Cu")
@@ -5318,7 +5915,7 @@
 	(footprint "Package_TO_SOT_THT:TO-92_Inline"
 		(layer "F.Cu")
 		(uuid "984384f6-adab-48ba-8d3e-ae202e880d4e")
-		(at 147 184)
+		(at 146 189)
 		(descr "TO-92 leads in-line, narrow, oval pads, drill 0.75mm (see NXP sot054_po.pdf)")
 		(tags "to-92 sc-43 sc-43a sot54 PA33 transistor")
 		(property "Reference" "Q1"
@@ -5571,7 +6168,7 @@
 	(footprint "Capacitor_THT:CP_Radial_D5.0mm_P2.00mm"
 		(layer "F.Cu")
 		(uuid "a7664167-9da3-4d66-ac2b-29c9c6b29579")
-		(at 146.5 154)
+		(at 146.5 161.5)
 		(descr "CP, Radial series, Radial, pin pitch=2.00mm, diameter=5mm, height=7mm, Electrolytic Capacitor")
 		(tags "CP Radial series Radial pin pitch 2.00mm diameter 5mm height 7mm Electrolytic Capacitor")
 		(property "Reference" "C1"
@@ -6933,7 +7530,7 @@
 	(footprint "LED_THT:LED_D3.0mm"
 		(layer "F.Cu")
 		(uuid "bc5260d1-e97b-476f-b799-9974bc7d864b")
-		(at 147 205)
+		(at 164.5 189)
 		(descr "LED, diameter 3.0mm, 2 pins, generated by kicad-footprint-generator")
 		(tags "LED")
 		(property "Reference" "D2"
@@ -7123,7 +7720,7 @@
 			)
 		)
 		(point
-			(at 153.625 159.995)
+			(at 171.125 143.995)
 			(size 2)
 			(layer "F.Fab")
 			(uuid "8251e27a-e2c2-48b7-b654-d0625cddd326")
@@ -7337,7 +7934,7 @@
 	(footprint "Package_TO_SOT_THT:TO-92_Inline"
 		(layer "F.Cu")
 		(uuid "d5d58255-4db4-47cc-a5ca-f73ce36ca55e")
-		(at 147 191)
+		(at 152.5 189)
 		(descr "TO-92 leads in-line, narrow, oval pads, drill 0.75mm (see NXP sot054_po.pdf)")
 		(tags "to-92 sc-43 sc-43a sot54 PA33 transistor")
 		(property "Reference" "Q3"
@@ -7587,6 +8184,112 @@
 			)
 		)
 	)
+	(footprint "MountingHole:MountingHole_3.2mm_M3"
+		(layer "F.Cu")
+		(uuid "e92b8d77-18a6-47a3-8e66-2430cb99aa09")
+		(at 103 212)
+		(descr "Mounting Hole 3.2mm, M3, no annular, generated by kicad-footprint-generator mountinghole.py")
+		(tags "mountinghole M3")
+		(property "Reference" "H3"
+			(at 0 -4.15 0)
+			(layer "F.SilkS")
+			(uuid "9160b3f5-7711-4cde-8479-b6295aac73b7")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Value" "MountingHole_3.2mm_M3"
+			(at 0 4.15 0)
+			(layer "F.Fab")
+			(uuid "b9539e99-7c8b-4e9e-8636-b61b912a251d")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 0)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "55c60aa0-8353-428e-9b1c-06986a039aa3")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 0)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "51c00731-a6b0-47db-9ede-0e6d6c13d543")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "KiLib_Generator" "mounting_hardware/mounting_hole"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "56e0b0ee-374c-44c6-88aa-ec4e97d18ce7")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(attr board_only exclude_from_pos_files exclude_from_bom)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 3.2 0)
+			(stroke
+				(width 0.15)
+				(type solid)
+			)
+			(fill no)
+			(layer "Cmts.User")
+			(uuid "54316b2b-88ee-4a9f-b2d2-55aff1f672ef")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 3.45 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.CrtYd")
+			(uuid "6a141492-6e69-4e37-8aef-6b04f0aacce8")
+		)
+		(fp_text user "${REFERENCE}"
+			(at 0 0 0)
+			(layer "F.Fab")
+			(uuid "843abe5a-e0f1-4de4-acc0-d82432abff38")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(pad "" np_thru_hole circle
+			(at 0 0)
+			(size 3.2 3.2)
+			(drill 3.2)
+			(layers "*.Cu" "*.Mask")
+			(uuid "50961f38-5b72-4925-862a-a68c9f207314")
+		)
+		(embedded_fonts no)
+	)
 	(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical"
 		(layer "F.Cu")
 		(uuid "f4928235-155d-4298-9e69-0d898893eac7")
@@ -7758,831 +8461,16 @@
 			)
 		)
 	)
-	(gr_rect
-		(start 100 100)
-		(end 172 215)
-		(stroke
-			(width 0.1)
-			(type default)
-		)
-		(fill no)
-		(layer "Edge.Cuts")
-		(uuid "3a83bd67-99aa-4011-a9ca-8349c8a5c8e2")
-	)
-	(footprint "MountingHole:MountingHole_3.2mm_M3"
-		(layer "F.Cu")
-		(uuid "5115a502-1e46-47c9-954c-2883091b0cda")
-		(at 103 103)
-		(descr "Mounting Hole 3.2mm, M3, no annular, generated by kicad-footprint-generator mountinghole.py")
-		(tags "mountinghole M3")
-		(property "Reference" "H1"
-			(at 0 -4.15 0)
-			(layer "F.SilkS")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(property "Value" "MountingHole_3.2mm_M3"
-			(at 0 4.15 0)
-			(layer "F.Fab")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(property "KiLib_Generator" "mounting_hardware/mounting_hole"
-			(at 0 0 0)
-			(layer "F.SilkS")
-			(hide yes)
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(attr board_only exclude_from_pos_files exclude_from_bom)
-		(duplicate_pad_numbers_are_jumpers no)
-		(fp_circle
-			(center 0 0)
-			(end 3.2 0)
-			(stroke
-				(width 0.15)
-				(type solid)
-			)
-			(fill no)
-			(layer "Cmts.User")
-		)
-		(fp_circle
-			(center 0 0)
-			(end 3.45 0)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "F.CrtYd")
-		)
-		(fp_text user "${REFERENCE}"
-			(at 0 0 0)
-			(layer "F.Fab")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(pad "" np_thru_hole circle
-			(at 0 0)
-			(size 3.2 3.2)
-			(drill 3.2)
-			(layers "*.Cu" "*.Mask")
-		)
-		(embedded_fonts no)
-	)
-	(footprint "MountingHole:MountingHole_3.2mm_M3"
-		(layer "F.Cu")
-		(uuid "364825dd-3009-4e4b-acb3-3e0599f72ad8")
-		(at 169 103)
-		(descr "Mounting Hole 3.2mm, M3, no annular, generated by kicad-footprint-generator mountinghole.py")
-		(tags "mountinghole M3")
-		(property "Reference" "H2"
-			(at 0 -4.15 0)
-			(layer "F.SilkS")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(property "Value" "MountingHole_3.2mm_M3"
-			(at 0 4.15 0)
-			(layer "F.Fab")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(property "KiLib_Generator" "mounting_hardware/mounting_hole"
-			(at 0 0 0)
-			(layer "F.SilkS")
-			(hide yes)
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(attr board_only exclude_from_pos_files exclude_from_bom)
-		(duplicate_pad_numbers_are_jumpers no)
-		(fp_circle
-			(center 0 0)
-			(end 3.2 0)
-			(stroke
-				(width 0.15)
-				(type solid)
-			)
-			(fill no)
-			(layer "Cmts.User")
-		)
-		(fp_circle
-			(center 0 0)
-			(end 3.45 0)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "F.CrtYd")
-		)
-		(fp_text user "${REFERENCE}"
-			(at 0 0 0)
-			(layer "F.Fab")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(pad "" np_thru_hole circle
-			(at 0 0)
-			(size 3.2 3.2)
-			(drill 3.2)
-			(layers "*.Cu" "*.Mask")
-		)
-		(embedded_fonts no)
-	)
-	(footprint "MountingHole:MountingHole_3.2mm_M3"
-		(layer "F.Cu")
-		(uuid "e92b8d77-18a6-47a3-8e66-2430cb99aa09")
-		(at 103 212)
-		(descr "Mounting Hole 3.2mm, M3, no annular, generated by kicad-footprint-generator mountinghole.py")
-		(tags "mountinghole M3")
-		(property "Reference" "H3"
-			(at 0 -4.15 0)
-			(layer "F.SilkS")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(property "Value" "MountingHole_3.2mm_M3"
-			(at 0 4.15 0)
-			(layer "F.Fab")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(property "KiLib_Generator" "mounting_hardware/mounting_hole"
-			(at 0 0 0)
-			(layer "F.SilkS")
-			(hide yes)
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(attr board_only exclude_from_pos_files exclude_from_bom)
-		(duplicate_pad_numbers_are_jumpers no)
-		(fp_circle
-			(center 0 0)
-			(end 3.2 0)
-			(stroke
-				(width 0.15)
-				(type solid)
-			)
-			(fill no)
-			(layer "Cmts.User")
-		)
-		(fp_circle
-			(center 0 0)
-			(end 3.45 0)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "F.CrtYd")
-		)
-		(fp_text user "${REFERENCE}"
-			(at 0 0 0)
-			(layer "F.Fab")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(pad "" np_thru_hole circle
-			(at 0 0)
-			(size 3.2 3.2)
-			(drill 3.2)
-			(layers "*.Cu" "*.Mask")
-		)
-		(embedded_fonts no)
-	)
-	(footprint "MountingHole:MountingHole_3.2mm_M3"
-		(layer "F.Cu")
-		(uuid "78061073-ba91-43da-8b7c-7224e6b46196")
-		(at 169 212)
-		(descr "Mounting Hole 3.2mm, M3, no annular, generated by kicad-footprint-generator mountinghole.py")
-		(tags "mountinghole M3")
-		(property "Reference" "H4"
-			(at 0 -4.15 0)
-			(layer "F.SilkS")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(property "Value" "MountingHole_3.2mm_M3"
-			(at 0 4.15 0)
-			(layer "F.Fab")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(property "KiLib_Generator" "mounting_hardware/mounting_hole"
-			(at 0 0 0)
-			(layer "F.SilkS")
-			(hide yes)
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(attr board_only exclude_from_pos_files exclude_from_bom)
-		(duplicate_pad_numbers_are_jumpers no)
-		(fp_circle
-			(center 0 0)
-			(end 3.2 0)
-			(stroke
-				(width 0.15)
-				(type solid)
-			)
-			(fill no)
-			(layer "Cmts.User")
-		)
-		(fp_circle
-			(center 0 0)
-			(end 3.45 0)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "F.CrtYd")
-		)
-		(fp_text user "${REFERENCE}"
-			(at 0 0 0)
-			(layer "F.Fab")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(pad "" np_thru_hole circle
-			(at 0 0)
-			(size 3.2 3.2)
-			(drill 3.2)
-			(layers "*.Cu" "*.Mask")
-		)
-		(embedded_fonts no)
-	)
-	(gr_circle
-		(center 103 103)
-		(end 107 103)
-		(stroke
-			(width 0.1)
-			(type default)
-		)
-		(fill no)
-		(layer "Dwgs.User")
-		(uuid "ee3775c8-dc53-4d47-90c3-1e981ce4ef02")
-	)
-	(gr_circle
-		(center 169 103)
-		(end 173 103)
-		(stroke
-			(width 0.1)
-			(type default)
-		)
-		(fill no)
-		(layer "Dwgs.User")
-		(uuid "f5ab72a7-6e56-4a06-bb9b-75d69a125fbd")
-	)
-	(gr_circle
-		(center 103 212)
-		(end 107 212)
-		(stroke
-			(width 0.1)
-			(type default)
-		)
-		(fill no)
-		(layer "Dwgs.User")
-		(uuid "b6e5ddf5-6438-46a0-8f05-577de91cccb8")
-	)
-	(gr_circle
-		(center 169 212)
-		(end 173 212)
-		(stroke
-			(width 0.1)
-			(type default)
-		)
-		(fill no)
-		(layer "Dwgs.User")
-		(uuid "832c25c1-b4bd-4fa8-80d4-0d836486661a")
-	)
-	(gr_rect
-		(start 96 97.5)
-		(end 176 217.5)
-		(stroke
-			(width 0.1)
-			(type default)
-		)
-		(fill no)
-		(layer "Dwgs.User")
-		(uuid "a3f345dc-d247-45c9-918a-3a0f7429cfce")
-	)
-	(gr_text "ケース内壁 80x120"
-		(at 136 98.8 0)
-		(layer "Dwgs.User")
-		(uuid "66a2f493-6a7a-4a37-89ef-1530c309e4c5")
-		(effects
-			(font
-				(size 0.8 0.8)
-				(thickness 0.12)
-			)
-		)
-	)
-	(gr_rect
-		(start 113 97.5)
-		(end 131 99.5)
-		(stroke
-			(width 0.1)
-			(type default)
-		)
-		(fill no)
-		(layer "Dwgs.User")
-		(uuid "f03ab048-7f36-405a-9c2e-ffc9a60b0569")
-	)
-	(gr_text "前面 RJ45開口 x45-63 z10-24"
-		(at 122 95.5 0)
-		(layer "Dwgs.User")
-		(uuid "8c4e7dee-6eb5-4827-934d-72f80c2f2228")
-		(effects
-			(font
-				(size 0.8 0.8)
-				(thickness 0.12)
-			)
-		)
-	)
-	(gr_circle
-		(center 156 97.5)
-		(end 164 97.5)
-		(stroke
-			(width 0.1)
-			(type default)
-		)
-		(fill no)
-		(layer "Dwgs.User")
-		(uuid "8cc75835-b6ad-496a-a3e0-09232e070c2c")
-	)
-	(gr_text "前面 丸穴 Ø16 z17.5"
-		(at 156 94 0)
-		(layer "Dwgs.User")
-		(uuid "b6b845fa-d411-4d08-9ff0-6714e423bb11")
-		(effects
-			(font
-				(size 0.8 0.8)
-				(thickness 0.12)
-			)
-		)
-	)
-	(gr_circle
-		(center 156 217.5)
-		(end 164 217.5)
-		(stroke
-			(width 0.1)
-			(type default)
-		)
-		(fill no)
-		(layer "Dwgs.User")
-		(uuid "d80b3465-9dc0-446f-9832-2f81b12628f5")
-	)
-	(gr_text "背面 丸穴 Ø16 z17.5"
-		(at 156 221 0)
-		(layer "Dwgs.User")
-		(uuid "c5d56d49-7739-4804-aebd-e5875e4374a0")
-		(effects
-			(font
-				(size 0.8 0.8)
-				(thickness 0.12)
-			)
-		)
-	)
-	(gr_rect
-		(start 118.5 215.5)
-		(end 133.5 217.5)
-		(stroke
-			(width 0.1)
-			(type default)
-		)
-		(fill no)
-		(layer "Dwgs.User")
-		(uuid "66af3c28-8583-4655-9af5-153a57a02f82")
-	)
-	(gr_text "背面 USB-C開口 15x6 z7"
-		(at 126 219.5 0)
-		(layer "Dwgs.User")
-		(uuid "eafa0f1a-4000-4147-aa8e-3bf50975e9f4")
-		(effects
-			(font
-				(size 0.8 0.8)
-				(thickness 0.12)
-			)
-		)
-	)
-	(gr_text "W5500 Lite (USR-ES1) 23x25"
-		(at 122 128 0)
-		(layer "Dwgs.User")
-		(uuid "ad5330a9-e098-4d48-a129-bb494fd2963b")
-		(effects
-			(font
-				(size 0.8 0.8)
-				(thickness 0.12)
-			)
-		)
-	)
-	(gr_rect
-		(start 112.45 156.3)
-		(end 139.55 214.8)
-		(stroke
-			(width 0.1)
-			(type default)
-		)
-		(fill no)
-		(layer "Dwgs.User")
-		(uuid "b5dce0d5-88a1-4bec-96c9-bce29a9ed7a8")
-	)
-	(gr_text "Freenove ESP32 WROOM 約27x58.5(要実測)"
-		(at 126 158.5 0)
-		(layer "Dwgs.User")
-		(uuid "e733d87f-1976-44c3-af99-58e7c19e705a")
-		(effects
-			(font
-				(size 0.8 0.8)
-				(thickness 0.12)
-			)
-		)
-	)
-	(gr_rect
-		(start 151.5 110)
-		(end 171.5 130)
-		(stroke
-			(width 0.1)
-			(type default)
-		)
-		(fill no)
-		(layer "Dwgs.User")
-		(uuid "f4830e8d-f3d4-4112-9672-0535adc08feb")
-	)
-	(gr_text "放熱器 U1 20x20"
-		(at 161.5 120 0)
-		(layer "Dwgs.User")
-		(uuid "ba28ba1a-7d8c-4ba2-9f40-93d2ae0d04be")
-		(effects
-			(font
-				(size 0.8 0.8)
-				(thickness 0.12)
-			)
-		)
-	)
-	(gr_rect
-		(start 151.5 133)
-		(end 171.5 153)
-		(stroke
-			(width 0.1)
-			(type default)
-		)
-		(fill no)
-		(layer "Dwgs.User")
-		(uuid "0e609b40-bf94-485e-a5f3-ec1e31e626b3")
-	)
-	(gr_text "放熱器 U2 20x20"
-		(at 161.5 143 0)
-		(layer "Dwgs.User")
-		(uuid "5110f35e-927e-4224-963d-3a9605dd4fd8")
-		(effects
-			(font
-				(size 0.8 0.8)
-				(thickness 0.12)
-			)
-		)
-	)
-	(gr_rect
-		(start 151.5 156)
-		(end 171.5 176)
-		(stroke
-			(width 0.1)
-			(type default)
-		)
-		(fill no)
-		(layer "Dwgs.User")
-		(uuid "300711ae-a0b6-4a42-ad37-568b0c554944")
-	)
-	(gr_text "放熱器 Q5 20x20"
-		(at 161.5 166 0)
-		(layer "Dwgs.User")
-		(uuid "191b8733-eda5-475d-998e-fecdc9481f5e")
-		(effects
-			(font
-				(size 0.8 0.8)
-				(thickness 0.12)
-			)
-		)
-	)
-	(footprint "Connector_Wire:SolderWire-1sqmm_1x02_P5.4mm_D1.4mm_OD2.7mm"
-		(layer "F.Cu")
-		(uuid "f901a3de-3f83-4c10-9b34-6a4904140777")
-		(at 150 106)
-		(descr "Soldered wire connection, for 2 times 1 mm² wires, basic insulation, conductor diameter 1.4mm, outer diameter 2.7mm, size source Multi-Contact FLEXI-E 1.0 (https://www.staubli.com/content/dam/ecs/catalogs-brochures/TM/CAB-Main-11014119-en.pdf#page=9), bend radius 3 times outer diameter")
-		(tags "connector wire 1sqmm")
-		(property "Reference" "J2"
-			(at 2.7 -2.58 0)
-			(layer "F.SilkS")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(property "Value" "DC_IN_13V8"
-			(at 2.7 2.58 0)
-			(layer "F.Fab")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(property "KiLib_Generator" "connector/wire"
-			(at 0 0 0)
-			(layer "F.SilkS")
-			(hide yes)
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(path "/061476d5-91d3-4976-a353-c4c41c1893bf")
-		(sheetname "/")
-		(sheetfile "w5500-esp32.kicad_sch")
-		(attr exclude_from_pos_files)
-		(duplicate_pad_numbers_are_jumpers no)
-		(fp_rect
-			(start -2.1 -1.88)
-			(end 2.1 1.88)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "F.CrtYd")
-		)
-		(fp_rect
-			(start 3.3 -1.88)
-			(end 7.5 1.88)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "F.CrtYd")
-		)
-		(fp_circle
-			(center 0 0)
-			(end 1.35 0)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(fill no)
-			(layer "F.Fab")
-		)
-		(fp_circle
-			(center 5.4 0)
-			(end 6.75 0)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(fill no)
-			(layer "F.Fab")
-		)
-		(fp_text user "${REFERENCE}"
-			(at 2.7 0 90)
-			(layer "F.Fab")
-			(effects
-				(font
-					(size 0.94 0.94)
-					(thickness 0.14)
-				)
-			)
-		)
-		(pad "1" thru_hole roundrect
-			(at 0 0)
-			(size 2.75 2.75)
-			(drill 1.75)
-			(net "+12V")
-			(layers "*.Cu" "*.Mask")
-			(remove_unused_layers no)
-			(roundrect_rratio 0.090909)
-		)
-		(pad "2" thru_hole circle
-			(at 5.4 0)
-			(size 2.75 2.75)
-			(drill 1.75)
-			(net "GND")
-			(layers "*.Cu" "*.Mask")
-			(remove_unused_layers no)
-		)
-		(embedded_fonts no)
-		(model "${KICAD10_3DMODEL_DIR}/Connector_Wire.3dshapes/SolderWire-1sqmm_1x02_P5.4mm_D1.4mm_OD2.7mm.step"
-			(offset
-				(xyz 0 0 0)
-			)
-			(scale
-				(xyz 1 1 1)
-			)
-			(rotate
-				(xyz 0 0 0)
-			)
-		)
-	)
-	(footprint "Connector_Wire:SolderWire-1sqmm_1x02_P5.4mm_D1.4mm_OD2.7mm"
-		(layer "F.Cu")
-		(uuid "6a3aa9df-3895-4cb0-88d6-dc3fed024637")
-		(at 157 188)
-		(descr "Soldered wire connection, for 2 times 1 mm² wires, basic insulation, conductor diameter 1.4mm, outer diameter 2.7mm, size source Multi-Contact FLEXI-E 1.0 (https://www.staubli.com/content/dam/ecs/catalogs-brochures/TM/CAB-Main-11014119-en.pdf#page=9), bend radius 3 times outer diameter")
-		(tags "connector wire 1sqmm")
-		(property "Reference" "J5"
-			(at 2.7 -2.58 0)
-			(layer "F.SilkS")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(property "Value" "Power"
-			(at 2.7 2.58 0)
-			(layer "F.Fab")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(property "KiLib_Generator" "connector/wire"
-			(at 0 0 0)
-			(layer "F.SilkS")
-			(hide yes)
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
-		)
-		(path "/95161a7c-835f-4cb3-8f57-7be52d8578dd")
-		(sheetname "/")
-		(sheetfile "w5500-esp32.kicad_sch")
-		(attr exclude_from_pos_files)
-		(duplicate_pad_numbers_are_jumpers no)
-		(fp_rect
-			(start -2.1 -1.88)
-			(end 2.1 1.88)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "F.CrtYd")
-		)
-		(fp_rect
-			(start 3.3 -1.88)
-			(end 7.5 1.88)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
-			(fill no)
-			(layer "F.CrtYd")
-		)
-		(fp_circle
-			(center 0 0)
-			(end 1.35 0)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(fill no)
-			(layer "F.Fab")
-		)
-		(fp_circle
-			(center 5.4 0)
-			(end 6.75 0)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
-			(fill no)
-			(layer "F.Fab")
-		)
-		(fp_text user "${REFERENCE}"
-			(at 2.7 0 90)
-			(layer "F.Fab")
-			(effects
-				(font
-					(size 0.94 0.94)
-					(thickness 0.14)
-				)
-			)
-		)
-		(pad "1" thru_hole roundrect
-			(at 0 0)
-			(size 2.75 2.75)
-			(drill 1.75)
-			(net "/Power")
-			(layers "*.Cu" "*.Mask")
-			(remove_unused_layers no)
-			(roundrect_rratio 0.090909)
-		)
-		(pad "2" thru_hole circle
-			(at 5.4 0)
-			(size 2.75 2.75)
-			(drill 1.75)
-			(net "GND")
-			(layers "*.Cu" "*.Mask")
-			(remove_unused_layers no)
-		)
-		(embedded_fonts no)
-		(model "${KICAD10_3DMODEL_DIR}/Connector_Wire.3dshapes/SolderWire-1sqmm_1x02_P5.4mm_D1.4mm_OD2.7mm.step"
-			(offset
-				(xyz 0 0 0)
-			)
-			(scale
-				(xyz 1 1 1)
-			)
-			(rotate
-				(xyz 0 0 0)
-			)
-		)
-	)
 	(footprint "Connector_Wire:SolderWire-0.5sqmm_1x02_P4.6mm_D0.9mm_OD2.1mm"
 		(layer "F.Cu")
 		(uuid "f49d9e33-c28f-44d4-9ae9-73190e3a5081")
-		(at 157 197)
+		(at 157 195.2)
 		(descr "Soldered wire connection, for 2 times 0.5 mm² wires, basic insulation, conductor diameter 0.9mm, outer diameter 2.1mm, size source Multi-Contact FLEXI-E 0.50 (https://www.staubli.com/content/dam/ecs/catalogs-brochures/TM/CAB-Main-11014119-en.pdf#page=9), bend radius 3 times outer diameter")
 		(tags "connector wire 0.5sqmm")
 		(property "Reference" "J6"
 			(at 2.3 -2.28 0)
 			(layer "F.SilkS")
+			(uuid "01f2d798-70a9-42e4-a710-ffe55ad6addc")
 			(effects
 				(font
 					(size 1 1)
@@ -8593,6 +8481,7 @@
 		(property "Value" "PTT_ON"
 			(at 2.3 2.28 0)
 			(layer "F.Fab")
+			(uuid "6573cbf1-56ba-46d6-9041-d1ed9fb55147")
 			(effects
 				(font
 					(size 1 1)
@@ -8600,10 +8489,33 @@
 				)
 			)
 		)
+		(property "Datasheet" ""
+			(at 0 0 0)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "f9976490-0716-4d9e-8932-c8d367d6b4ba")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 0)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "ccf2e0ef-4e6d-4ef7-86ce-ab7bd5ccdc44")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(property "KiLib_Generator" "connector/wire"
 			(at 0 0 0)
 			(layer "F.SilkS")
 			(hide yes)
+			(uuid "173310ad-2cf8-4470-a905-6fc9f5bc4cdc")
 			(effects
 				(font
 					(size 1 1)
@@ -8625,6 +8537,7 @@
 			)
 			(fill no)
 			(layer "F.CrtYd")
+			(uuid "754aeed5-de01-4084-8816-be1eb2ccfa5f")
 		)
 		(fp_rect
 			(start 2.8 -1.58)
@@ -8635,6 +8548,7 @@
 			)
 			(fill no)
 			(layer "F.CrtYd")
+			(uuid "e337f1e1-a169-4911-a4e4-bbc7e3e0cb95")
 		)
 		(fp_circle
 			(center 0 0)
@@ -8645,6 +8559,7 @@
 			)
 			(fill no)
 			(layer "F.Fab")
+			(uuid "34ec6876-1114-427f-aaf7-c5076b41466f")
 		)
 		(fp_circle
 			(center 4.6 0)
@@ -8655,10 +8570,12 @@
 			)
 			(fill no)
 			(layer "F.Fab")
+			(uuid "8dc1f3ed-aec4-4913-a993-164a7583bc0c")
 		)
 		(fp_text user "${REFERENCE}"
 			(at 2.3 0 90)
 			(layer "F.Fab")
+			(uuid "cf9c995d-2853-4d0d-a085-cc2f2fc8e7b4")
 			(effects
 				(font
 					(size 0.79 0.79)
@@ -8670,18 +8587,20 @@
 			(at 0 0)
 			(size 2.15 2.15)
 			(drill 1.15)
-			(net "/PTT_ON")
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
 			(roundrect_rratio 0.116279)
+			(net "/PTT_ON")
+			(uuid "1b2f4679-d243-4104-a760-8843a21341ef")
 		)
 		(pad "2" thru_hole circle
 			(at 4.6 0)
 			(size 2.15 2.15)
 			(drill 1.15)
-			(net "GND")
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
+			(net "GND")
+			(uuid "b20e2e1b-39d8-4fec-9266-82cc99e89af4")
 		)
 		(embedded_fonts no)
 		(model "${KICAD10_3DMODEL_DIR}/Connector_Wire.3dshapes/SolderWire-0.5sqmm_1x02_P4.6mm_D0.9mm_OD2.1mm.step"
@@ -8693,6 +8612,466 @@
 			)
 			(rotate
 				(xyz 0 0 0)
+			)
+		)
+	)
+	(footprint "Connector_Wire:SolderWire-1sqmm_1x02_P5.4mm_D1.4mm_OD2.7mm"
+		(layer "F.Cu")
+		(uuid "f901a3de-3f83-4c10-9b34-6a4904140777")
+		(at 150 106)
+		(descr "Soldered wire connection, for 2 times 1 mm² wires, basic insulation, conductor diameter 1.4mm, outer diameter 2.7mm, size source Multi-Contact FLEXI-E 1.0 (https://www.staubli.com/content/dam/ecs/catalogs-brochures/TM/CAB-Main-11014119-en.pdf#page=9), bend radius 3 times outer diameter")
+		(tags "connector wire 1sqmm")
+		(property "Reference" "J2"
+			(at 2.7 -2.58 0)
+			(layer "F.SilkS")
+			(uuid "6275a49b-2f91-4ac1-999c-6a11fb5be382")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Value" "DC_IN_13V8"
+			(at 2.7 2.58 0)
+			(layer "F.Fab")
+			(uuid "738d2383-833a-4435-b543-533d00a0b0e9")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 0)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "93c488c8-0cfa-4f94-8a7d-714fc4dea9a5")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 0 0 0)
+			(layer "F.Fab")
+			(hide yes)
+			(uuid "427122ea-6a48-4ee8-b3c1-3eb00d1d8e66")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "KiLib_Generator" "connector/wire"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(uuid "43f8693f-ab72-4b6d-95b1-afea1e57348a")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(path "/061476d5-91d3-4976-a353-c4c41c1893bf")
+		(sheetname "/")
+		(sheetfile "w5500-esp32.kicad_sch")
+		(attr exclude_from_pos_files)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_rect
+			(start -2.1 -1.88)
+			(end 2.1 1.88)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.CrtYd")
+			(uuid "fdba530e-363d-4dc3-b249-a4c7f4f68f47")
+		)
+		(fp_rect
+			(start 3.3 -1.88)
+			(end 7.5 1.88)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.CrtYd")
+			(uuid "66b43dc4-4994-4d0a-b0be-251ddd09d87e")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 1.35 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.Fab")
+			(uuid "41308a06-34b6-4646-94da-8e82941779d3")
+		)
+		(fp_circle
+			(center 5.4 0)
+			(end 6.75 0)
+			(stroke
+				(width 0.1)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.Fab")
+			(uuid "4c5ed247-2154-4903-aee6-3691e8a89093")
+		)
+		(fp_text user "${REFERENCE}"
+			(at 2.7 0 90)
+			(layer "F.Fab")
+			(uuid "f1fd66cb-2ea1-43d6-92fa-3269caff4a20")
+			(effects
+				(font
+					(size 0.94 0.94)
+					(thickness 0.14)
+				)
+			)
+		)
+		(pad "1" thru_hole roundrect
+			(at 0 0)
+			(size 2.75 2.75)
+			(drill 1.75)
+			(layers "*.Cu" "*.Mask")
+			(remove_unused_layers no)
+			(roundrect_rratio 0.090909)
+			(net "+12V")
+			(uuid "dbe2db84-ac2e-4c0b-9075-34271d666640")
+		)
+		(pad "2" thru_hole circle
+			(at 5.4 0)
+			(size 2.75 2.75)
+			(drill 1.75)
+			(layers "*.Cu" "*.Mask")
+			(remove_unused_layers no)
+			(net "GND")
+			(uuid "1c26fa24-129e-4143-88fe-a216751b8633")
+		)
+		(embedded_fonts no)
+		(model "${KICAD10_3DMODEL_DIR}/Connector_Wire.3dshapes/SolderWire-1sqmm_1x02_P5.4mm_D1.4mm_OD2.7mm.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
+	)
+	(gr_rect
+		(start 96 97.5)
+		(end 176 217.5)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "a3f345dc-d247-45c9-918a-3a0f7429cfce")
+	)
+	(gr_circle
+		(center 103 103)
+		(end 107 103)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "ee3775c8-dc53-4d47-90c3-1e981ce4ef02")
+	)
+	(gr_circle
+		(center 103 212)
+		(end 107 212)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "b6e5ddf5-6438-46a0-8f05-577de91cccb8")
+	)
+	(gr_rect
+		(start 112.45 156.3)
+		(end 139.55 214.8)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "b5dce0d5-88a1-4bec-96c9-bce29a9ed7a8")
+	)
+	(gr_rect
+		(start 113 97.5)
+		(end 131 99.5)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "f03ab048-7f36-405a-9c2e-ffc9a60b0569")
+	)
+	(gr_rect
+		(start 118.5 215.5)
+		(end 133.5 217.5)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "66af3c28-8583-4655-9af5-153a57a02f82")
+	)
+	(gr_rect
+		(start 146 97.5)
+		(end 166 117.5)
+		(stroke
+			(width 0.15)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "1426b213-2675-481f-9540-7b9a8285636f")
+	)
+	(gr_rect
+		(start 146 197.5)
+		(end 166 217.5)
+		(stroke
+			(width 0.15)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "fe0e5216-1b3c-4044-b017-9493095a24c4")
+	)
+	(gr_rect
+		(start 151.5 110)
+		(end 171.5 130)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "f4830e8d-f3d4-4112-9672-0535adc08feb")
+	)
+	(gr_rect
+		(start 151.5 133)
+		(end 171.5 153)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "0e609b40-bf94-485e-a5f3-ec1e31e626b3")
+	)
+	(gr_rect
+		(start 151.5 156)
+		(end 171.5 176)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "300711ae-a0b6-4a42-ad37-568b0c554944")
+	)
+	(gr_circle
+		(center 156 97.5)
+		(end 164 97.5)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "8cc75835-b6ad-496a-a3e0-09232e070c2c")
+	)
+	(gr_circle
+		(center 156 217.5)
+		(end 164 217.5)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "d80b3465-9dc0-446f-9832-2f81b12628f5")
+	)
+	(gr_circle
+		(center 169 103)
+		(end 173 103)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "f5ab72a7-6e56-4a06-bb9b-75d69a125fbd")
+	)
+	(gr_circle
+		(center 169 212)
+		(end 173 212)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "832c25c1-b4bd-4fa8-80d4-0d836486661a")
+	)
+	(gr_rect
+		(start 100 100)
+		(end 172 215)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Edge.Cuts")
+		(uuid "3a83bd67-99aa-4011-a9ca-8349c8a5c8e2")
+	)
+	(gr_text "前面コネクタ裏 空き 20mm(配線用)"
+		(at 156 116.5 0)
+		(layer "Dwgs.User")
+		(uuid "7ab02963-b4d5-4945-85dd-a8e3d529961e")
+		(effects
+			(font
+				(size 0.8 0.8)
+			)
+		)
+	)
+	(gr_text "背面コネクタ裏 空き 20mm(配線用)"
+		(at 156 198.5 0)
+		(layer "Dwgs.User")
+		(uuid "846b1b8c-4041-475c-8861-20d9bc17b82c")
+		(effects
+			(font
+				(size 0.8 0.8)
+			)
+		)
+	)
+	(gr_text "前面 RJ45開口 x45-63 z10-24"
+		(at 122 95.5 0)
+		(layer "Dwgs.User")
+		(uuid "8c4e7dee-6eb5-4827-934d-72f80c2f2228")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(gr_text "W5500 Lite (USR-ES1) 23x25"
+		(at 122 128 0)
+		(layer "Dwgs.User")
+		(uuid "ad5330a9-e098-4d48-a129-bb494fd2963b")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(gr_text "Freenove ESP32 WROOM 約27x58.5(要実測)"
+		(at 126 158.5 0)
+		(layer "Dwgs.User")
+		(uuid "e733d87f-1976-44c3-af99-58e7c19e705a")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(gr_text "背面 USB-C開口 15x6 z7"
+		(at 126 219.5 0)
+		(layer "Dwgs.User")
+		(uuid "eafa0f1a-4000-4147-aa8e-3bf50975e9f4")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(gr_text "ケース内壁 80x120"
+		(at 136 98.8 0)
+		(layer "Dwgs.User")
+		(uuid "66a2f493-6a7a-4a37-89ef-1530c309e4c5")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(gr_text "前面 丸穴 Ø16 z17.5"
+		(at 156 94 0)
+		(layer "Dwgs.User")
+		(uuid "b6b845fa-d411-4d08-9ff0-6714e423bb11")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(gr_text "背面 丸穴 Ø16 z17.5"
+		(at 156 221 0)
+		(layer "Dwgs.User")
+		(uuid "c5d56d49-7739-4804-aebd-e5875e4374a0")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(gr_text "放熱器 U1 20x20"
+		(at 161.5 120 0)
+		(layer "Dwgs.User")
+		(uuid "ba28ba1a-7d8c-4ba2-9f40-93d2ae0d04be")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(gr_text "放熱器 U2 20x20"
+		(at 161.5 143 0)
+		(layer "Dwgs.User")
+		(uuid "5110f35e-927e-4224-963d-3a9605dd4fd8")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(gr_text "放熱器 Q5 20x20"
+		(at 161.5 166 0)
+		(layer "Dwgs.User")
+		(uuid "191b8733-eda5-475d-998e-fecdc9481f5e")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
 			)
 		)
 	)
