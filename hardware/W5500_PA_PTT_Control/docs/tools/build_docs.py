@@ -6,7 +6,7 @@
 Markdownを見出し・段落・表・箇条書き・コード・引用の部品に分け、Word版はpython-docxで、
 PDF版はHTMLにしてから同じフォルダのhtml2pdf.swift(macOS標準の文書描画機能で印刷する)で
 作る。対応している書式は、このフォルダの文書で使っているもの(見出し・表・箇条書き・
-番号付きリスト・コード・引用・太字・インラインコード・リンク・front matter)だけ。
+番号付きリスト・コード・引用・太字・インラインコード・リンク・front matter・表の欄の中の改行`<br>`)だけ。
 """
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ from docx.shared import Pt, RGBColor
 
 DOCS_DIR = Path(__file__).resolve().parents[1]
 TOOLS_DIR = Path(__file__).resolve().parent
-# Word版・PDF版を作る文書(日本語版のみ。英語版はMarkdownのみで管理する)。
+# Word版・PDF版を作る文書(どちらも日英併記)。
 TARGETS = ["W5500_PA_PTT_Control_仕様書.md", "MCU1_J1_W5500_接続一覧.md"]
 
 CSS = """
@@ -158,7 +158,15 @@ def spans(text: str, bold: bool = False) -> list[tuple[str, bool, bool]]:
 
 # ---------------------------------------------------------------- HTML(PDF用)
 
+BR_RE = re.compile(r"<br\s*/?>")
+
+
 def inline_html(text: str) -> str:
+    """インライン書式をHTMLにする。表の欄の中の`<br>`(日本語と英語の区切り)は改行のまま残す。"""
+    return "<br>".join(_inline_html(t) for t in BR_RE.split(text))
+
+
+def _inline_html(text: str) -> str:
     parts = []
     for s, b, c in spans(text):
         s = html.escape(s)
@@ -208,6 +216,13 @@ def to_html(blocks: list[tuple]) -> str:
 # ---------------------------------------------------------------- Word
 
 def add_runs(paragraph, text: str, size: float | None = None) -> None:
+    for k, piece in enumerate(BR_RE.split(text)):
+        if k:
+            paragraph.add_run().add_break()  # 表の欄の中の`<br>`は改行にする
+        _add_runs(paragraph, piece, size)
+
+
+def _add_runs(paragraph, text: str, size: float | None = None) -> None:
     for s, b, c in spans(text):
         run = paragraph.add_run(s)
         run.bold = b or None
