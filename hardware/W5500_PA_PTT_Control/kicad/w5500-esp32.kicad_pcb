@@ -90,7 +90,7 @@
 	(footprint "project_footprints:W5500_Lite_2x06_P2.54mm_15.24mm"
 		(layer "F.Cu")
 		(uuid "0796206d-85f2-4c2c-8206-e5a06a5eb69d")
-		(at 104 127)
+		(at 114.38 140)
 		(descr "W5500 Lite breakout, 6+6 THT pins, 2.54mm pitch, ~15.24mm row spacing (APPROXIMATE - verify against real board before fab)")
 		(tags "W5500 Lite ethernet APPROXIMATE")
 		(property "Reference" "A1"
@@ -344,7 +344,7 @@
 	(footprint "Capacitor_THT:CP_Radial_D5.0mm_P2.00mm"
 		(layer "F.Cu")
 		(uuid "0c300403-0ee6-4446-a2e1-4c55aa766138")
-		(at 138 120)
+		(at 146.5 131)
 		(descr "CP, Radial series, Radial, pin pitch=2.00mm, diameter=5mm, height=7mm, Electrolytic Capacitor")
 		(tags "CP Radial series Radial pin pitch 2.00mm diameter 5mm height 7mm Electrolytic Capacitor")
 		(property "Reference" "C2"
@@ -1706,7 +1706,7 @@
 	(footprint "Capacitor_THT:CP_Radial_D5.0mm_P2.00mm"
 		(layer "F.Cu")
 		(uuid "1609eb2e-8669-4393-9e58-93530aba7792")
-		(at 138 146)
+		(at 146.5 176)
 		(descr "CP, Radial series, Radial, pin pitch=2.00mm, diameter=5mm, height=7mm, Electrolytic Capacitor")
 		(tags "CP Radial series Radial pin pitch 2.00mm diameter 5mm height 7mm Electrolytic Capacitor")
 		(property "Reference" "C3"
@@ -3068,11 +3068,11 @@
 	(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical"
 		(layer "F.Cu")
 		(uuid "3cf9bc52-3be0-4cd0-942c-b2d663902177")
-		(at 135 204)
+		(at 107.5 172 90)
 		(descr "Resistor, Axial_DIN0207 series, Axial, Vertical, pin pitch=5.08mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Vertical pin pitch 5.08mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R9"
-			(at 2.54 -2.37 0)
+			(at 2.54 -2.37 90)
 			(layer "F.SilkS")
 			(uuid "6d6d9008-ed98-46a8-83f3-17b9a7d9bfec")
 			(effects
@@ -3083,7 +3083,7 @@
 			)
 		)
 		(property "Value" "10k"
-			(at 2.54 2.37 0)
+			(at 2.54 2.37 90)
 			(layer "F.Fab")
 			(uuid "f693df28-d8dd-4f7f-92bb-c44ddc90f858")
 			(effects
@@ -3094,7 +3094,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 0 0 0)
+			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "244e199e-3a42-486b-84bc-549cc053684b")
@@ -3105,7 +3105,7 @@
 			)
 		)
 		(property "Description" "W5500 RST pull-up to +3V3_A - keeps RST inactive(High) by default; GPIO21(J1 pin32) pulls it Low to reset"
-			(at 0 0 0)
+			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "caa7b02c-92fd-40c7-92f8-2417fa7c41a8")
@@ -3116,7 +3116,7 @@
 			)
 		)
 		(property "KiLib_Generator" "resistor/THT"
-			(at 0 0 0)
+			(at 0 0 90)
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "5bb60ebc-1c7a-4bec-bda9-fb3fe8e5eed4")
@@ -3193,7 +3193,7 @@
 			(uuid "8ed0c835-83dc-44df-b49c-bd86f7db5477")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 2.54 -2.37 0)
+			(at 2.54 -2.37 90)
 			(layer "F.Fab")
 			(uuid "1a4eef6d-ba91-45b6-ade2-f9e1d19f4704")
 			(effects
@@ -3204,7 +3204,7 @@
 			)
 		)
 		(pad "1" thru_hole circle
-			(at 0 0)
+			(at 0 0 90)
 			(size 1.6 1.6)
 			(drill 0.8)
 			(layers "*.Cu" "*.Mask")
@@ -3214,7 +3214,7 @@
 			(uuid "ed1ab99e-4ced-444f-93d6-742f4f3b5e7e")
 		)
 		(pad "2" thru_hole circle
-			(at 5.08 0)
+			(at 5.08 0 90)
 			(size 1.6 1.6)
 			(drill 0.8)
 			(layers "*.Cu" "*.Mask")
@@ -3744,11 +3744,11 @@
 	(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical"
 		(layer "F.Cu")
 		(uuid "5d5f498d-5a7c-46a4-82a5-d55a76db2bf5")
-		(at 135 196)
+		(at 107.5 154 90)
 		(descr "Resistor, Axial_DIN0207 series, Axial, Vertical, pin pitch=5.08mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Vertical pin pitch 5.08mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R10"
-			(at 2.54 -2.37 0)
+			(at 2.54 -2.37 90)
 			(layer "F.SilkS")
 			(uuid "ea98bde2-a79c-41e7-93d0-9022d31c1ea0")
 			(effects
@@ -3759,7 +3759,7 @@
 			)
 		)
 		(property "Value" "10k"
-			(at 2.54 2.37 0)
+			(at 2.54 2.37 90)
 			(layer "F.Fab")
 			(uuid "d00bbb90-e59f-4ddd-a031-72fd4f84a410")
 			(effects
@@ -3770,7 +3770,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 0 0 0)
+			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "726279e3-400c-4475-9267-0525290832aa")
@@ -3781,7 +3781,7 @@
 			)
 		)
 		(property "Description" "Power(12V)電源表示用LED(D1)の電流制限抵抗"
-			(at 0 0 0)
+			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "03a902bb-92a5-4b09-a877-3749a2d733a6")
@@ -3792,7 +3792,7 @@
 			)
 		)
 		(property "KiLib_Generator" "resistor/THT"
-			(at 0 0 0)
+			(at 0 0 90)
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "ab1deeaf-bafe-42f9-83e8-e2523aa24ca1")
@@ -3869,7 +3869,7 @@
 			(uuid "f60ef4db-4a12-4918-92f4-faa474245f20")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 2.54 -2.37 0)
+			(at 2.54 -2.37 90)
 			(layer "F.Fab")
 			(uuid "a6f83fe3-4687-4ff8-ae78-966097d9443a")
 			(effects
@@ -3880,7 +3880,7 @@
 			)
 		)
 		(pad "1" thru_hole circle
-			(at 0 0)
+			(at 0 0 90)
 			(size 1.6 1.6)
 			(drill 0.8)
 			(layers "*.Cu" "*.Mask")
@@ -3890,7 +3890,7 @@
 			(uuid "6ef6354f-9604-490c-9f38-d2285d1295b5")
 		)
 		(pad "2" thru_hole circle
-			(at 5.08 0)
+			(at 5.08 0 90)
 			(size 1.6 1.6)
 			(drill 0.8)
 			(layers "*.Cu" "*.Mask")
@@ -3915,7 +3915,7 @@
 	(footprint "LED_THT:LED_D3.0mm"
 		(layer "F.Cu")
 		(uuid "679cfd09-1524-497d-bc5a-c533dd73a834")
-		(at 147 196)
+		(at 147 198)
 		(descr "LED, diameter 3.0mm, 2 pins, generated by kicad-footprint-generator")
 		(tags "LED")
 		(property "Reference" "D1"
@@ -4148,11 +4148,11 @@
 	(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical"
 		(layer "F.Cu")
 		(uuid "6a290613-45ed-4fae-a943-91251b979f56")
-		(at 135 180)
+		(at 104 118 90)
 		(descr "Resistor, Axial_DIN0207 series, Axial, Vertical, pin pitch=5.08mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Vertical pin pitch 5.08mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R6"
-			(at 2.54 -2.37 0)
+			(at 2.54 -2.37 90)
 			(layer "F.SilkS")
 			(uuid "e8ef6254-daf0-4388-91af-d175fdabd6db")
 			(effects
@@ -4163,7 +4163,7 @@
 			)
 		)
 		(property "Value" "510"
-			(at 2.54 2.37 0)
+			(at 2.54 2.37 90)
 			(layer "F.Fab")
 			(uuid "620ebe21-bd3d-4a48-a292-a87a793756ad")
 			(effects
@@ -4174,7 +4174,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 0 0 0)
+			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "46f83acb-4628-43b8-9351-3423f9f9c8a3")
@@ -4185,7 +4185,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 0 0 0)
+			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "e4e373d5-addc-4ea6-8558-5072e1bfd433")
@@ -4196,7 +4196,7 @@
 			)
 		)
 		(property "KiLib_Generator" "resistor/THT"
-			(at 0 0 0)
+			(at 0 0 90)
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "626a20d0-7bf7-4553-9c81-28b3ac2e43ba")
@@ -4273,7 +4273,7 @@
 			(uuid "9e50f0dd-1be4-47a5-8bed-d86cabe7f7f8")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 2.54 -2.37 0)
+			(at 2.54 -2.37 90)
 			(layer "F.Fab")
 			(uuid "819aa958-a8d4-4b66-b0b8-59ce53a7382a")
 			(effects
@@ -4284,7 +4284,7 @@
 			)
 		)
 		(pad "1" thru_hole circle
-			(at 0 0)
+			(at 0 0 90)
 			(size 1.6 1.6)
 			(drill 0.8)
 			(layers "*.Cu" "*.Mask")
@@ -4294,7 +4294,7 @@
 			(uuid "ed459b00-e5b1-4b08-ae34-774222806c01")
 		)
 		(pad "2" thru_hole circle
-			(at 5.08 0)
+			(at 5.08 0 90)
 			(size 1.6 1.6)
 			(drill 0.8)
 			(layers "*.Cu" "*.Mask")
@@ -4319,11 +4319,11 @@
 	(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical"
 		(layer "F.Cu")
 		(uuid "27da16de-1b2c-416f-8268-fc07975f6518")
-		(at 135 192)
+		(at 104 145 90)
 		(descr "Resistor, Axial_DIN0207 series, Axial, Vertical, pin pitch=5.08mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Vertical pin pitch 5.08mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R12"
-			(at 2.54 -2.37 0)
+			(at 2.54 -2.37 90)
 			(layer "F.SilkS")
 			(uuid "5595aa2e-dfba-40c1-a097-08840a7b0164")
 			(effects
@@ -4334,7 +4334,7 @@
 			)
 		)
 		(property "Value" "10k"
-			(at 2.54 2.37 0)
+			(at 2.54 2.37 90)
 			(layer "F.Fab")
 			(uuid "950d92de-a385-4087-9bd3-f58b73610de8")
 			(effects
@@ -4345,7 +4345,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 0 0 0)
+			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "47b9496b-403f-4a29-a740-f8cea2d69877")
@@ -4356,7 +4356,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 0 0 0)
+			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "6dbca250-82d3-4794-b0c7-f0ce8dce1c7d")
@@ -4367,7 +4367,7 @@
 			)
 		)
 		(property "KiLib_Generator" "resistor/THT"
-			(at 0 0 0)
+			(at 0 0 90)
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "7b8d367d-415c-469e-b498-06a32953443c")
@@ -4444,7 +4444,7 @@
 			(uuid "0d00398d-c99e-476b-adad-8a31fc57bdfa")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 2.54 -2.37 0)
+			(at 2.54 -2.37 90)
 			(layer "F.Fab")
 			(uuid "d5f05359-905a-437b-a437-7384fd8ba8db")
 			(effects
@@ -4455,7 +4455,7 @@
 			)
 		)
 		(pad "1" thru_hole circle
-			(at 0 0)
+			(at 0 0 90)
 			(size 1.6 1.6)
 			(drill 0.8)
 			(layers "*.Cu" "*.Mask")
@@ -4465,7 +4465,7 @@
 			(uuid "cee8d89c-21af-4632-8e55-14f94bb488cb")
 		)
 		(pad "2" thru_hole circle
-			(at 5.08 0)
+			(at 5.08 0 90)
 			(size 1.6 1.6)
 			(drill 0.8)
 			(layers "*.Cu" "*.Mask")
@@ -4490,7 +4490,7 @@
 	(footprint "project_footprints:Socket_2x20_P2.54mm_25.4mm_DevKitC"
 		(layer "F.Cu")
 		(uuid "6e7a76d5-dac7-460b-a139-409dccf3ea49")
-		(at 104 146)
+		(at 113.3 158)
 		(descr "Dual-row 40-pin female socket, 2.54mm pitch, 25.4mm row spacing, for ESP32 DevKitC-style 40pin wide boards")
 		(tags "ESP32 DevKitC socket 40pin 25.4mm")
 		(property "Reference" "J1"
@@ -5272,11 +5272,11 @@
 	(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical"
 		(layer "F.Cu")
 		(uuid "7b1993ac-32ca-4655-bfe7-4a705f1b3ad8")
-		(at 135 188)
+		(at 104 136 90)
 		(descr "Resistor, Axial_DIN0207 series, Axial, Vertical, pin pitch=5.08mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Vertical pin pitch 5.08mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R8"
-			(at 2.54 -2.37 0)
+			(at 2.54 -2.37 90)
 			(layer "F.SilkS")
 			(uuid "3ab08159-0689-4c5b-8180-a2b04bccddd9")
 			(effects
@@ -5287,7 +5287,7 @@
 			)
 		)
 		(property "Value" "1k"
-			(at 2.54 2.37 0)
+			(at 2.54 2.37 90)
 			(layer "F.Fab")
 			(uuid "519103f5-9180-4583-a9a8-1378a04811c6")
 			(effects
@@ -5298,7 +5298,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 0 0 0)
+			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "4ee18692-636c-40e1-a9d7-b0f451405e49")
@@ -5309,7 +5309,7 @@
 			)
 		)
 		(property "Description" "Q5 gate pull-up to PA_COM (source) - holds PMOS OFF when Q1 is off"
-			(at 0 0 0)
+			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "a1d32c7f-1b34-4b4c-ae25-7a5ca2d46c86")
@@ -5320,7 +5320,7 @@
 			)
 		)
 		(property "KiLib_Generator" "resistor/THT"
-			(at 0 0 0)
+			(at 0 0 90)
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "14dea98a-93f3-461d-86ca-2f34f713dd39")
@@ -5397,7 +5397,7 @@
 			(uuid "a46d87fe-75ec-4f77-a8cb-4119c86913a1")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 2.54 -2.37 0)
+			(at 2.54 -2.37 90)
 			(layer "F.Fab")
 			(uuid "10de5f0a-0384-4a3d-8f5c-c85dec3c8641")
 			(effects
@@ -5408,7 +5408,7 @@
 			)
 		)
 		(pad "1" thru_hole circle
-			(at 0 0)
+			(at 0 0 90)
 			(size 1.6 1.6)
 			(drill 0.8)
 			(layers "*.Cu" "*.Mask")
@@ -5418,7 +5418,7 @@
 			(uuid "c896197a-0c6a-48f0-884e-73299aa71cc4")
 		)
 		(pad "2" thru_hole circle
-			(at 5.08 0)
+			(at 5.08 0 90)
 			(size 1.6 1.6)
 			(drill 0.8)
 			(layers "*.Cu" "*.Mask")
@@ -5443,7 +5443,7 @@
 	(footprint "Package_TO_SOT_THT:TO-92_Inline"
 		(layer "F.Cu")
 		(uuid "984384f6-adab-48ba-8d3e-ae202e880d4e")
-		(at 147 181)
+		(at 147 184)
 		(descr "TO-92 leads in-line, narrow, oval pads, drill 0.75mm (see NXP sot054_po.pdf)")
 		(tags "to-92 sc-43 sc-43a sot54 PA33 transistor")
 		(property "Reference" "Q1"
@@ -5696,7 +5696,7 @@
 	(footprint "Capacitor_THT:CP_Radial_D5.0mm_P2.00mm"
 		(layer "F.Cu")
 		(uuid "a7664167-9da3-4d66-ac2b-29c9c6b29579")
-		(at 138 134)
+		(at 146.5 154)
 		(descr "CP, Radial series, Radial, pin pitch=2.00mm, diameter=5mm, height=7mm, Electrolytic Capacitor")
 		(tags "CP Radial series Radial pin pitch 2.00mm diameter 5mm height 7mm Electrolytic Capacitor")
 		(property "Reference" "C1"
@@ -7058,7 +7058,7 @@
 	(footprint "LED_THT:LED_D3.0mm"
 		(layer "F.Cu")
 		(uuid "bc5260d1-e97b-476f-b799-9974bc7d864b")
-		(at 147 202)
+		(at 147 205)
 		(descr "LED, diameter 3.0mm, 2 pins, generated by kicad-footprint-generator")
 		(tags "LED")
 		(property "Reference" "D2"
@@ -7291,11 +7291,11 @@
 	(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical"
 		(layer "F.Cu")
 		(uuid "bea2ab61-576e-4ca4-a29c-e28b7c95c16c")
-		(at 135 184)
+		(at 104 127 90)
 		(descr "Resistor, Axial_DIN0207 series, Axial, Vertical, pin pitch=5.08mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Vertical pin pitch 5.08mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R7"
-			(at 2.54 -2.37 0)
+			(at 2.54 -2.37 90)
 			(layer "F.SilkS")
 			(uuid "e2e4cb99-2d48-42a1-9a8e-76c2b3b17a9e")
 			(effects
@@ -7306,7 +7306,7 @@
 			)
 		)
 		(property "Value" "510"
-			(at 2.54 2.37 0)
+			(at 2.54 2.37 90)
 			(layer "F.Fab")
 			(uuid "ba8b92d6-11eb-43c6-9f8b-20041cc9a092")
 			(effects
@@ -7317,7 +7317,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 0 0 0)
+			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "c24fb622-dcad-4655-bb9f-cd4378357b40")
@@ -7328,7 +7328,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 0 0 0)
+			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "7119fbf8-378a-419b-9cc3-3339710b268f")
@@ -7339,7 +7339,7 @@
 			)
 		)
 		(property "KiLib_Generator" "resistor/THT"
-			(at 0 0 0)
+			(at 0 0 90)
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "22fae019-f3f4-4f14-90f7-b6b3d47bb6af")
@@ -7416,7 +7416,7 @@
 			(uuid "102d1450-565b-431b-ad0f-9a399133347b")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 2.54 -2.37 0)
+			(at 2.54 -2.37 90)
 			(layer "F.Fab")
 			(uuid "8167193b-375e-4a45-83e1-946b25cff2fc")
 			(effects
@@ -7427,7 +7427,7 @@
 			)
 		)
 		(pad "1" thru_hole circle
-			(at 0 0)
+			(at 0 0 90)
 			(size 1.6 1.6)
 			(drill 0.8)
 			(layers "*.Cu" "*.Mask")
@@ -7437,7 +7437,7 @@
 			(uuid "5eecad5a-b333-47d7-ad19-bb8ca9875b3e")
 		)
 		(pad "2" thru_hole circle
-			(at 5.08 0)
+			(at 5.08 0 90)
 			(size 1.6 1.6)
 			(drill 0.8)
 			(layers "*.Cu" "*.Mask")
@@ -7462,7 +7462,7 @@
 	(footprint "Package_TO_SOT_THT:TO-92_Inline"
 		(layer "F.Cu")
 		(uuid "d5d58255-4db4-47cc-a5ca-f73ce36ca55e")
-		(at 147 188)
+		(at 147 191)
 		(descr "TO-92 leads in-line, narrow, oval pads, drill 0.75mm (see NXP sot054_po.pdf)")
 		(tags "to-92 sc-43 sc-43a sot54 PA33 transistor")
 		(property "Reference" "Q3"
@@ -7715,11 +7715,11 @@
 	(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical"
 		(layer "F.Cu")
 		(uuid "f4928235-155d-4298-9e69-0d898893eac7")
-		(at 135 200)
+		(at 107.5 163 90)
 		(descr "Resistor, Axial_DIN0207 series, Axial, Vertical, pin pitch=5.08mm, 0.25W = 1/4W, length*diameter=6.3*2.5mm^2, http://cdn-reichelt.de/documents/datenblatt/B400/1_4W%23YAG.pdf")
 		(tags "Resistor Axial_DIN0207 series Axial Vertical pin pitch 5.08mm 0.25W = 1/4W length 6.3mm diameter 2.5mm")
 		(property "Reference" "R11"
-			(at 2.54 -2.37 0)
+			(at 2.54 -2.37 90)
 			(layer "F.SilkS")
 			(uuid "df8eaddd-7cd6-4293-8cf6-5bc12569fd1f")
 			(effects
@@ -7730,7 +7730,7 @@
 			)
 		)
 		(property "Value" "10k"
-			(at 2.54 2.37 0)
+			(at 2.54 2.37 90)
 			(layer "F.Fab")
 			(uuid "ba4d041c-d7b5-46c8-a5b2-ae8e83ead804")
 			(effects
@@ -7741,7 +7741,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 0 0 0)
+			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "ac2c70e2-ff43-4219-b0ea-c65f2e3d4755")
@@ -7752,7 +7752,7 @@
 			)
 		)
 		(property "Description" "+12V電源(未スイッチ・入力側)表示用LED(D2)の電流制限抵抗"
-			(at 0 0 0)
+			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "bab7fc4a-4a1e-4be1-ae40-f0bced7d2242")
@@ -7763,7 +7763,7 @@
 			)
 		)
 		(property "KiLib_Generator" "resistor/THT"
-			(at 0 0 0)
+			(at 0 0 90)
 			(layer "F.SilkS")
 			(hide yes)
 			(uuid "ec4186f7-27cd-40f8-817f-251c1d150bfd")
@@ -7840,7 +7840,7 @@
 			(uuid "b4ae6761-9043-4637-99ef-f6e40ae57106")
 		)
 		(fp_text user "${REFERENCE}"
-			(at 2.54 -2.37 0)
+			(at 2.54 -2.37 90)
 			(layer "F.Fab")
 			(uuid "6c350b8b-a53f-4f80-b4d1-bf54e3782be7")
 			(effects
@@ -7851,7 +7851,7 @@
 			)
 		)
 		(pad "1" thru_hole circle
-			(at 0 0)
+			(at 0 0 90)
 			(size 1.6 1.6)
 			(drill 0.8)
 			(layers "*.Cu" "*.Mask")
@@ -7861,7 +7861,7 @@
 			(uuid "058973fe-a9ed-432e-b2ed-144611210915")
 		)
 		(pad "2" thru_hole circle
-			(at 5.08 0)
+			(at 5.08 0 90)
 			(size 1.6 1.6)
 			(drill 0.8)
 			(layers "*.Cu" "*.Mask")
@@ -7894,58 +7894,509 @@
 		(layer "Edge.Cuts")
 		(uuid "3a83bd67-99aa-4011-a9ca-8349c8a5c8e2")
 	)
-	(gr_rect
-		(start 102 101)
-		(end 127 141)
+	(footprint "MountingHole:MountingHole_3.2mm_M3"
+		(layer "F.Cu")
+		(uuid "5115a502-1e46-47c9-954c-2883091b0cda")
+		(at 103 103)
+		(descr "Mounting Hole 3.2mm, M3, no annular, generated by kicad-footprint-generator mountinghole.py")
+		(tags "mountinghole M3")
+		(property "Reference" "H1"
+			(at 0 -4.15 0)
+			(layer "F.SilkS")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Value" "MountingHole_3.2mm_M3"
+			(at 0 4.15 0)
+			(layer "F.Fab")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "KiLib_Generator" "mounting_hardware/mounting_hole"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(attr board_only exclude_from_pos_files exclude_from_bom)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 3.2 0)
+			(stroke
+				(width 0.15)
+				(type solid)
+			)
+			(fill no)
+			(layer "Cmts.User")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 3.45 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.CrtYd")
+		)
+		(fp_text user "${REFERENCE}"
+			(at 0 0 0)
+			(layer "F.Fab")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(pad "" np_thru_hole circle
+			(at 0 0)
+			(size 3.2 3.2)
+			(drill 3.2)
+			(layers "*.Cu" "*.Mask")
+		)
+		(embedded_fonts no)
+	)
+	(footprint "MountingHole:MountingHole_3.2mm_M3"
+		(layer "F.Cu")
+		(uuid "364825dd-3009-4e4b-acb3-3e0599f72ad8")
+		(at 169 103)
+		(descr "Mounting Hole 3.2mm, M3, no annular, generated by kicad-footprint-generator mountinghole.py")
+		(tags "mountinghole M3")
+		(property "Reference" "H2"
+			(at 0 -4.15 0)
+			(layer "F.SilkS")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Value" "MountingHole_3.2mm_M3"
+			(at 0 4.15 0)
+			(layer "F.Fab")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "KiLib_Generator" "mounting_hardware/mounting_hole"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(attr board_only exclude_from_pos_files exclude_from_bom)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 3.2 0)
+			(stroke
+				(width 0.15)
+				(type solid)
+			)
+			(fill no)
+			(layer "Cmts.User")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 3.45 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.CrtYd")
+		)
+		(fp_text user "${REFERENCE}"
+			(at 0 0 0)
+			(layer "F.Fab")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(pad "" np_thru_hole circle
+			(at 0 0)
+			(size 3.2 3.2)
+			(drill 3.2)
+			(layers "*.Cu" "*.Mask")
+		)
+		(embedded_fonts no)
+	)
+	(footprint "MountingHole:MountingHole_3.2mm_M3"
+		(layer "F.Cu")
+		(uuid "e92b8d77-18a6-47a3-8e66-2430cb99aa09")
+		(at 103 212)
+		(descr "Mounting Hole 3.2mm, M3, no annular, generated by kicad-footprint-generator mountinghole.py")
+		(tags "mountinghole M3")
+		(property "Reference" "H3"
+			(at 0 -4.15 0)
+			(layer "F.SilkS")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Value" "MountingHole_3.2mm_M3"
+			(at 0 4.15 0)
+			(layer "F.Fab")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "KiLib_Generator" "mounting_hardware/mounting_hole"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(attr board_only exclude_from_pos_files exclude_from_bom)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 3.2 0)
+			(stroke
+				(width 0.15)
+				(type solid)
+			)
+			(fill no)
+			(layer "Cmts.User")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 3.45 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.CrtYd")
+		)
+		(fp_text user "${REFERENCE}"
+			(at 0 0 0)
+			(layer "F.Fab")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(pad "" np_thru_hole circle
+			(at 0 0)
+			(size 3.2 3.2)
+			(drill 3.2)
+			(layers "*.Cu" "*.Mask")
+		)
+		(embedded_fonts no)
+	)
+	(footprint "MountingHole:MountingHole_3.2mm_M3"
+		(layer "F.Cu")
+		(uuid "78061073-ba91-43da-8b7c-7224e6b46196")
+		(at 169 212)
+		(descr "Mounting Hole 3.2mm, M3, no annular, generated by kicad-footprint-generator mountinghole.py")
+		(tags "mountinghole M3")
+		(property "Reference" "H4"
+			(at 0 -4.15 0)
+			(layer "F.SilkS")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "Value" "MountingHole_3.2mm_M3"
+			(at 0 4.15 0)
+			(layer "F.Fab")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(property "KiLib_Generator" "mounting_hardware/mounting_hole"
+			(at 0 0 0)
+			(layer "F.SilkS")
+			(hide yes)
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(attr board_only exclude_from_pos_files exclude_from_bom)
+		(duplicate_pad_numbers_are_jumpers no)
+		(fp_circle
+			(center 0 0)
+			(end 3.2 0)
+			(stroke
+				(width 0.15)
+				(type solid)
+			)
+			(fill no)
+			(layer "Cmts.User")
+		)
+		(fp_circle
+			(center 0 0)
+			(end 3.45 0)
+			(stroke
+				(width 0.05)
+				(type solid)
+			)
+			(fill no)
+			(layer "F.CrtYd")
+		)
+		(fp_text user "${REFERENCE}"
+			(at 0 0 0)
+			(layer "F.Fab")
+			(effects
+				(font
+					(size 1 1)
+					(thickness 0.15)
+				)
+			)
+		)
+		(pad "" np_thru_hole circle
+			(at 0 0)
+			(size 3.2 3.2)
+			(drill 3.2)
+			(layers "*.Cu" "*.Mask")
+		)
+		(embedded_fonts no)
+	)
+	(gr_circle
+		(center 103 103)
+		(end 107 103)
 		(stroke
 			(width 0.1)
 			(type default)
 		)
 		(fill no)
 		(layer "Dwgs.User")
-		(uuid "1199068e-a286-47a0-ba96-50ff5bf5e9b0")
+		(uuid "efa3b15e-d860-4c86-bb3d-20dd1b1f6e0b")
 	)
-	(gr_text "W5500モジュール(RJ45は上端側)"
-		(at 114.5 104 0)
-		(layer "Dwgs.User")
-		(uuid "59e581d9-7d7d-4c12-b817-8544c4faafb8")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "寸法は実データで更新"
-		(at 114.5 106 0)
-		(layer "Dwgs.User")
-		(uuid "719b9714-1896-4659-8bd6-196d1e12be5f")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_rect
-		(start 102 143)
-		(end 130 199)
+	(gr_circle
+		(center 169 103)
+		(end 173 103)
 		(stroke
 			(width 0.1)
 			(type default)
 		)
 		(fill no)
 		(layer "Dwgs.User")
-		(uuid "27b7635c-bcbd-48b3-ba46-63bef80d8994")
+		(uuid "f8272d2a-581b-4ca8-b13f-66ca38d6d520")
 	)
-	(gr_text "ESP32 DevKitC(USBは下端側)"
-		(at 116 197 0)
+	(gr_circle
+		(center 103 212)
+		(end 107 212)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
 		(layer "Dwgs.User")
-		(uuid "9d270674-8ae2-4b79-8380-71d2274261b8")
+		(uuid "25780f61-d8c0-403a-998f-ea7811f978e3")
+	)
+	(gr_circle
+		(center 169 212)
+		(end 173 212)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "3a78c1bf-57ff-48b7-bf4c-1d13122b98b6")
+	)
+	(gr_rect
+		(start 96 97.5)
+		(end 176 217.5)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "ce796a96-8dc3-4c05-8f38-cb6e967954e3")
+	)
+	(gr_text "ケース内壁 80x120"
+		(at 136 98.8 0)
+		(layer "Dwgs.User")
+		(uuid "460c4f82-9371-41a5-9317-eff32fa46465")
 		(effects
 			(font
-				(size 1 1)
-				(thickness 0.15)
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(gr_rect
+		(start 113 97.5)
+		(end 131 99.5)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "ee8c157d-3b11-40b3-8c75-6be787385830")
+	)
+	(gr_text "前面 RJ45開口 x45-63 z10-24"
+		(at 122 95.5 0)
+		(layer "Dwgs.User")
+		(uuid "2d684533-8745-4c01-9aee-1ad43e9f45ad")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(gr_circle
+		(center 156 97.5)
+		(end 164 97.5)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "43ae2a83-c14e-4c3b-b0af-72e4b31d62c9")
+	)
+	(gr_text "前面 丸穴 Ø16 z17.5"
+		(at 156 94 0)
+		(layer "Dwgs.User")
+		(uuid "694e2cb0-cd16-4c23-913a-77243324fced")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(gr_circle
+		(center 156 217.5)
+		(end 164 217.5)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "ce94aaab-7bb2-4636-9666-f0b9c549f559")
+	)
+	(gr_text "背面 丸穴 Ø16 z17.5"
+		(at 156 221 0)
+		(layer "Dwgs.User")
+		(uuid "61e248c9-d14a-4139-9d09-c4dbe1068f03")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(gr_rect
+		(start 118.5 215.5)
+		(end 133.5 217.5)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "7e0b5ee2-84f1-489d-a5bd-e81450494e13")
+	)
+	(gr_text "背面 USB開口 15x6 z7"
+		(at 126 219.5 0)
+		(layer "Dwgs.User")
+		(uuid "40562c24-fd2a-4866-92fa-bea76d0b43c6")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(gr_rect
+		(start 109.5 101)
+		(end 134.5 154)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "809361c8-e653-483e-bd05-1d966357998f")
+	)
+	(gr_text "W5500モジュール(寸法は実データで更新)"
+		(at 122 104 0)
+		(layer "Dwgs.User")
+		(uuid "6d0d03c7-c2c2-4153-84e7-53dcd31dc138")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(gr_rect
+		(start 112 156)
+		(end 140 212)
+		(stroke
+			(width 0.1)
+			(type default)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "9235b07a-6465-4231-a290-e56389c2daae")
+	)
+	(gr_text "ESP32 DevKitC"
+		(at 126 208 0)
+		(layer "Dwgs.User")
+		(uuid "aad1e745-41bc-435a-be44-93f3eae7deeb")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
 			)
 		)
 	)
@@ -7958,27 +8409,16 @@
 		)
 		(fill no)
 		(layer "Dwgs.User")
-		(uuid "bd2a3db9-ca4d-4e5c-abed-e3574d98a3c9")
+		(uuid "76d25baa-f358-44d0-a182-0fe183c196fb")
 	)
-	(gr_text "放熱器 U1"
-		(at 161.5 119 0)
+	(gr_text "放熱器 U1 20x20"
+		(at 161.5 120 0)
 		(layer "Dwgs.User")
-		(uuid "4c33a209-940d-4a8b-a2b3-85893505bdc5")
+		(uuid "065eb654-7010-47b2-969d-02383d726c80")
 		(effects
 			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "20x20"
-		(at 161.5 121 0)
-		(layer "Dwgs.User")
-		(uuid "adf1830c-db1a-4ad8-8416-3147e0f927ba")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
+				(size 0.8 0.8)
+				(thickness 0.12)
 			)
 		)
 	)
@@ -7991,27 +8431,16 @@
 		)
 		(fill no)
 		(layer "Dwgs.User")
-		(uuid "144367cb-5f1d-4d41-8b06-c14a2af722d8")
+		(uuid "6d7eaef7-792a-4b0d-a049-63308c8f1e1a")
 	)
-	(gr_text "放熱器 U2"
-		(at 161.5 142 0)
+	(gr_text "放熱器 U2 20x20"
+		(at 161.5 143 0)
 		(layer "Dwgs.User")
-		(uuid "8c150349-729f-4103-b336-6defeb4f89ba")
+		(uuid "c5868e62-d4bf-4c11-b91c-3c63730618c4")
 		(effects
 			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "20x20"
-		(at 161.5 144 0)
-		(layer "Dwgs.User")
-		(uuid "ce271d5b-9d8c-4670-b06e-9a14d01e6977")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
+				(size 0.8 0.8)
+				(thickness 0.12)
 			)
 		)
 	)
@@ -8024,49 +8453,38 @@
 		)
 		(fill no)
 		(layer "Dwgs.User")
-		(uuid "4445d6c7-d782-4d66-9174-49093fea5142")
+		(uuid "7b0bae04-33ef-4e66-8c8f-e319fa0e8670")
 	)
-	(gr_text "放熱器 Q5"
-		(at 161.5 165 0)
+	(gr_text "放熱器 Q5 20x20"
+		(at 161.5 166 0)
 		(layer "Dwgs.User")
-		(uuid "ceef1074-b0ff-486e-bb9a-c5ae9a97ce7f")
+		(uuid "792f8317-88ab-480e-9593-20f196e1cc08")
 		(effects
 			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(gr_text "20x20"
-		(at 161.5 167 0)
-		(layer "Dwgs.User")
-		(uuid "7231915e-a712-47c7-8787-be8ab38af562")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
+				(size 0.8 0.8)
+				(thickness 0.12)
 			)
 		)
 	)
 	(gr_rect
 		(start 155 178)
-		(end 171 213)
+		(end 171 206)
 		(stroke
 			(width 0.1)
 			(type default)
 		)
 		(fill no)
 		(layer "Dwgs.User")
-		(uuid "57007d95-88c6-4049-b5c4-63ed70401953")
+		(uuid "27fa76d1-0078-40a2-909f-f1da62c99ac4")
 	)
 	(gr_text "J2/J5/J6"
-		(at 163 195.5 0)
+		(at 163 192 0)
 		(layer "Dwgs.User")
-		(uuid "a5b35a0f-b8f6-4cb0-9fbc-a93bed20790e")
+		(uuid "ff8a84ba-cae5-4c36-a406-2f2be03d0732")
 		(effects
 			(font
-				(size 1 1)
-				(thickness 0.15)
+				(size 0.8 0.8)
+				(thickness 0.12)
 			)
 		)
 	)
