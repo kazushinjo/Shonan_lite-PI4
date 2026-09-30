@@ -9688,7 +9688,7 @@
 				)
 			)
 		)
-		(property "Footprint" "project_footprints:W5500_Lite_2x06_P2.54mm_15.24mm"
+		(property "Footprint" "project_footprints:W5500_Lite_USR-ES1_2x06_P2.54mm_20.32mm"
 			(at 106.68 68.58 0)
 			(hide yes)
 			(show_name yes)

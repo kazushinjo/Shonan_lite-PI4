@@ -21,6 +21,14 @@ exactly** (previously MCU1 used the pad numbers of the ESP32-WROOM-32 module its
 `RF_Module:ESP32-WROOM-32` library), which did not match J1's socket pin numbers). The pin numbers in the table below
 are common to MCU1 and J1.
 
+> On 2026-09-30, two footprints were corrected to match the documentation of the actual parts.
+> - A1 (W5500 Lite): per the USR-ES1 datasheet (Jinan USR IOT, "3.3 Dimensions"), the row spacing was changed from 15.24 mm to 20.32 mm,
+>   and pins 7–12 now count from the RJ45 end like pins 1–6 (previously pin 7 was at the end opposite the RJ45, so the right-row signals were
+>   connected in reverse). The footprint name is `W5500_Lite_USR-ES1_2x06_P2.54mm_20.32mm`.
+> - J1 (DevKitC socket): per Freenove's official pinout diagram (seen from the component side), the pin order was flipped vertically.
+>   Pins 1 (5V) and 21 (GND) are at the USB-C end and pins 20 (3V3) and 40 (GND) at the antenna end (previously the order was a mirror image,
+>   placing 5V on the 3V3 or GND pins).
+
 | Signal | MCU1/J1 pin | W5500 (A1) pin | Notes |
 |---|---|---|---|
 | SPI CS | GPIO5 (31) | CS (5) | Separate net name on the MCU1 side (label only); actual wiring is between J1 and A1 |

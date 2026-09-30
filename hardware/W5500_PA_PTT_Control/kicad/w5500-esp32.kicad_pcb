@@ -87,14 +87,14 @@
 			(outputdirectory "")
 		)
 	)
-	(footprint "project_footprints:W5500_Lite_2x06_P2.54mm_15.24mm"
+	(footprint "project_footprints:W5500_Lite_USR-ES1_2x06_P2.54mm_20.32mm"
 		(layer "F.Cu")
 		(uuid "0796206d-85f2-4c2c-8206-e5a06a5eb69d")
-		(at 114.38 140)
-		(descr "W5500 Lite breakout, 6+6 THT pins, 2.54mm pitch, ~15.24mm row spacing (APPROXIMATE - verify against real board before fab)")
-		(tags "W5500 Lite ethernet APPROXIMATE")
+		(at 111.84 106.9)
+		(descr "W5500 Lite / USR-ES1 SPI Ethernet module (HanRun HR961160C RJ45). 2x6 THT pins, 2.54mm pitch, 20.32mm row spacing. Pins 1-6 (left) and 7-12 (right) both count from the RJ45 end. Dimensions from USR-ES1 datasheet (Jinan USR IOT, 3.3 Dimensions): PCB 23x25mm, RJ45 16.10mm wide overhanging the PCB front edge by 2.50mm, pin 1 at 6.40mm from the PCB front edge.")
+		(tags "W5500 Lite USR-ES1 ethernet RJ45")
 		(property "Reference" "A1"
-			(at 0 -3 0)
+			(at 10.16 -4.5 0)
 			(layer "F.SilkS")
 			(uuid "c28a2377-57d1-4aca-a0ee-53cee88c15f0")
 			(effects
@@ -105,7 +105,7 @@
 			)
 		)
 		(property "Value" "W5500_Lite"
-			(at 0 20 0)
+			(at 10.16 20 0)
 			(layer "F.Fab")
 			(uuid "636a82d2-f892-4bb0-b9d0-fac1eb820de5")
 			(effects
@@ -173,172 +173,47 @@
 			)
 		)
 		(attr through_hole)
-		(duplicate_pad_numbers_are_jumpers no)
 		(fp_rect
-			(start -3 -1.27)
-			(end 18.24 13.97)
-			(stroke
-				(width 0.05)
-				(type solid)
-			)
+			(start -1.84 -9.4) (end 22.16 19)
+			(stroke (width 0.05) (type solid))
 			(fill no)
 			(layer "F.CrtYd")
-			(uuid "7755413d-31f7-404d-b749-bf07dc3e442d")
 		)
 		(fp_rect
-			(start -2.5 -0.77)
-			(end 17.74 13.47)
-			(stroke
-				(width 0.1)
-				(type solid)
-			)
+			(start -1.34 -6.4) (end 21.66 18.5)
+			(stroke (width 0.1) (type solid))
 			(fill no)
 			(layer "F.Fab")
-			(uuid "42468d6b-6d73-41aa-946d-7b0295e593b6")
 		)
-		(fp_text user "APPROX PITCH - VERIFY"
-			(at 7.62 -3 0)
+		(fp_rect
+			(start 2.11 -8.9) (end 18.21 12.7)
+			(stroke (width 0.1) (type solid))
+			(fill no)
 			(layer "F.Fab")
-			(uuid "ef10f65c-815f-45b0-822f-3c308cae35e1")
-			(effects
-				(font
-					(size 1 1)
-					(thickness 0.15)
-				)
-			)
 		)
-		(pad "1" thru_hole circle
-			(at 0 0)
-			(size 1.7 1.7)
-			(drill 1)
-			(layers "*.Cu" "*.Mask")
-			(remove_unused_layers no)
-			(net "GND")
-			(pinfunction "GND_1")
-			(pintype "power_in")
-			(uuid "6de3275d-769e-494f-8784-dbf173d1e9b2")
+		(fp_text user "RJ45 (HR961160C)"
+			(at 10.16 -7.5 0)
+			(layer "F.Fab")
+			(effects (font (size 0.8 0.8) (thickness 0.12)))
 		)
-		(pad "2" thru_hole circle
-			(at 0 2.54)
-			(size 1.7 1.7)
-			(drill 1)
-			(layers "*.Cu" "*.Mask")
-			(remove_unused_layers no)
-			(net "GND")
-			(pinfunction "GND_2")
-			(pintype "power_in")
-			(uuid "6d71d955-6e46-4bb9-ba2d-40d42110031e")
+		(fp_rect
+			(start -1.34 -6.4) (end 21.66 18.5)
+			(stroke (width 0.12) (type solid))
+			(fill no)
+			(layer "F.SilkS")
 		)
-		(pad "3" thru_hole circle
-			(at 0 5.08)
-			(size 1.7 1.7)
-			(drill 1)
-			(layers "*.Cu" "*.Mask")
-			(remove_unused_layers no)
-			(net "Net-(A1-MOSI)")
-			(pinfunction "MOSI_3")
-			(pintype "input")
-			(uuid "ee227f74-c73f-4d3b-92e2-f0c7a9c15b34")
-		)
-		(pad "4" thru_hole circle
-			(at 0 7.62)
-			(size 1.7 1.7)
-			(drill 1)
-			(layers "*.Cu" "*.Mask")
-			(remove_unused_layers no)
-			(net "Net-(A1-SCK)")
-			(pinfunction "SCK_4")
-			(pintype "input")
-			(uuid "6beb23fa-87fe-4579-9d7e-7c1d05800dec")
-		)
-		(pad "5" thru_hole circle
-			(at 0 10.16)
-			(size 1.7 1.7)
-			(drill 1)
-			(layers "*.Cu" "*.Mask")
-			(remove_unused_layers no)
-			(net "Net-(A1-CS)")
-			(pinfunction "CS_5")
-			(pintype "input")
-			(uuid "e6278eb4-10a6-41e8-b876-fa24678eb796")
-		)
-		(pad "6" thru_hole circle
-			(at 0 12.7)
-			(size 1.7 1.7)
-			(drill 1)
-			(layers "*.Cu" "*.Mask")
-			(remove_unused_layers no)
-			(net "unconnected-(A1-INT-Pad6)")
-			(pinfunction "INT_6")
-			(pintype "output+no_connect")
-			(uuid "81c8113b-412c-4a39-b62d-12504adafa7d")
-		)
-		(pad "7" thru_hole circle
-			(at 15.24 12.7)
-			(size 1.7 1.7)
-			(drill 1)
-			(layers "*.Cu" "*.Mask")
-			(remove_unused_layers no)
-			(net "GND")
-			(pinfunction "GND_7")
-			(pintype "power_in")
-			(uuid "9e3b6aac-dd62-4a6f-b496-0596d8e7c62c")
-		)
-		(pad "8" thru_hole circle
-			(at 15.24 10.16)
-			(size 1.7 1.7)
-			(drill 1)
-			(layers "*.Cu" "*.Mask")
-			(remove_unused_layers no)
-			(net "/+3V3_A")
-			(pinfunction "VCC_8")
-			(pintype "power_in")
-			(uuid "3af84590-be79-4a5b-a1fb-eb936c7916bc")
-		)
-		(pad "9" thru_hole circle
-			(at 15.24 7.62)
-			(size 1.7 1.7)
-			(drill 1)
-			(layers "*.Cu" "*.Mask")
-			(remove_unused_layers no)
-			(net "/+3V3_A")
-			(pinfunction "VCC_9")
-			(pintype "power_in")
-			(uuid "463b5a5f-5bda-4f9d-a395-994ff5597bfc")
-		)
-		(pad "10" thru_hole circle
-			(at 15.24 5.08)
-			(size 1.7 1.7)
-			(drill 1)
-			(layers "*.Cu" "*.Mask")
-			(remove_unused_layers no)
-			(net "unconnected-(A1-NC-Pad10)")
-			(pinfunction "NC_10")
-			(pintype "no_connect")
-			(uuid "08662464-9310-4b5b-8c38-74e3bf2a19ff")
-		)
-		(pad "11" thru_hole circle
-			(at 15.24 2.54)
-			(size 1.7 1.7)
-			(drill 1)
-			(layers "*.Cu" "*.Mask")
-			(remove_unused_layers no)
-			(net "/GPIO21_W5500_RST")
-			(pinfunction "RST_11")
-			(pintype "input")
-			(uuid "029352af-b354-4da6-bdde-13446fa114c8")
-		)
-		(pad "12" thru_hole circle
-			(at 15.24 0)
-			(size 1.7 1.7)
-			(drill 1)
-			(layers "*.Cu" "*.Mask")
-			(remove_unused_layers no)
-			(net "Net-(A1-MISO)")
-			(pinfunction "MISO_12")
-			(pintype "output")
-			(uuid "e07fd59c-ec80-454c-a20b-5360e67ee749")
-		)
+		(pad "1" thru_hole rect (at 0 0) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net "GND"))
+		(pad "2" thru_hole circle (at 0 2.54) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net "GND"))
+		(pad "3" thru_hole circle (at 0 5.08) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net "Net-(A1-MOSI)"))
+		(pad "4" thru_hole circle (at 0 7.62) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net "Net-(A1-SCK)"))
+		(pad "5" thru_hole circle (at 0 10.16) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net "Net-(A1-CS)"))
+		(pad "6" thru_hole circle (at 0 12.7) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net "unconnected-(A1-INT-Pad6)"))
+		(pad "7" thru_hole circle (at 20.32 0) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net "GND"))
+		(pad "8" thru_hole circle (at 20.32 2.54) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net "/+3V3_A"))
+		(pad "9" thru_hole circle (at 20.32 5.08) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net "/+3V3_A"))
+		(pad "10" thru_hole circle (at 20.32 7.62) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net "unconnected-(A1-NC-Pad10)"))
+		(pad "11" thru_hole circle (at 20.32 10.16) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net "/GPIO21_W5500_RST"))
+		(pad "12" thru_hole circle (at 20.32 12.7) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask") (net "Net-(A1-MISO)"))
 		(embedded_fonts no)
 	)
 	(footprint "Capacitor_THT:CP_Radial_D5.0mm_P2.00mm"
@@ -4490,11 +4365,11 @@
 	(footprint "project_footprints:Socket_2x20_P2.54mm_25.4mm_DevKitC"
 		(layer "F.Cu")
 		(uuid "6e7a76d5-dac7-460b-a139-409dccf3ea49")
-		(at 113.3 158)
-		(descr "Dual-row 40-pin female socket, 2.54mm pitch, 25.4mm row spacing, for ESP32 DevKitC-style 40pin wide boards")
+		(at 113.3 165.24)
+		(descr "Dual-row 40-pin female socket, 2.54mm pitch, 25.4mm row spacing, for ESP32 DevKitC-style 40pin wide boards Pin layout matches the Freenove ESP32 WROOM board seen from the component side (USB-C end at the bottom): pins 1 (5V) and 21 (GND) at the USB-C end, pins 20 (3V3) and 40 (GND) at the antenna end.")
 		(tags "ESP32 DevKitC socket 40pin 25.4mm")
 		(property "Reference" "J1"
-			(at 0 -3 0)
+			(at 0 51.26 0)
 			(layer "F.SilkS")
 			(uuid "00d9f228-c69f-482e-91dc-58a2cbcb2354")
 			(effects
@@ -4505,7 +4380,7 @@
 			)
 		)
 		(property "Value" "ESP32_DevKitC_Socket_40P_25.4mm"
-			(at 0 51.54 0)
+			(at 0 -3.28 0)
 			(layer "F.Fab")
 			(uuid "d99e4737-a5d4-47ab-9993-d85100dc8e79")
 			(effects
@@ -4516,7 +4391,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 0 0 0)
+			(at 0 48.26 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "64a277d8-e79f-4ccd-a031-930ce2b4355e")
@@ -4527,7 +4402,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 0 0 0)
+			(at 0 48.26 0)
 			(layer "F.Fab")
 			(hide yes)
 			(uuid "9694611a-d616-4637-b991-f823e4d5beaf")
@@ -4553,8 +4428,8 @@
 		(attr through_hole)
 		(duplicate_pad_numbers_are_jumpers no)
 		(fp_rect
-			(start -3 -1.27)
-			(end 28.4 49.54)
+			(start -3 49.53)
+			(end 28.4 -1.28)
 			(stroke
 				(width 0.05)
 				(type solid)
@@ -4564,8 +4439,8 @@
 			(uuid "6d6142fb-fc24-42b5-917f-bb33fac90f63")
 		)
 		(fp_rect
-			(start -2.5 -0.77)
-			(end 27.9 49.03)
+			(start -2.5 49.03)
+			(end 27.9 -0.77)
 			(stroke
 				(width 0.1)
 				(type solid)
@@ -4575,7 +4450,7 @@
 			(uuid "badd3973-269c-4dde-bf9f-13f43191a73e")
 		)
 		(pad "1" thru_hole circle
-			(at 0 0)
+			(at 0 48.26)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4586,7 +4461,7 @@
 			(uuid "0dbebbdb-cd81-4635-8b15-51ba08874329")
 		)
 		(pad "2" thru_hole circle
-			(at 0 2.54)
+			(at 0 45.72)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4597,7 +4472,7 @@
 			(uuid "d65f782c-9e95-4011-8938-d31167fa49fc")
 		)
 		(pad "3" thru_hole circle
-			(at 0 5.08)
+			(at 0 43.18)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4608,7 +4483,7 @@
 			(uuid "fa3dd93c-c5ad-4d17-a70d-0f130dc93f3b")
 		)
 		(pad "4" thru_hole circle
-			(at 0 7.62)
+			(at 0 40.64)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4619,7 +4494,7 @@
 			(uuid "0d833807-48c4-400e-9a9a-edf707dbf4e5")
 		)
 		(pad "5" thru_hole circle
-			(at 0 10.16)
+			(at 0 38.1)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4630,7 +4505,7 @@
 			(uuid "b5134af0-a8d6-40c0-a4cb-d0e6399ddb84")
 		)
 		(pad "6" thru_hole circle
-			(at 0 12.7)
+			(at 0 35.56)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4641,7 +4516,7 @@
 			(uuid "fa87412b-3d24-484f-b95d-64f4ce702166")
 		)
 		(pad "7" thru_hole circle
-			(at 0 15.24)
+			(at 0 33.02)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4652,7 +4527,7 @@
 			(uuid "1b220c03-8672-4245-83d1-ffd849504d9e")
 		)
 		(pad "8" thru_hole circle
-			(at 0 17.78)
+			(at 0 30.48)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4663,7 +4538,7 @@
 			(uuid "e2817f51-e960-4211-bad1-9fcffa1c156b")
 		)
 		(pad "9" thru_hole circle
-			(at 0 20.32)
+			(at 0 27.94)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4674,7 +4549,7 @@
 			(uuid "31fbbb0d-d3e6-4412-8208-426888f875f3")
 		)
 		(pad "10" thru_hole circle
-			(at 0 22.86)
+			(at 0 25.4)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4685,7 +4560,7 @@
 			(uuid "ac811647-a80d-4440-aa4c-0e7175b68e38")
 		)
 		(pad "11" thru_hole circle
-			(at 0 25.4)
+			(at 0 22.86)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4696,7 +4571,7 @@
 			(uuid "3821b624-55bf-43fb-a136-bf69f7f58b3e")
 		)
 		(pad "12" thru_hole circle
-			(at 0 27.94)
+			(at 0 20.32)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4707,7 +4582,7 @@
 			(uuid "cdcfc7a5-5310-488c-9eda-78c458ccb642")
 		)
 		(pad "13" thru_hole circle
-			(at 0 30.48)
+			(at 0 17.78)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4718,7 +4593,7 @@
 			(uuid "54343b94-998e-4e0c-8214-0bbda2ba9279")
 		)
 		(pad "14" thru_hole circle
-			(at 0 33.02)
+			(at 0 15.24)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4729,7 +4604,7 @@
 			(uuid "9a587df7-31e5-417f-9b0e-ac031950e8dc")
 		)
 		(pad "15" thru_hole circle
-			(at 0 35.56)
+			(at 0 12.7)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4740,7 +4615,7 @@
 			(uuid "c68a9d19-d369-46c6-ad88-2fe318e5a7a0")
 		)
 		(pad "16" thru_hole circle
-			(at 0 38.1)
+			(at 0 10.16)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4751,7 +4626,7 @@
 			(uuid "67f4585b-0b9c-4618-a699-8162d8a1ec83")
 		)
 		(pad "17" thru_hole circle
-			(at 0 40.64)
+			(at 0 7.62)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4762,7 +4637,7 @@
 			(uuid "8b0ccb6b-f65c-436c-820d-57fceed02786")
 		)
 		(pad "18" thru_hole circle
-			(at 0 43.18)
+			(at 0 5.08)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4773,7 +4648,7 @@
 			(uuid "6917109d-6096-4167-ad67-85b93f17bbc1")
 		)
 		(pad "19" thru_hole circle
-			(at 0 45.72)
+			(at 0 2.54)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4784,7 +4659,7 @@
 			(uuid "c70bce3c-7d0c-49ca-9223-f8406c1994ff")
 		)
 		(pad "20" thru_hole circle
-			(at 0 48.26)
+			(at 0 0)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4795,7 +4670,7 @@
 			(uuid "f202cf1b-7aa8-4c50-a8f6-7aa0f2e03acf")
 		)
 		(pad "21" thru_hole circle
-			(at 25.4 0)
+			(at 25.4 48.26)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4806,7 +4681,7 @@
 			(uuid "c2022f3e-601b-4bed-a923-da41d01fd7ee")
 		)
 		(pad "22" thru_hole circle
-			(at 25.4 2.54)
+			(at 25.4 45.72)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4817,7 +4692,7 @@
 			(uuid "79177521-9fe4-4cdf-aedd-49464d77ad12")
 		)
 		(pad "23" thru_hole circle
-			(at 25.4 5.08)
+			(at 25.4 43.18)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4828,7 +4703,7 @@
 			(uuid "6e0b8822-70b5-4c66-b0ca-53f2ddce109a")
 		)
 		(pad "24" thru_hole circle
-			(at 25.4 7.62)
+			(at 25.4 40.64)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4839,7 +4714,7 @@
 			(uuid "df300f45-3dd5-4d9a-856c-d9ec15c9c058")
 		)
 		(pad "25" thru_hole circle
-			(at 25.4 10.16)
+			(at 25.4 38.1)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4850,7 +4725,7 @@
 			(uuid "422a5318-241a-4734-a80c-209ac05c2593")
 		)
 		(pad "26" thru_hole circle
-			(at 25.4 12.7)
+			(at 25.4 35.56)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4861,7 +4736,7 @@
 			(uuid "6cc17b45-ef20-4f91-8122-0ff0bd4f1ff4")
 		)
 		(pad "27" thru_hole circle
-			(at 25.4 15.24)
+			(at 25.4 33.02)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4872,7 +4747,7 @@
 			(uuid "056eef58-ab5a-4135-8344-90f396faab95")
 		)
 		(pad "28" thru_hole circle
-			(at 25.4 17.78)
+			(at 25.4 30.48)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4883,7 +4758,7 @@
 			(uuid "67d8e85a-32f8-49fe-9eae-599867cba554")
 		)
 		(pad "29" thru_hole circle
-			(at 25.4 20.32)
+			(at 25.4 27.94)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4894,7 +4769,7 @@
 			(uuid "40f68f42-19a7-441b-902d-74df2f6a8e36")
 		)
 		(pad "30" thru_hole circle
-			(at 25.4 22.86)
+			(at 25.4 25.4)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4905,7 +4780,7 @@
 			(uuid "9d8c2a08-864d-463f-8b67-a4aeaa730d2b")
 		)
 		(pad "31" thru_hole circle
-			(at 25.4 25.4)
+			(at 25.4 22.86)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4916,7 +4791,7 @@
 			(uuid "61d16074-dde9-4f6a-b646-3655e5a140c5")
 		)
 		(pad "32" thru_hole circle
-			(at 25.4 27.94)
+			(at 25.4 20.32)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4927,7 +4802,7 @@
 			(uuid "5abc72ae-f041-4a1a-bf8e-db15d7ad6ca9")
 		)
 		(pad "33" thru_hole circle
-			(at 25.4 30.48)
+			(at 25.4 17.78)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4938,7 +4813,7 @@
 			(uuid "e66d8db5-a867-4d1f-90fb-8bef60e87455")
 		)
 		(pad "34" thru_hole circle
-			(at 25.4 33.02)
+			(at 25.4 15.24)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4949,7 +4824,7 @@
 			(uuid "97be1b60-6a3b-49df-b6a7-6930450df29c")
 		)
 		(pad "35" thru_hole circle
-			(at 25.4 35.56)
+			(at 25.4 12.7)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4960,7 +4835,7 @@
 			(uuid "9e59290a-5f43-48c1-84da-0e22c0ce8faa")
 		)
 		(pad "36" thru_hole circle
-			(at 25.4 38.1)
+			(at 25.4 10.16)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4971,7 +4846,7 @@
 			(uuid "ef1dd59c-59c1-4a6c-90f5-dbc6e786472f")
 		)
 		(pad "37" thru_hole circle
-			(at 25.4 40.64)
+			(at 25.4 7.62)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4982,7 +4857,7 @@
 			(uuid "c1901bed-3c1a-460b-96a2-b27b549921d1")
 		)
 		(pad "38" thru_hole circle
-			(at 25.4 43.18)
+			(at 25.4 5.08)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -4993,7 +4868,7 @@
 			(uuid "fe3f4678-d02a-4557-b2d5-01e4a5969c36")
 		)
 		(pad "39" thru_hole circle
-			(at 25.4 45.72)
+			(at 25.4 2.54)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -5004,7 +4879,7 @@
 			(uuid "5ad0c52c-f042-48d2-9bfb-7aed48b5afcc")
 		)
 		(pad "40" thru_hole circle
-			(at 25.4 48.26)
+			(at 25.4 0)
 			(size 1.7 1.7)
 			(drill 1)
 			(layers "*.Cu" "*.Mask")
@@ -8211,7 +8086,7 @@
 		)
 		(fill no)
 		(layer "Dwgs.User")
-		(uuid "efa3b15e-d860-4c86-bb3d-20dd1b1f6e0b")
+		(uuid "ee3775c8-dc53-4d47-90c3-1e981ce4ef02")
 	)
 	(gr_circle
 		(center 169 103)
@@ -8222,7 +8097,7 @@
 		)
 		(fill no)
 		(layer "Dwgs.User")
-		(uuid "f8272d2a-581b-4ca8-b13f-66ca38d6d520")
+		(uuid "f5ab72a7-6e56-4a06-bb9b-75d69a125fbd")
 	)
 	(gr_circle
 		(center 103 212)
@@ -8233,7 +8108,7 @@
 		)
 		(fill no)
 		(layer "Dwgs.User")
-		(uuid "25780f61-d8c0-403a-998f-ea7811f978e3")
+		(uuid "b6e5ddf5-6438-46a0-8f05-577de91cccb8")
 	)
 	(gr_circle
 		(center 169 212)
@@ -8244,7 +8119,7 @@
 		)
 		(fill no)
 		(layer "Dwgs.User")
-		(uuid "3a78c1bf-57ff-48b7-bf4c-1d13122b98b6")
+		(uuid "832c25c1-b4bd-4fa8-80d4-0d836486661a")
 	)
 	(gr_rect
 		(start 96 97.5)
@@ -8255,12 +8130,12 @@
 		)
 		(fill no)
 		(layer "Dwgs.User")
-		(uuid "ce796a96-8dc3-4c05-8f38-cb6e967954e3")
+		(uuid "a3f345dc-d247-45c9-918a-3a0f7429cfce")
 	)
 	(gr_text "ケース内壁 80x120"
 		(at 136 98.8 0)
 		(layer "Dwgs.User")
-		(uuid "460c4f82-9371-41a5-9317-eff32fa46465")
+		(uuid "66a2f493-6a7a-4a37-89ef-1530c309e4c5")
 		(effects
 			(font
 				(size 0.8 0.8)
@@ -8277,12 +8152,12 @@
 		)
 		(fill no)
 		(layer "Dwgs.User")
-		(uuid "ee8c157d-3b11-40b3-8c75-6be787385830")
+		(uuid "f03ab048-7f36-405a-9c2e-ffc9a60b0569")
 	)
 	(gr_text "前面 RJ45開口 x45-63 z10-24"
 		(at 122 95.5 0)
 		(layer "Dwgs.User")
-		(uuid "2d684533-8745-4c01-9aee-1ad43e9f45ad")
+		(uuid "8c4e7dee-6eb5-4827-934d-72f80c2f2228")
 		(effects
 			(font
 				(size 0.8 0.8)
@@ -8299,12 +8174,12 @@
 		)
 		(fill no)
 		(layer "Dwgs.User")
-		(uuid "43ae2a83-c14e-4c3b-b0af-72e4b31d62c9")
+		(uuid "8cc75835-b6ad-496a-a3e0-09232e070c2c")
 	)
 	(gr_text "前面 丸穴 Ø16 z17.5"
 		(at 156 94 0)
 		(layer "Dwgs.User")
-		(uuid "694e2cb0-cd16-4c23-913a-77243324fced")
+		(uuid "b6b845fa-d411-4d08-9ff0-6714e423bb11")
 		(effects
 			(font
 				(size 0.8 0.8)
@@ -8321,12 +8196,12 @@
 		)
 		(fill no)
 		(layer "Dwgs.User")
-		(uuid "ce94aaab-7bb2-4636-9666-f0b9c549f559")
+		(uuid "d80b3465-9dc0-446f-9832-2f81b12628f5")
 	)
 	(gr_text "背面 丸穴 Ø16 z17.5"
 		(at 156 221 0)
 		(layer "Dwgs.User")
-		(uuid "61e248c9-d14a-4139-9d09-c4dbe1068f03")
+		(uuid "c5d56d49-7739-4804-aebd-e5875e4374a0")
 		(effects
 			(font
 				(size 0.8 0.8)
@@ -8343,12 +8218,23 @@
 		)
 		(fill no)
 		(layer "Dwgs.User")
-		(uuid "7e0b5ee2-84f1-489d-a5bd-e81450494e13")
+		(uuid "66af3c28-8583-4655-9af5-153a57a02f82")
 	)
-	(gr_text "背面 USB開口 15x6 z7"
+	(gr_text "背面 USB-C開口 15x6 z7"
 		(at 126 219.5 0)
 		(layer "Dwgs.User")
-		(uuid "40562c24-fd2a-4866-92fa-bea76d0b43c6")
+		(uuid "eafa0f1a-4000-4147-aa8e-3bf50975e9f4")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(gr_text "W5500 Lite (USR-ES1) 23x25"
+		(at 122 128 0)
+		(layer "Dwgs.User")
+		(uuid "ad5330a9-e098-4d48-a129-bb494fd2963b")
 		(effects
 			(font
 				(size 0.8 0.8)
@@ -8357,42 +8243,20 @@
 		)
 	)
 	(gr_rect
-		(start 109.5 101)
-		(end 134.5 154)
+		(start 112.45 156.3)
+		(end 139.55 214.8)
 		(stroke
 			(width 0.1)
 			(type default)
 		)
 		(fill no)
 		(layer "Dwgs.User")
-		(uuid "809361c8-e653-483e-bd05-1d966357998f")
+		(uuid "b5dce0d5-88a1-4bec-96c9-bce29a9ed7a8")
 	)
-	(gr_text "W5500モジュール(寸法は実データで更新)"
-		(at 122 104 0)
+	(gr_text "Freenove ESP32 WROOM 約27x58.5(要実測)"
+		(at 126 158.5 0)
 		(layer "Dwgs.User")
-		(uuid "6d0d03c7-c2c2-4153-84e7-53dcd31dc138")
-		(effects
-			(font
-				(size 0.8 0.8)
-				(thickness 0.12)
-			)
-		)
-	)
-	(gr_rect
-		(start 112 156)
-		(end 140 212)
-		(stroke
-			(width 0.1)
-			(type default)
-		)
-		(fill no)
-		(layer "Dwgs.User")
-		(uuid "9235b07a-6465-4231-a290-e56389c2daae")
-	)
-	(gr_text "ESP32 DevKitC"
-		(at 126 208 0)
-		(layer "Dwgs.User")
-		(uuid "aad1e745-41bc-435a-be44-93f3eae7deeb")
+		(uuid "e733d87f-1976-44c3-af99-58e7c19e705a")
 		(effects
 			(font
 				(size 0.8 0.8)
@@ -8409,12 +8273,12 @@
 		)
 		(fill no)
 		(layer "Dwgs.User")
-		(uuid "76d25baa-f358-44d0-a182-0fe183c196fb")
+		(uuid "f4830e8d-f3d4-4112-9672-0535adc08feb")
 	)
 	(gr_text "放熱器 U1 20x20"
 		(at 161.5 120 0)
 		(layer "Dwgs.User")
-		(uuid "065eb654-7010-47b2-969d-02383d726c80")
+		(uuid "ba28ba1a-7d8c-4ba2-9f40-93d2ae0d04be")
 		(effects
 			(font
 				(size 0.8 0.8)
@@ -8431,12 +8295,12 @@
 		)
 		(fill no)
 		(layer "Dwgs.User")
-		(uuid "6d7eaef7-792a-4b0d-a049-63308c8f1e1a")
+		(uuid "0e609b40-bf94-485e-a5f3-ec1e31e626b3")
 	)
 	(gr_text "放熱器 U2 20x20"
 		(at 161.5 143 0)
 		(layer "Dwgs.User")
-		(uuid "c5868e62-d4bf-4c11-b91c-3c63730618c4")
+		(uuid "5110f35e-927e-4224-963d-3a9605dd4fd8")
 		(effects
 			(font
 				(size 0.8 0.8)
@@ -8453,12 +8317,12 @@
 		)
 		(fill no)
 		(layer "Dwgs.User")
-		(uuid "7b0bae04-33ef-4e66-8c8f-e319fa0e8670")
+		(uuid "300711ae-a0b6-4a42-ad37-568b0c554944")
 	)
 	(gr_text "放熱器 Q5 20x20"
 		(at 161.5 166 0)
 		(layer "Dwgs.User")
-		(uuid "792f8317-88ab-480e-9593-20f196e1cc08")
+		(uuid "191b8733-eda5-475d-998e-fecdc9481f5e")
 		(effects
 			(font
 				(size 0.8 0.8)
@@ -8475,12 +8339,12 @@
 		)
 		(fill no)
 		(layer "Dwgs.User")
-		(uuid "27fa76d1-0078-40a2-909f-f1da62c99ac4")
+		(uuid "20963c6c-5eea-4143-8857-30ec3a73ee82")
 	)
 	(gr_text "J2/J5/J6"
 		(at 163 192 0)
 		(layer "Dwgs.User")
-		(uuid "ff8a84ba-cae5-4c36-a406-2f2be03d0732")
+		(uuid "ed022f33-661a-4de7-aea9-be359e0bab5d")
 		(effects
 			(font
 				(size 0.8 0.8)
