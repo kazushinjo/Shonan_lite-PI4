@@ -487,6 +487,18 @@ def _push_pluto_settings(settings: AppSettings, lo_hz: float) -> None:
         raise OSError(f"Pluto設定ファイル書き込み失敗: {detail or result.returncode}")
 
 
+def _send_ptt_request(host: str, state: str) -> None:
+    """PA_Power/PTTコントローラ(ESP32+W5500、hardware/W5500_PA_PTT_Control)へ
+    TX開始/終了を通知する(`GET /tx?state=on|off`)。Pi5版と同じ経路。
+
+    ESP32側はこのリクエストのハンドラ内でPTT(GPIO27)のON/OFFのみを行う
+    (12V電源には触れない)。未接続・応答なしの場合は例外をそのまま送出する
+    (呼び出し側でログのみに握りつぶし、TX本体の動作は妨げない)。
+    """
+    url = f"http://{host}/tx?state={state}"
+    urllib.request.urlopen(url, timeout=1.5).close()
+
+
 # Pi4本体のTX出力GPIO。Langstone V2のTx Output(wiringPi 29=GPIO21=物理40番ピン、
 # 送信中HIGH)と同じピンに揃え、ESP32+W5500(PA_Power/PTTコントローラ)なしでも
 # PA/LNA切替用のPTT ON信号を取り出せるようにする。
@@ -679,6 +691,11 @@ class TxController(QtCore.QObject):
             _set_pi_tx_gpio(True)
         except (OSError, subprocess.SubprocessError) as exc:
             self.log_line.emit(f"[PTT] Pi4 GPIO{PI_TX_GPIO}のHIGH出力に失敗しました: {exc}")
+        if settings.active_ptt_controller_host():
+            try:
+                _send_ptt_request(settings.active_ptt_controller_host(), "on")
+            except (OSError, urllib.error.URLError, http.client.HTTPException) as exc:
+                self.log_line.emit(f"[PTT] ESP32への送信開始通知に失敗しました: {exc}")
         # 通常送信は映像のみ。音声入力・AAC音声は送信しない。
         args = video_args + overlay_input_args + overlay_filter_args + [
             "-map", video_map,
@@ -716,6 +733,11 @@ class TxController(QtCore.QObject):
         except (OSError, subprocess.SubprocessError) as exc:
             if was_running:
                 self.log_line.emit(f"[PTT] Pi4 GPIO{PI_TX_GPIO}のLOW出力に失敗しました: {exc}")
+        if was_running and self._last_settings and self._last_settings.active_ptt_controller_host():
+            try:
+                _send_ptt_request(self._last_settings.active_ptt_controller_host(), "off")
+            except (OSError, urllib.error.URLError, http.client.HTTPException) as exc:
+                self.log_line.emit(f"[PTT] ESP32への送信終了通知に失敗しました: {exc}")
         if not was_running:
             return
         # ffmpegを直接起動している(setsid/bash -cのパイプ構成をやめた)ため、QProcessの

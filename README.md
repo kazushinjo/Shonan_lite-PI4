@@ -214,8 +214,9 @@ ESP32 W5500(PA_Power/PTTコントローラ、[`hardware/W5500_PA_PTT_Control`](h
   PA・LNA(同軸リレー等)を駆動すること。
 - Shonan_Liteは送信開始時(映像送出の前)にHIGH、送信停止時とアプリ起動時にLOWにする
   ([`pi4/gui/backend.py`](pi4/gui/backend.py)の`_set_pi_tx_gpio()`、`pinctrl`で出力)。
-- 12 V電源のON/OFFとホーム画面の「Pluto電源」カードはESP32 W5500が必要。ESP32を使うかどうかは
-  設定画面の「ESP32 W5500を使用する」で選ぶ(OFFにしてもIPアドレスは保持される)。
+- ESP32 W5500を併用する場合は、送信の開始/停止に連動してESP32のPTT出力(J6)も同時に切り替わる
+  (`/tx?state=on|off`)。12 V電源のON/OFFとホーム画面の「Pluto電源」カードはESP32 W5500が必要。
+  ESP32を使うかどうかは設定画面の「ESP32 W5500を使用する」で選ぶ(OFFにしてもIPアドレスは保持される)。
 
 <!-- English -->
 
@@ -226,7 +227,8 @@ ESP32 W5500 (PA_Power/PTT controller, [`hardware/W5500_PA_PTT_Control`](hardware
   similar before driving the PA and LNA (coax relays, etc.).
 - Shonan_Lite sets it HIGH when TX starts (before the video is sent) and LOW when TX stops and at app startup
   (`_set_pi_tx_gpio()` in [`pi4/gui/backend.py`](pi4/gui/backend.py), driven with `pinctrl`).
-- Switching the 12 V power ON/OFF and the "Pluto Power" card on the Home screen require the ESP32 W5500. Whether to use
+- When the ESP32 W5500 is also used, its PTT output (J6) switches together with TX start/stop (`/tx?state=on|off`).
+  Switching the 12 V power ON/OFF and the "Pluto Power" card on the Home screen require the ESP32 W5500. Whether to use
   the ESP32 is selected with "Use ESP32 W5500" on the Settings screen (the IP address is kept even when OFF).
 
 ## Langstone V2Modify(SDRトランシーバー)への切替 / Switching to Langstone V2Modify (SDR transceiver)
