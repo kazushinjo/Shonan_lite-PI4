@@ -293,7 +293,7 @@ ESP32 W5500 (PA_Power/PTT controller, [`hardware/W5500_PA_PTT_Control`](hardware
 
 ## Langstone V2Modify(SDRトランシーバー)への切替 / Switching to Langstone V2Modify (SDR transceiver)
 
-Home画面の「Langstone」カードから、[kazushinjo/Langstone-V2Modify](https://github.com/kazushinjo/Langstone-V2Modify)
+Home画面の「Langstone」カードから、`kazushinjo/Langstone-V2Modify`
 (VHF/UHF/マイクロ波帯SDRトランシーバー、ADALM-Pluto対応)へ切り替えられる。
 Langstone V2ModifyはQt eglfsとは別に`/dev/fb0`を直接描画する独立アプリのため、
 DATV送受信アプリとは同時起動できない。`shonan-gui.service`/`langstone.service`/
@@ -445,7 +445,7 @@ This assumes an LNB (local oscillator 9750 MHz) on the antenna side that convert
 - 受信部安定化調査修正・再捕捉修正・本アプリ開発: 真城和一
 - 本アプリは、Dave Crump氏(G8GKQ)が開発したDATV送受信機プロジェクト「Portsdown」に啓発され、開発したものです。同氏の先駆的な取り組みに感謝いたします。
 - Langstone V2(SDRトランシーバー): Colin Durbridge氏(G4EML)の[g4eml/Langstone-V2](https://github.com/g4eml/Langstone-V2)
-  (Pi 4 + DFRobot DFR0550 + ADALM-Pluto向けに改造した[kazushinjo/Langstone-V2Modify](https://github.com/kazushinjo/Langstone-V2Modify)を
+  (Pi 4 + DFRobot DFR0550 + ADALM-Pluto向けに改造した`kazushinjo/Langstone-V2Modify`を
   [`pi4/third_party/Langstone-V2Modify/`](pi4/third_party/Langstone-V2Modify/)に同梱)
 
 <!-- English -->
@@ -455,7 +455,7 @@ This assumes an LNB (local oscillator 9750 MHz) on the antenna side that convert
 - Reception stability investigation and fixes, re-acquisition fixes, and development of this app: Kazuichi Shinjo
 - This application was developed inspired by "Portsdown", the DATV transceiver project created by Dave Crump (G8GKQ). We extend our deep gratitude for his pioneering work.
 - Langstone V2 (SDR transceiver): [g4eml/Langstone-V2](https://github.com/g4eml/Langstone-V2) by Colin Durbridge (G4EML)
-  ([kazushinjo/Langstone-V2Modify](https://github.com/kazushinjo/Langstone-V2Modify), modified for the Pi 4 + DFRobot DFR0550 +
+  (`kazushinjo/Langstone-V2Modify`, modified for the Pi 4 + DFRobot DFR0550 +
   ADALM-Pluto, is bundled in [`pi4/third_party/Langstone-V2Modify/`](pi4/third_party/Langstone-V2Modify/))
 
 ## License
@@ -466,6 +466,6 @@ This assumes an LNB (local oscillator 9750 MHz) on the antenna side that convert
 This software is licensed under the GNU General Public License v3.0 (GPLv3).
 Full license text: [LICENSE](LICENSE)
 
-- Langstone V2 (SDR transceiver, [g4eml/Langstone-V2](https://github.com/g4eml/Langstone-V2); bundled as [kazushinjo/Langstone-V2Modify](https://github.com/kazushinjo/Langstone-V2Modify)): GPLv3
+- Langstone V2 (SDR transceiver, [g4eml/Langstone-V2](https://github.com/g4eml/Langstone-V2); bundled as `kazushinjo/Langstone-V2Modify`): GPLv3
 - Reception subsystem design (Shinji Yamazaki, JE1BTA): GPLv3
 - Application development, reception stability fixes (Kazuichi Shinjo): GPLv3
