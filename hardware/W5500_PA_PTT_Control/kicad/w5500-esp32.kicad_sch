@@ -6847,10 +6847,6 @@
 		(uuid "02c299b9-1020-4e54-bdb1-b9bf7377a7f7")
 	)
 	(no_connect
-		(at 157.48 69.85)
-		(uuid "0b2bffad-a209-4bd0-8eee-75be5705bbc3")
-	)
-	(no_connect
 		(at 195.58 107.95)
 		(uuid "189e094d-5ba9-4b65-b5bf-e23277944019")
 	)
@@ -6883,10 +6879,6 @@
 		(uuid "40884fa0-84d0-4939-93fb-3218eb6f6652")
 	)
 	(no_connect
-		(at 157.48 64.77)
-		(uuid "47673904-3db5-4eb1-b013-3f55961d13ff")
-	)
-	(no_connect
 		(at 157.48 74.93)
 		(uuid "4800096f-2c47-4def-9d5a-3a1b5539f1c2")
 	)
@@ -6901,10 +6893,6 @@
 	(no_connect
 		(at 102.87 200.66)
 		(uuid "538a20c8-95e0-47c4-b141-9ffbb5ee6386")
-	)
-	(no_connect
-		(at 157.48 67.31)
-		(uuid "571a72fa-07b7-4dbf-9bd3-de7ddd0ea2a2")
 	)
 	(no_connect
 		(at 64.77 187.96)
@@ -7015,10 +7003,6 @@
 		(uuid "bc39afb4-abbd-4421-92ff-b4011d5adade")
 	)
 	(no_connect
-		(at 157.48 72.39)
-		(uuid "c0227e8f-593b-409b-9b1a-440e91e4f68a")
-	)
-	(no_connect
 		(at 195.58 97.79)
 		(uuid "c0412952-4ea0-44f4-b095-37458f547b2a")
 	)
@@ -7045,10 +7029,6 @@
 	(no_connect
 		(at 64.77 223.52)
 		(uuid "e30b175f-afe8-43d3-8710-6406a08b9a37")
-	)
-	(no_connect
-		(at 157.48 113.03)
-		(uuid "e809e5ba-4f98-4b33-a19b-223118e50b47")
 	)
 	(no_connect
 		(at 195.58 95.25)
@@ -7081,6 +7061,104 @@
 	(no_connect
 		(at 102.87 223.52)
 		(uuid "fb9dc5e1-5b63-474e-a67b-3f8eeb18ccb3")
+	)
+	(wire
+		(pts
+			(xy 250.19 58.42) (xy 250.19 59.69)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5836e5d3-da3f-4e77-8402-e28bbe3e8e6d")
+	)
+	(junction
+		(at 250.19 58.42)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "dad126ff-fcc5-4c7e-8806-fd4be38d1d74")
+	)
+	(wire
+		(pts
+			(xy 157.48 64.77) (xy 154.94 64.77)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ea33c844-5267-4cbd-b017-c5029bb7fcb2")
+	)
+	(wire
+		(pts
+			(xy 157.48 67.31) (xy 154.94 67.31)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "103c9e8c-6eb7-4dbd-8229-67db5b654ee2")
+	)
+	(wire
+		(pts
+			(xy 157.48 69.85) (xy 154.94 69.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d59ab1af-4de4-45cf-8058-2fd38e3e3ea2")
+	)
+	(wire
+		(pts
+			(xy 157.48 72.39) (xy 154.94 72.39)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "320b1581-3bb6-4997-9dc6-9dd3b606083c")
+	)
+	(wire
+		(pts
+			(xy 154.94 64.77) (xy 154.94 72.39)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f14aefcd-22d0-4b87-bdfe-1cf554d1d9ba")
+	)
+	(junction
+		(at 154.94 67.31)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "8b538fb8-20e9-458f-a6ef-1ea5867bbc4e")
+	)
+	(junction
+		(at 154.94 69.85)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "a051c46d-9eed-4426-ad87-f9daea63e39a")
+	)
+	(wire
+		(pts
+			(xy 160.02 190.5) (xy 160.02 195.58)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0a64136f-4851-4cb2-a6ac-19a0fde01377")
+	)
+	(wire
+		(pts
+			(xy 340.36 72.39) (xy 340.36 77.47)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "39e6ccb7-db22-41be-8d37-e32a177d5ba3")
 	)
 	(wire
 		(pts
@@ -8346,7 +8424,7 @@
 				)
 			)
 		)
-		(property "Value" ""
+		(property "Value" "GND"
 			(at 340.36 86.36 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8423,7 +8501,7 @@
 				)
 			)
 		)
-		(property "Value" ""
+		(property "Value" "GND"
 			(at 53.594 200.406 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8531,7 +8609,7 @@
 				)
 			)
 		)
-		(property "Description" "+12V電源(未スイッチ・入力側)表示用LED(D2)の電流制限抵抗"
+		(property "Description" "+12V電源(未スイッチ・入力側)表示用の外付けLED(J8経由)の電流制限抵抗"
 			(at 160.02 182.88 0)
 			(hide yes)
 			(show_name yes)
@@ -8580,7 +8658,7 @@
 				)
 			)
 		)
-		(property "Value" ""
+		(property "Value" "GND"
 			(at 260.35 176.53 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8658,7 +8736,7 @@
 				)
 			)
 		)
-		(property "Value" ""
+		(property "Value" "GND"
 			(at 162.179 177.8 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8767,7 +8845,7 @@
 				)
 			)
 		)
-		(property "Description" "Power(12V)電源表示用LED(D1)の電流制限抵抗"
+		(property "Description" "Power(12V)電源表示用の外付けLED(J7経由)の電流制限抵抗"
 			(at 340.36 64.77 0)
 			(hide yes)
 			(show_name yes)
@@ -9221,8 +9299,8 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:LED")
-		(at 340.36 73.66 90)
+		(lib_id "Connector_Generic:Conn_01x02")
+		(at 345.44 69.85 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -9230,9 +9308,9 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "4bf8f13a-d9c0-411b-a370-f1cbc9366170")
-		(property "Reference" "D1"
-			(at 345.44 73.152 0)
+		(uuid "600be602-c64e-4d5a-94a1-55b5fa8cbb28")
+		(property "Reference" "J7"
+			(at 345.186 62.23 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -9241,9 +9319,8 @@
 				)
 			)
 		)
-		(property "Value" "LED_Red_3mm"
-			(at 347.98 77.47 0)
-			(hide yes)
+		(property "Value" "LED_PWR"
+			(at 345.694 64.77 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -9252,8 +9329,8 @@
 				)
 			)
 		)
-		(property "Footprint" "LED_THT:LED_D3.0mm"
-			(at 340.36 73.66 0)
+		(property "Footprint" "Connector_JST:JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical"
+			(at 345.44 69.85 0)
 			(hide yes)
 			(show_name yes)
 			(do_not_autoplace no)
@@ -9264,7 +9341,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 340.36 73.66 0)
+			(at 345.44 69.85 0)
 			(hide yes)
 			(show_name yes)
 			(do_not_autoplace no)
@@ -9274,8 +9351,8 @@
 				)
 			)
 		)
-		(property "Description" "Power(12V)電源表示用赤色LED、直径3mm・リードピッチ2.54mm"
-			(at 340.36 73.66 0)
+		(property "Description" "外付けPower表示LED(赤)の接続。1=アノード(R10経由)、2=カソード(GND)"
+			(at 345.44 69.85 0)
 			(hide yes)
 			(show_name yes)
 			(do_not_autoplace no)
@@ -9286,23 +9363,23 @@
 			)
 		)
 		(pin "1"
-			(uuid "64d0fd14-4777-4291-ab76-3cc2b60ca989")
+			(uuid "e9730aa3-250f-41da-8a13-2392ba601e1a")
 		)
 		(pin "2"
-			(uuid "c568dc09-caf7-4bb7-bccc-a6dfde870a99")
+			(uuid "9fa95b7f-3b7d-424d-b314-98b8cd73f1bb")
 		)
 		(instances
 			(project "w5500-esp32"
 				(path "/0100d23c-65ba-4b48-9527-fff8f2d69db1"
-					(reference "D1")
+					(reference "J7")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_id "Device:LED")
-		(at 160.02 191.77 90)
+		(lib_id "Connector_Generic:Conn_01x02")
+		(at 165.1 187.96 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -9310,9 +9387,9 @@
 		(on_board yes)
 		(in_pos_files yes)
 		(dnp no)
-		(uuid "51e55ab2-1262-4df7-9602-8c775c1b0a81")
-		(property "Reference" "D2"
-			(at 166.64 187.96 0)
+		(uuid "7e456cc8-d1e4-4d1c-8b3f-22faf97e1613")
+		(property "Reference" "J8"
+			(at 164.846 180.34 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -9321,9 +9398,8 @@
 				)
 			)
 		)
-		(property "Value" "LED_Green_3mm"
-			(at 166.64 195.58 0)
-			(hide yes)
+		(property "Value" "LED_12V"
+			(at 165.354 182.88 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -9332,8 +9408,8 @@
 				)
 			)
 		)
-		(property "Footprint" "LED_THT:LED_D3.0mm"
-			(at 160.02 191.77 0)
+		(property "Footprint" "Connector_JST:JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical"
+			(at 165.1 187.96 0)
 			(hide yes)
 			(show_name yes)
 			(do_not_autoplace no)
@@ -9344,7 +9420,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 160.02 191.77 0)
+			(at 165.1 187.96 0)
 			(hide yes)
 			(show_name yes)
 			(do_not_autoplace no)
@@ -9354,8 +9430,8 @@
 				)
 			)
 		)
-		(property "Description" "+12V電源(未スイッチ・入力側)表示用緑色LED、直径3mm・リードピッチ2.54mm"
-			(at 160.02 191.77 0)
+		(property "Description" "外付け+12V(入力側)表示LED(緑)の接続。1=アノード(R11経由)、2=カソード(GND)"
+			(at 165.1 187.96 0)
 			(hide yes)
 			(show_name yes)
 			(do_not_autoplace no)
@@ -9366,15 +9442,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "21721b03-0998-4457-9218-5950a1f662e7")
+			(uuid "a76a6cc2-fdbd-4c8d-b729-ed8ed9bd0486")
 		)
 		(pin "2"
-			(uuid "fb736201-7908-478b-831b-c0356efe9868")
+			(uuid "fd0e1412-d603-4bd2-9f24-3c4e8a7f8bd6")
 		)
 		(instances
 			(project "w5500-esp32"
 				(path "/0100d23c-65ba-4b48-9527-fff8f2d69db1"
-					(reference "D2")
+					(reference "J8")
 					(unit 1)
 				)
 			)
@@ -9993,7 +10069,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Package_TO_SOT_THT:TO-92_Inline"
+		(property "Footprint" "Package_TO_SOT_THT:TO-92_Inline_Wide"
 			(at 325.12 92.075 0)
 			(hide yes)
 			(show_name yes)
@@ -10102,7 +10178,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Package_TO_SOT_THT:TO-92_Inline"
+		(property "Footprint" "Package_TO_SOT_THT:TO-92_Inline_Wide"
 			(at 264.16 60.325 0)
 			(hide yes)
 			(show_name yes)
@@ -10200,7 +10276,7 @@
 				)
 			)
 		)
-		(property "Value" ""
+		(property "Value" "GND"
 			(at 288.29 175 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10513,7 +10589,7 @@
 				)
 			)
 		)
-		(property "Value" ""
+		(property "Value" "GND"
 			(at 271.78 175 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10674,7 +10750,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "0.1uF"
+		(property "Value" "0.33uF"
 			(at 264.16 167.6399 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10707,7 +10783,7 @@
 				)
 			)
 		)
-		(property "Description" "U1 input capacitor (per Toshiba TA48033S datasheet: CIN=0.33uF)"
+		(property "Description" "U2 output / U1 input capacitor (TA48033S datasheet: CIN=0.33uF), 16V or higher"
 			(at 260.35 166.37 0)
 			(hide yes)
 			(show_name yes)
@@ -10756,7 +10832,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "0.1uF"
+		(property "Value" "33uF"
 			(at 292.1 167.6399 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10789,7 +10865,7 @@
 				)
 			)
 		)
-		(property "Description" "U1 output capacitor (per Toshiba TA48033S datasheet standard circuit: COUT=33uF)"
+		(property "Description" "U1 output capacitor, electrolytic 33uF 10V or higher (TA48033S datasheet standard circuit: COUT=33uF; required for LDO stability)"
 			(at 288.29 166.37 0)
 			(hide yes)
 			(show_name yes)
@@ -10837,7 +10913,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "0.1uF"
+		(property "Value" "0.33uF"
 			(at 227.838 169.164 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10870,7 +10946,7 @@
 				)
 			)
 		)
-		(property "Description" "U1 input capacitor (per Toshiba TA48033S datasheet: CIN=0.33uF)"
+		(property "Description" "U2 (L7805) input capacitor 0.33uF, 25V or higher"
 			(at 234.95 166.37 0)
 			(hide yes)
 			(show_name yes)
@@ -11075,7 +11151,7 @@
 				)
 			)
 		)
-		(property "Value" ""
+		(property "Value" "GND"
 			(at 261.62 71.12 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11317,7 +11393,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical"
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0309_L9.0mm_D3.2mm_P5.08mm_Vertical"
 			(at 313.69 79.16 90)
 			(hide yes)
 			(show_name yes)
@@ -11468,7 +11544,7 @@
 				)
 			)
 		)
-		(property "Value" ""
+		(property "Value" "GND"
 			(at 246.38 175 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11631,7 +11707,7 @@
 				)
 			)
 		)
-		(property "Value" ""
+		(property "Value" "GND"
 			(at 322.58 102.87 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11709,7 +11785,7 @@
 				)
 			)
 		)
-		(property "Value" ""
+		(property "Value" "GND"
 			(at 367.03 101.6 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11787,7 +11863,7 @@
 				)
 			)
 		)
-		(property "Value" ""
+		(property "Value" "GND"
 			(at 160.02 207.01 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -11865,7 +11941,7 @@
 				)
 			)
 		)
-		(property "Value" ""
+		(property "Value" "GND"
 			(at 209.55 81.28 0)
 			(show_name no)
 			(do_not_autoplace yes)
@@ -11951,7 +12027,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_Wire:SolderWire-0.5sqmm_1x02_P4.6mm_D0.9mm_OD2.1mm"
+		(property "Footprint" "Connector_JST:JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical"
 			(at 374.65 113.03 0)
 			(hide yes)
 			(show_name yes)
@@ -12117,7 +12193,7 @@
 				)
 			)
 		)
-		(property "Value" ""
+		(property "Value" "GND"
 			(at 322.58 102.87 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12167,6 +12243,319 @@
 			(project "w5500-esp32"
 				(path "/0100d23c-65ba-4b48-9527-fff8f2d69db1"
 					(reference "#PWR0301")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 250.19 63.5 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "06b300fb-5f83-41ac-a85d-844d864f9183")
+		(property "Reference" "R13"
+			(at 252.222 62.25 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10k"
+			(at 252.222 64.77 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical"
+			(at 248.412 63.5 90)
+			(hide yes)
+			(show_name yes)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 250.19 63.5 0)
+			(hide yes)
+			(show_name yes)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Q3 base pull-down (keeps Q3/PTT OFF while GPIO27 floats at boot)"
+			(at 250.19 63.5 0)
+			(hide yes)
+			(show_name yes)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "d659d11b-2a8b-4d83-926c-602c4313a30e")
+		)
+		(pin "2"
+			(uuid "0ab44c0b-4d61-490d-b7cc-c49aae57456d")
+		)
+		(instances
+			(project "w5500-esp32"
+				(path "/0100d23c-65ba-4b48-9527-fff8f2d69db1"
+					(reference "R13")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 250.19 67.31 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "7d00208b-61df-407d-936e-c1a00de46893")
+		(property "Reference" "#PWR0302"
+			(at 250.19 73.66 0)
+			(hide yes)
+			(show_name yes)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 262.89 71.12 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 262.89 66.04 0)
+			(hide yes)
+			(show_name yes)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 262.89 66.04 0)
+			(hide yes)
+			(show_name yes)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 262.89 66.04 0)
+			(hide yes)
+			(show_name yes)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "1f58d9fe-aa34-49c2-b55f-4a0b44b71ced")
+		)
+		(instances
+			(project "w5500-esp32"
+				(path "/0100d23c-65ba-4b48-9527-fff8f2d69db1"
+					(reference "#PWR0302")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 154.94 72.39 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "6e347aa2-b29a-477f-846c-c517c0457495")
+		(property "Reference" "#PWR0303"
+			(at 154.94 78.74 0)
+			(hide yes)
+			(show_name yes)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 167.64 76.2 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 167.64 71.12 0)
+			(hide yes)
+			(show_name yes)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 167.64 71.12 0)
+			(hide yes)
+			(show_name yes)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 167.64 71.12 0)
+			(hide yes)
+			(show_name yes)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "05d7e526-e739-40d6-b697-e82f168da385")
+		)
+		(instances
+			(project "w5500-esp32"
+				(path "/0100d23c-65ba-4b48-9527-fff8f2d69db1"
+					(reference "#PWR0303")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 157.48 113.03 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "a1cf82c9-474f-4341-b73c-6fcea7eed9b2")
+		(property "Reference" "#PWR0304"
+			(at 157.48 119.38 0)
+			(hide yes)
+			(show_name yes)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 170.18 116.84 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 170.18 111.76 0)
+			(hide yes)
+			(show_name yes)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 170.18 111.76 0)
+			(hide yes)
+			(show_name yes)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 170.18 111.76 0)
+			(hide yes)
+			(show_name yes)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "2895a4c8-454b-4098-a892-9cb362d1f826")
+		)
+		(instances
+			(project "w5500-esp32"
+				(path "/0100d23c-65ba-4b48-9527-fff8f2d69db1"
+					(reference "#PWR0304")
 					(unit 1)
 				)
 			)
