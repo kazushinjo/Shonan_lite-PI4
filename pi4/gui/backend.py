@@ -854,7 +854,7 @@ class TxController(QtCore.QObject):
             "-bsf:v", "dump_extra=freq=keyframe",
             "-b:v", f"{video_kbps}k", "-maxrate", f"{video_kbps}k", "-bufsize", f"{video_kbps}k",
             "-g", "30", "-pix_fmt", "yuv420p",
-            "-c:a", "aac", "-b:a", f"{audio_kbps}k", "-af", "ashowinfo",
+            "-c:a", "aac", "-ac", "1", "-b:a", f"{audio_kbps}k", "-af", "ashowinfo",
             "-f", "mpegts", udp_ts_url,
         ]
         self._launch_ffmpeg(args, output_file=self._ca_log_path)
