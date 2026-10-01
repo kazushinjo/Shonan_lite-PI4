@@ -9,7 +9,7 @@
 //  - mode = 3：組立状態
 //  - mode = 4：分解図
 
-mode = 1;            // 1:本体のみ 2:蓋のみ 3:組立状態 4:分解図
+mode = 2;            // 1:本体のみ 2:蓋のみ 3:組立状態 4:分解図
 inner_x = 80;       // 内寸 X (幅)
 inner_y = 120;      // 内寸 Y (奥行)
 inner_z = 35;       // 内寸 Z (高さ)
@@ -52,6 +52,18 @@ explode_offset  = 20.0; // 分解図で蓋を持ち上げる距離
 lid_notch_x = 20.0;     // X中心座標（内寸基準）
 lid_notch_w = 25.0;     // 横幅
 lid_notch_h = 8.0;      // 高さ（リップ下端から上方向）
+
+// --- 蓋のエンボス文字 ---
+// [文字, X座標(左端), Y座標, 縦の揃え, 文字の大きさ] 座標は内寸基準。
+// 縦の揃え "baseline"=Yが文字の下端、"top"=Yが文字の上端（背面の縁で外へはみ出さないように）
+lid_labels = [
+    ["+12V IN",         7.0,  10.0, "baseline", 6.0],  // 前面側 (+12V入力コネクタの上)
+    ["PA/PTT Control",  7.0,  60.0, "baseline", 7.0],  // 中央
+    ["+12V OUT",        7.0, 115.0, "top",      6.0],  // 背面側 (12V出力コネクタの上)
+];
+// 文字の大きさはOpenSCADのtext()のsize (大文字の高さはその約0.7倍)
+lid_text_h      = 1.0;    // 天板からの盛り上げ高さ
+lid_text_font   = "Liberation Sans:style=Bold";
 
 // 3つ目の穴 (背面の角丸長方形穴・中心座標)
 hole3_x = 50.0;
@@ -178,6 +190,13 @@ module lid() {
         union() {
             // 蓋の天板（z=0から上向き）
             rounded_box(lid_outer_x, lid_outer_y, lid_top_t, lid_outer_r);
+
+            // 天板の上面に盛り上げた文字（前面側から読める向き）
+            for (label = lid_labels)
+                translate([thickness + label[1], thickness + label[2], lid_top_t - 0.01])
+                    linear_extrude(height = lid_text_h + 0.01)
+                    text(label[0], size = label[4], font = lid_text_font,
+                         halign = "left", valign = label[3]);
 
             // 蓋の裏側へ伸びる差し込みリップ（z=0より下）
             translate([lid_clearance + (outer_x - inner_x) / 2,
