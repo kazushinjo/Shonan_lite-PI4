@@ -657,6 +657,7 @@ class TxController(QtCore.QObject):
             overlay_input_args: list[str] = []
             overlay_filter_args: list[str] = ["-vf", _TX_VIDEO_SCALE_FILTER]
             video_map = preview_video_map = "0:v"
+            audio_index = 1
         elif settings.video_source == "file" and settings.video_file_path:
             # ★選択できるのは静止画のみ(videosource.py参照)。カラーバーと同じ「-loop 1 -framerate 30」で
             # 静止画を反復送信し、カメラと同じくコールサイン・備考を重ねる(Pi5版と同じ)。
@@ -664,11 +665,11 @@ class TxController(QtCore.QObject):
                 "-re", "-loop", "1", "-framerate", "30",
                 "-i", settings.video_file_path,
             ]
-            overlay_input_args, overlay_filter_args, video_map, preview_video_map, _audio_index = \
+            overlay_input_args, overlay_filter_args, video_map, preview_video_map, audio_index = \
                 _build_overlay_pipeline(settings, split_preview=True)
         else:
             video_args = _camera_input_args(settings.camera_device)
-            overlay_input_args, overlay_filter_args, video_map, preview_video_map, _audio_index = \
+            overlay_input_args, overlay_filter_args, video_map, preview_video_map, audio_index = \
                 _build_overlay_pipeline(settings, split_preview=True)
 
         # カメラ送信中は「実際に送出している映像」を送信画面へプレビュー表示する。
@@ -678,6 +679,7 @@ class TxController(QtCore.QObject):
         self._preview_buffer.clear()
 
         video_kbps = TX_VIDEO_BITRATE_BPS // 1000
+        audio_kbps = TX_AUDIO_BITRATE_BPS // 1000
         if _uses_software_loopback(settings):
             output_url = f"udp://{settings.effective_loopback_host()}:{settings.rx_listen_port}?pkt_size=1316"
         else:
@@ -696,15 +698,17 @@ class TxController(QtCore.QObject):
                 _send_ptt_request(settings.active_ptt_controller_host(), "on")
             except (OSError, urllib.error.URLError, http.client.HTTPException) as exc:
                 self.log_line.emit(f"[PTT] ESP32への送信開始通知に失敗しました: {exc}")
-        # 通常送信は映像のみ。音声入力・AAC音声は送信しない。
-        args = video_args + overlay_input_args + overlay_filter_args + [
-            "-map", video_map,
+        # カメラ内蔵マイク(無ければ無音)の音声をAACで映像と一緒に送信する(Pi5版と同じ)。
+        args = video_args + overlay_input_args + _audio_input_args() + overlay_filter_args + [
+            "-map", video_map, "-map", f"{audio_index}:a",
             # Raspberry Pi 4のVideoCore H.264ハードウェアエンコーダを使用する。
             # dump_extraで各キーフレームへSPS/PPSを付加し、途中視聴でも復号可能にする。
             "-c:v", "h264_v4l2m2m", "-bf", "0",
             "-bsf:v", "dump_extra=freq=keyframe",
             "-b:v", f"{video_kbps}k", "-maxrate", f"{video_kbps}k", "-bufsize", f"{video_kbps}k",
             "-g", "30", "-pix_fmt", "yuv420p",
+            # 16kbpsを左右2chで分け合うと音質が落ちるため、声の送信はモノラルに固定する。
+            "-c:a", "aac", "-ac", "1", "-b:a", f"{audio_kbps}k",
             "-f", "mpegts", output_url,
         ]
         if preview_enabled:

@@ -90,21 +90,6 @@ class VideoSourceScreen(SettingsSubScreen):
                          checked=(current_source == "file"))
         self._add_source(left_layout, tr("テストパターン", "Test Pattern"), "colorbar",
                          enabled=True, checked=(current_source == "colorbar"))
-        audio_title = QtWidgets.QLabel(tr("音声設定", "Audio"))
-        audio_title.setStyleSheet("font-size: 13px; font-weight: bold; color: #54bce0;")
-        left_layout.addWidget(audio_title)
-        self.audio_none_button = QtWidgets.QPushButton(tr("音声なし", "No Audio"))
-        self.audio_none_button.setCheckable(True)
-        self.audio_none_button.setChecked(not settings.audio_enabled)
-        self.audio_none_button.setMinimumHeight(30)
-        self.audio_none_button.setStyleSheet(
-            "QPushButton { background-color: #303538; color: white; border: none;"
-            " border-radius: 8px; padding: 4px 10px; text-align: left;"
-            " font-size: 13px; font-weight: bold; }"
-            "QPushButton:checked { background-color: #1677ff; }"
-            "QPushButton:pressed { background-color: #222222; }")
-        self.audio_none_button.toggled.connect(self._select_audio_none)
-        left_layout.addWidget(self.audio_none_button)
         left_layout.addStretch(1)
         # カメラ映像を静止画(JPG)として撮影・保存する。保存した画像は「ファイル選択」で
         # 送信画像として選べる。映像ソースが「カメラ」のときだけ表示する。
@@ -374,13 +359,6 @@ class VideoSourceScreen(SettingsSubScreen):
             return
         self.main_window.save_settings()
         self._update_preview()
-
-    def _select_audio_none(self, checked: bool) -> None:
-        if not checked:
-            self.audio_none_button.setChecked(True)
-            return
-        self.main_window.settings.audio_enabled = False
-        self.main_window.save_settings()
 
     def _update_capture_button(self) -> None:
         settings = self.main_window.settings
