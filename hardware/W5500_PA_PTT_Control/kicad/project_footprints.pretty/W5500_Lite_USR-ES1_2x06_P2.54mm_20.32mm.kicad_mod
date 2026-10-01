@@ -57,4 +57,15 @@
 	(pad "11" thru_hole circle (at 20.32 10.16) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask"))
 	(pad "12" thru_hole circle (at 20.32 12.7) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask"))
 	(embedded_fonts no)
+	(model "${KIPRJMOD}/3dmodels/W5500_Lite_USR-ES1.wrl"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
 )

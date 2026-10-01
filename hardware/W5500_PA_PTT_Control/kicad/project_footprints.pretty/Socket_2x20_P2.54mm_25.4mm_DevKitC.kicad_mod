@@ -50,4 +50,15 @@
 	(pad "39" thru_hole circle (at 25.4 2.54) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask"))
 	(pad "40" thru_hole circle (at 25.4 0) (size 1.7 1.7) (drill 1) (layers "*.Cu" "*.Mask"))
 	(embedded_fonts no)
+	(model "${KIPRJMOD}/3dmodels/Freenove_ESP32_WROOM.wrl"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
 )

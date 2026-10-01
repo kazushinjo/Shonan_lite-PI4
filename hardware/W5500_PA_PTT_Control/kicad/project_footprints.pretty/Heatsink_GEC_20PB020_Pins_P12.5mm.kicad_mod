@@ -16,10 +16,9 @@
 			)
 		)
 	)
-	(property "Value" "Heatsink_20PB020"
-		(at 0 11 0)
+	(property "Value" "105054"
+		(at 6.5 0 0)
 		(layer "F.Fab")
-		(hide yes)
 		(uuid "95f92b03-6536-4da8-b934-b0b254f292b9")
 		(effects
 			(font
@@ -55,5 +54,16 @@
 		(layers "*.Cu" "*.Mask")
 		(clearance 1)
 		(uuid "d7fafe2b-274f-4053-83d9-ca1a10f74342")
+	)
+	(model "${KIPRJMOD}/3dmodels/Heatsink_GEC_20PB020.wrl"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
 	)
 )
