@@ -52,7 +52,7 @@ from backend import (
     PI_TX_GPIO, PTT_CHANNEL_POWER, RxController, TxController, _push_pluto_settings,
     _send_ptt_channel_state, _set_pi_tx_gpio,
 )
-from i18n import apply_language, is_english, set_language
+from i18n import apply_language, is_english, set_language, tr
 from widgets import error_dialog
 
 # 電源投入(アプリ起動)からMCU1(ESP32)のGPIO26(12V電源チャンネル)をONにするまでの遅延。
@@ -154,9 +154,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.rx_controller.set_volume(round(self.settings.rx_volume * 100))
 
     def change_volume(self, delta_percent: int) -> None:
-        # オンデバイス復調OFFで送信中はPTT ONでオーディオアンプの電源が切れているため、
-        # 音量は変えない(ポップアップも出さない)。
+        # オンデバイス復調OFFで送信中はPTT ONでオーディオアンプの電源が切れていて受信音量は
+        # 意味がないため、エンコーダは送信音量(マイク録音音量)の変更に使う。
         if self.tx_controller.is_running() and not self.settings.use_on_device_demod:
+            self._change_tx_audio_volume(delta_percent)
             return
         percent = max(0, min(100, round(self.settings.rx_volume * 100) + delta_percent))
         self.settings.rx_volume = percent / 100.0
@@ -165,9 +166,28 @@ class MainWindow(QtWidgets.QMainWindow):
         rx_screen = self._screens.get("rx")
         if hasattr(rx_screen, "set_volume_display"):
             rx_screen.set_volume_display(percent)
-        # 回している間は毎回書き込まず、止めてから1秒後にまとめて保存する。
         self._volume_save_timer.start()
-        self.volume_overlay.setText(f"音量 / Volume  {percent}%")
+        self._show_volume_overlay(f"音量 / Volume  {percent}%")
+
+    def _change_tx_audio_volume(self, delta_percent: int) -> None:
+        settings = self.settings
+        percent = max(0, min(100, settings.tx_audio_volume() + delta_percent))
+        settings.set_tx_audio_volume(percent)
+        if settings.tx_audio_input == "camera":
+            label = tr("カメラ音声", "Camera")
+        else:
+            label = tr("USBオーディオ", "USB Audio")
+        text = f"{tr('送信音量', 'TX Volume')} ({label})  {percent}%"
+        if not self.tx_controller.set_tx_audio_volume(percent):
+            # 選んだ入力のデバイスが無く無音で送信中。値だけ保存し、次の送信開始時に反映する。
+            text += "\n" + tr("入力デバイスなし(無音送信中)", "No input device (sending silence)")
+        self._volume_save_timer.start()
+        self._show_volume_overlay(text)
+
+    def _show_volume_overlay(self, text: str) -> None:
+        # 回している間は毎回書き込まず、止めてから1秒後にまとめて保存する(呼び出し側で
+        # _volume_save_timerを再始動)。
+        self.volume_overlay.setText(text)
         # ★固定幅だと文字(特に100%時)が欠けたため、文字に合わせて大きさを決める。
         self.volume_overlay.adjustSize()
         self.volume_overlay.move((self.width() - self.volume_overlay.width()) // 2,
