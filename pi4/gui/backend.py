@@ -60,11 +60,9 @@ _TX_STREAMING_RE = re.compile(r"frame=\s*\d+")
 _TX_PROGRESS_RE = re.compile(r"frame=\s*(\d+).*?L?size=\s*(\d+)(KiB|kB|MiB|MB|B)?")
 _TX_SIZE_UNITS = {None: 1, "B": 1, "kB": 1000, "KiB": 1024, "MB": 1000 ** 2, "MiB": 1024 ** 2}
 _UDP_TS_PACKET_BYTES = 1316
-# USBカメラ(C920 PRO)内蔵マイクのALSAカード番号を固定値で持たない理由:
-# 機体交換(046d:0825→046d:08e5)でcard 0→card 1に変わった実績があり、USB抜き差しや
-# 接続順序でも変わりうる(real_pluto_bringup_status.md参照)。固定値の既定は最後の手段の
-# フォールバックとしてのみ残す。
-_CAMERA_AUDIO_ALSA_FALLBACK = "plughw:1,0"
+# 送信音声のALSAカード番号を固定値で持たない理由:
+# 機体交換(046d:0825→046d:08e5)でC920がcard 0→card 1に変わった実績があり、USB抜き差しや
+# 接続順序でも変わりうる(real_pluto_bringup_status.md参照)。TX開始のたびに検出する。
 _CAMERA_AUDIO_ALSA_NAME_HINT = "C920"
 # RX受信音声の再生に使うUSBオーディオ(カード番号はUSB抜き差しや接続順序で変わりうるため
 # 固定せず、_detect_playback_alsa_device()で"USB"を含む名前から動的検出する)。
@@ -88,28 +86,61 @@ def _detect_playback_alsa_device() -> Optional[str]:
     return None
 
 
-def _detect_camera_alsa_device() -> Optional[str]:
-    """`arecord -l`からC920内蔵マイクのカード番号をTX開始のたびに動的検出する。
-    見つからない場合はNoneを返す。送信側は無音AAC入力へ切り替え、映像送信を
-    音声デバイス不在で中断させない。
-    """
+def _list_capture_alsa_devices() -> list[tuple[int, str, str]]:
+    """`arecord -l`の録音デバイスを(カード番号, "plughw:カード,デバイス", 行)の形で返す。"""
     try:
         result = subprocess.run(
             ["arecord", "-l"], capture_output=True, text=True, timeout=3)
     except (OSError, subprocess.TimeoutExpired):
-        return None
-    first_capture = None
+        return []
+    devices = []
     for line in result.stdout.splitlines():
         m = re.match(r"card (\d+):.*device (\d+):", line)
-        if not m:
-            continue
-        device = f"plughw:{m.group(1)},{m.group(2)}"
-        if first_capture is None:
-            first_capture = device
+        if m:
+            devices.append((int(m.group(1)), f"plughw:{m.group(1)},{m.group(2)}", line))
+    return devices
+
+
+def _usb_device_dir(sysfs_device_link: str) -> Optional[str]:
+    """sysfsの`device`リンク(USBインターフェース、例: .../1-1/1-1:1.0)から、
+    それが属するUSB機器のディレクトリ(.../1-1)を返す。"""
+    try:
+        interface_dir = os.path.realpath(sysfs_device_link)
+    except OSError:
+        return None
+    if ":" not in os.path.basename(interface_dir):
+        return None
+    return os.path.dirname(interface_dir)
+
+
+def _camera_alsa_card(camera_device: str, captures: list[tuple[int, str, str]]) -> Optional[int]:
+    """送信に使うカメラ(v4l2)と同じUSB機器に載っている録音カードの番号を返す。
+
+    C920は機体によって「USB PnP Sound Device」のような汎用名で列挙され、USBオーディオと
+    名前で区別できないため、まずsysfs上で映像デバイスと同じUSB機器かどうかで判定し、
+    分からない場合だけ名前("C920")で探す。"""
+    video_name = os.path.basename(os.path.realpath(camera_device))
+    camera_usb = _usb_device_dir(f"/sys/class/video4linux/{video_name}/device")
+    if camera_usb is not None:
+        for card, _device, _line in captures:
+            if _usb_device_dir(f"/sys/class/sound/card{card}/device") == camera_usb:
+                return card
+    for card, _device, line in captures:
         if _CAMERA_AUDIO_ALSA_NAME_HINT in line:
+            return card
+    return None
+
+
+def _detect_tx_audio_alsa_device(settings: AppSettings) -> Optional[str]:
+    """設定画面で選んだ送信音声の入力(tx_audio_input)の録音デバイスを返す。
+    camera=カメラ内蔵マイク、usb=カメラ以外の録音デバイス(USBオーディオ)。
+    見つからない場合はNone(送信側は無音で送り、映像送信は中断させない)。"""
+    captures = _list_capture_alsa_devices()
+    camera_card = _camera_alsa_card(settings.camera_device, captures)
+    for card, device, _line in captures:
+        if (card == camera_card) == (settings.tx_audio_input == "camera"):
             return device
-    # C920が汎用名「USB PnP Sound Device」として列挙される機体にも対応する。
-    return first_capture
+    return None
 
 
 CAMERA_CAPTURE_SIZE = "1280x720"
@@ -150,14 +181,20 @@ def _camera_input_args(device: str) -> list[str]:
     return base + ["-i", device]
 
 
-def _audio_input_args() -> list[str]:
-    device = _detect_camera_alsa_device()
+def _audio_input_args(settings: AppSettings) -> tuple[list[str], str]:
+    """ffmpegの音声入力引数と、ログ表示用の説明を返す。
+
+    カメラ音声・USBオーディオのどちらも1chで録音する(C920のマイク等はステレオで
+    列挙されるが、plughwが1chへ変換する)。符号化側も"-ac 1"のモノラル。"""
+    device = _detect_tx_audio_alsa_device(settings)
+    label = "カメラ音声" if settings.tx_audio_input == "camera" else "USBオーディオ"
     if device is not None:
-        return ["-f", "alsa", "-i", device]
+        return (["-f", "alsa", "-channels", "1", "-i", device],
+                f"[音声] {label} ({device}、モノラル)を送信します")
     return [
         "-f", "lavfi", "-i",
         "anullsrc=channel_layout=mono:sample_rate=48000",
-    ]
+    ], f"[音声] {label}が見つからないため無音で送信します"
 
 
 # コールサイン/日時/備考オーバーレイに使うフォント(shonan_lite-ipad版CameraOverlayRenderer
@@ -689,17 +726,26 @@ class TxController(QtCore.QObject):
                 self.error.emit(f"Pluto+設定送信に失敗しました: {exc}")
                 return
             output_url = _build_udp_ts_url(settings)
-        try:
-            _set_pi_tx_gpio(True)
-        except (OSError, subprocess.SubprocessError) as exc:
-            self.log_line.emit(f"[PTT] Pi4 GPIO{PI_TX_GPIO}のHIGH出力に失敗しました: {exc}")
-        if settings.active_ptt_controller_host():
+        if settings.use_on_device_demod:
+            # ★オンデバイス復調はアッテネータ経由の自己受信試験でPAを使わない。PTT ONで
+            # オーディオアンプの電源が切れ、受信音を聞けなくなるため、PTTはOFFのまま送信する
+            # (stop()側のOFF通知は従来どおり送り、OFFを保証する)。
+            self.log_line.emit("[PTT] オンデバイス復調中のためPTTをONにせず送信します")
+        else:
             try:
-                _send_ptt_request(settings.active_ptt_controller_host(), "on")
-            except (OSError, urllib.error.URLError, http.client.HTTPException) as exc:
-                self.log_line.emit(f"[PTT] ESP32への送信開始通知に失敗しました: {exc}")
-        # カメラ内蔵マイク(無ければ無音)の音声をAACで映像と一緒に送信する(Pi5版と同じ)。
-        args = video_args + overlay_input_args + _audio_input_args() + overlay_filter_args + [
+                _set_pi_tx_gpio(True)
+            except (OSError, subprocess.SubprocessError) as exc:
+                self.log_line.emit(f"[PTT] Pi4 GPIO{PI_TX_GPIO}のHIGH出力に失敗しました: {exc}")
+            if settings.active_ptt_controller_host():
+                try:
+                    _send_ptt_request(settings.active_ptt_controller_host(), "on")
+                except (OSError, urllib.error.URLError, http.client.HTTPException) as exc:
+                    self.log_line.emit(f"[PTT] ESP32への送信開始通知に失敗しました: {exc}")
+        # 設定画面で選んだ音声入力(カメラ音声/USBオーディオ、無ければ無音)をAACで
+        # 映像と一緒に送信する(Pi5版と同じ)。
+        audio_args, audio_message = _audio_input_args(settings)
+        self.log_line.emit(audio_message)
+        args = video_args + overlay_input_args + audio_args + overlay_filter_args + [
             "-map", video_map, "-map", f"{audio_index}:a",
             # Raspberry Pi 4のVideoCore H.264ハードウェアエンコーダを使用する。
             # dump_extraで各キーフレームへSPS/PPSを付加し、途中視聴でも復号可能にする。
@@ -851,8 +897,9 @@ class TxController(QtCore.QObject):
         udp_ts_url = _build_udp_ts_url(settings)
         overlay_input_args, overlay_filter_args, video_map, _preview_video_map, audio_index = \
             _build_overlay_pipeline(settings, extra_video_filters="showinfo")
+        audio_args, _audio_message = _audio_input_args(settings)
         args = _camera_input_args(settings.camera_device) + overlay_input_args + \
-            _audio_input_args() + overlay_filter_args + [
+            audio_args + overlay_filter_args + [
             "-map", video_map, "-map", f"{audio_index}:a",
             "-c:v", "h264_v4l2m2m", "-bf", "0",
             "-bsf:v", "dump_extra=freq=keyframe",

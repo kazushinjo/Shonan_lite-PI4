@@ -113,6 +113,12 @@ class RxScreen(SettingsSubScreen):
         self.volume_slider.setRange(0, 100)
         self.volume_slider.valueChanged.connect(self._on_volume_changed)
         volume_row.addWidget(self.volume_slider, 1)
+        # 現在の音量(%)。スライダーとロータリーエンコーダ(main.py)のどちらで変えても更新する。
+        self.volume_value_label = QtWidgets.QLabel()
+        self.volume_value_label.setFixedWidth(64)
+        self.volume_value_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.volume_value_label.setStyleSheet("color: white; font-size: 16px; font-weight: bold;")
+        volume_row.addWidget(self.volume_value_label)
         panel_layout.addLayout(volume_row)
 
         button_row = QtWidgets.QHBoxLayout()
@@ -173,9 +179,7 @@ class RxScreen(SettingsSubScreen):
         self.symbol_value.setText(f"{settings.symbol_rate_msps * 1000:.0f} kS/s")
         self.modulation_value.setText(settings.modulation_scheme)
         self.fec_value.setText(settings.fec_rate)
-        self.volume_slider.blockSignals(True)
-        self.volume_slider.setValue(round(settings.rx_volume * 100))
-        self.volume_slider.blockSignals(False)
+        self.set_volume_display(round(settings.rx_volume * 100))
         self._sync_button_state()
         self._set_video_fullscreen(False)
         self._last_rate_packets = None
@@ -183,7 +187,15 @@ class RxScreen(SettingsSubScreen):
         self._bitrate_mbps = 0.0
         self._set_stats(False, 0, 0)
 
+    def set_volume_display(self, percent: int) -> None:
+        """スライダー位置と音量(%)表示を合わせる(valueChangedで保存・反映し直さない)。"""
+        self.volume_slider.blockSignals(True)
+        self.volume_slider.setValue(percent)
+        self.volume_slider.blockSignals(False)
+        self.volume_value_label.setText(f"{percent}%")
+
     def _on_volume_changed(self, value: int) -> None:
+        self.volume_value_label.setText(f"{value}%")
         self.main_window.settings.rx_volume = value / 100.0
         self.main_window.save_settings()
         self.controller.set_volume(value)

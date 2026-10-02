@@ -59,6 +59,8 @@ from widgets import error_dialog
 MCU1_GPIO26_ON_DELAY_MS = 5_000
 # プログラム終了時、MCU1のGPIO26をOFFにしてから実際に終了するまでの遅延。
 MCU1_GPIO26_OFF_DELAY_SEC = 3
+# ロータリーエンコーダ(マウスホイール)1クリックあたりの音量変化(%)。
+VOLUME_KNOB_STEP_PERCENT = 2
 
 # Langstone V2の「GOTO SHONAN_LITE」で切り替えてきたときにLangstone側
 # (LangstoneGUI_Pluto.c)が作る印。あれば起動時のPluto+再起動を省き、使ったら消す
@@ -120,7 +122,59 @@ class MainWindow(QtWidgets.QMainWindow):
         QtCore.QTimer.singleShot(MCU1_GPIO26_ON_DELAY_MS, self._power_on_mcu1_gpio26)
 
         self._build_keyboard_panel()
+        self._setup_volume_knob()
         QtWidgets.QApplication.instance().installEventFilter(self)
+
+    def _setup_volume_knob(self) -> None:
+        """Langstoneと共用のロータリーエンコーダ(SparkFun Pro Micro、USBマウスのホイール
+        として認識される)で、どの画面からでもPiの音声出力(USBオーディオ)の音量を変える。
+
+        ★eglfsではホイール操作が見えないマウスカーソル位置のウィジェットへ届き、
+        意図しないスクロール等を起こすため、アプリ全体のイベントフィルタ(eventFilter)で
+        横取りして音量変更だけに使う(タッチ操作はホイールイベントを出さないので影響しない)。
+        """
+        self._wheel_accum = 0
+        self._volume_save_timer = QtCore.QTimer(self)
+        self._volume_save_timer.setSingleShot(True)
+        self._volume_save_timer.setInterval(1000)
+        self._volume_save_timer.timeout.connect(self.save_settings)
+        self.volume_overlay = QtWidgets.QLabel(self)
+        self.volume_overlay.setAlignment(QtCore.Qt.AlignCenter)
+        self.volume_overlay.setAttribute(QtCore.Qt.WA_TransparentForMouseEvents)
+        self.volume_overlay.setStyleSheet(
+            "background-color: rgba(20, 24, 28, 220); color: white; font-size: 28px;"
+            " font-weight: bold; border: 2px solid #1677ff; border-radius: 14px;"
+            " padding: 14px 32px;")
+        self.volume_overlay.hide()
+        self._volume_overlay_timer = QtCore.QTimer(self)
+        self._volume_overlay_timer.setSingleShot(True)
+        self._volume_overlay_timer.setInterval(1500)
+        self._volume_overlay_timer.timeout.connect(self.volume_overlay.hide)
+        # 保存済みの音量をUSBオーディオへ反映しておく(Langstone等が変えた値のままにしない)。
+        self.rx_controller.set_volume(round(self.settings.rx_volume * 100))
+
+    def change_volume(self, delta_percent: int) -> None:
+        # オンデバイス復調OFFで送信中はPTT ONでオーディオアンプの電源が切れているため、
+        # 音量は変えない(ポップアップも出さない)。
+        if self.tx_controller.is_running() and not self.settings.use_on_device_demod:
+            return
+        percent = max(0, min(100, round(self.settings.rx_volume * 100) + delta_percent))
+        self.settings.rx_volume = percent / 100.0
+        self.rx_controller.set_volume(percent)
+        # 受信画面の音量スライダーと音量(%)表示も追従させる。
+        rx_screen = self._screens.get("rx")
+        if hasattr(rx_screen, "set_volume_display"):
+            rx_screen.set_volume_display(percent)
+        # 回している間は毎回書き込まず、止めてから1秒後にまとめて保存する。
+        self._volume_save_timer.start()
+        self.volume_overlay.setText(f"音量 / Volume  {percent}%")
+        # ★固定幅だと文字(特に100%時)が欠けたため、文字に合わせて大きさを決める。
+        self.volume_overlay.adjustSize()
+        self.volume_overlay.move((self.width() - self.volume_overlay.width()) // 2,
+                                 (self.height() - self.volume_overlay.height()) // 2)
+        self.volume_overlay.raise_()
+        self.volume_overlay.show()
+        self._volume_overlay_timer.start()
 
     def _power_on_mcu1_gpio26(self) -> None:
         host = self.settings.active_ptt_controller_host()
@@ -149,6 +203,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.navigate_to(route)
 
     def eventFilter(self, watched, event):
+        if event.type() == QtCore.QEvent.Wheel:
+            # ロータリーエンコーダ(_setup_volume_knob参照)。1クリック=120で、
+            # 高分解能ホイールの細かい値は120に達するまで貯める。
+            self._wheel_accum += event.angleDelta().y()
+            steps = int(self._wheel_accum / 120)
+            if steps:
+                self._wheel_accum -= steps * 120
+                self.change_volume(steps * VOLUME_KNOB_STEP_PERCENT)
+            return True
         if event.type() == QtCore.QEvent.Show and isinstance(watched, QtWidgets.QDialog):
             apply_language(watched, is_english(self.settings))
         return super().eventFilter(watched, event)
@@ -390,6 +453,12 @@ class MainWindow(QtWidgets.QMainWindow):
             self.capture_screenshot()
         elif command == "restart":
             self.restart_app()
+        elif command.startswith("volume:"):
+            # ロータリーエンコーダを回したときと同じ音量変更(例: "volume:+2")。動作確認用。
+            try:
+                self.change_volume(int(command[len("volume:"):]))
+            except ValueError:
+                pass
         elif command.startswith("navigate:"):
             # 任意の画面へ移動するだけ(送受信は開始しない)。Pi5版と同じ書式。
             route = command[len("navigate:"):]
