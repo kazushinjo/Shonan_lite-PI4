@@ -616,6 +616,17 @@
 			(uuid "6a9f39bb-93e5-4728-9711-2f47a67e0252")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/3dmodels/W5500_Lite_USR-ES1.wrl"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "Capacitor_THT:CP_Radial_D5.0mm_P2.00mm"
 		(layer "F.Cu")
@@ -5531,10 +5542,9 @@
 				)
 			)
 		)
-		(property "Value" "Heatsink_20PB020"
-			(at 0 11 0)
+		(property "Value" "105054"
+			(at 6.5 0 0)
 			(layer "F.Fab")
-			(hide yes)
 			(uuid "6697c104-5c2a-4db0-8d0f-5747072ed493")
 			(effects
 				(font
@@ -5595,6 +5605,17 @@
 			(uuid "15e638b7-a809-41e5-96fa-c10cae1a0c79")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/3dmodels/Heatsink_GEC_20PB020.wrl"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "project_footprints:Socket_2x20_P2.54mm_25.4mm_DevKitC"
 		(layer "F.Cu")
@@ -6124,6 +6145,17 @@
 			(uuid "192e2b9c-105a-4aec-920a-00ade66a55b2")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/3dmodels/Freenove_ESP32_WROOM.wrl"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "Package_TO_SOT_THT:TO-92_Inline_Wide"
 		(layer "F.Cu")
@@ -8101,10 +8133,9 @@
 				)
 			)
 		)
-		(property "Value" "Heatsink_20PB020"
-			(at 0 11 0)
+		(property "Value" "105054"
+			(at 6.5 0 0)
 			(layer "F.Fab")
-			(hide yes)
 			(uuid "d1f25e85-d4b5-415b-b247-237162033b7a")
 			(effects
 				(font
@@ -8165,6 +8196,17 @@
 			(uuid "349b53b8-d82c-4a10-8d3b-6327d4fe8868")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/3dmodels/Heatsink_GEC_20PB020.wrl"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "project_footprints:Heatsink_GEC_20PB020_Pins_P12.5mm"
 		(layer "F.Cu")
@@ -8184,10 +8226,9 @@
 				)
 			)
 		)
-		(property "Value" "Heatsink_20PB020"
-			(at 0 11 0)
+		(property "Value" "105054"
+			(at 6.5 0 0)
 			(layer "F.Fab")
-			(hide yes)
 			(uuid "9e65f286-4a71-4353-9935-5d999057044f")
 			(effects
 				(font
@@ -8248,6 +8289,17 @@
 			(uuid "0803cacc-ea10-4dee-ab4b-d928bf623388")
 		)
 		(embedded_fonts no)
+		(model "${KIPRJMOD}/3dmodels/Heatsink_GEC_20PB020.wrl"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P5.08mm_Vertical"
 		(layer "F.Cu")
