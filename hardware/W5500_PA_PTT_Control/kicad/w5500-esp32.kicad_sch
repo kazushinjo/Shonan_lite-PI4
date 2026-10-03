@@ -4137,7 +4137,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "Regulator_Linear:TA48033S"
+		(symbol "project_symbols:LM2940T-3.3"
 			(pin_names
 				(offset 0.254)
 			)
@@ -4156,7 +4156,7 @@
 					)
 				)
 			)
-			(property "Value" "TA48033S"
+			(property "Value" "LM2940T-3.3"
 				(at 0 3.175 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -4180,7 +4180,7 @@
 					(justify left)
 				)
 			)
-			(property "Datasheet" "https://akizukidenshi.com/catalog/g/g100534/"
+			(property "Datasheet" "https://www.ti.com/lit/ds/symlink/lm2940-n.pdf"
 				(at 0 -1.27 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -4191,7 +4191,7 @@
 					)
 				)
 			)
-			(property "Description" "Low dropout 3-terminal positive regulator, 3.3V 1A, VD=0.3-0.5V typ. Input +12V(13.8V) to +3V3_A rail for W5500 module only. Pinout 1=IN 2=OUT 3=GND (GND/OUT swapped vs 78xx series - see Toshiba datasheet). TO-220 heatsink REQUIRED: (13.8V-3.3V)*0.2A =~2.1W dissipation exceeds no-heatsink rating."
+			(property "Description" "Low dropout 3-terminal positive regulator, 3.3V 1A (LM2940T-3.3, TO-220). Input +5V (U2 output) to +3V3_A rail for W5500 module only. Pinout 1=IN 2=GND 3=OUT (same as 78xx). CIN=0.47uF, COUT>=22uF with ESR 0.1-1 ohm required for stability."
 				(at 0 0 0)
 				(show_name no)
 				(do_not_autoplace no)
@@ -4224,7 +4224,7 @@
 					)
 				)
 			)
-			(symbol "TA48033S_0_1"
+			(symbol "LM2940T-3.3_0_1"
 				(rectangle
 					(start -5.08 1.905)
 					(end 5.08 -5.08)
@@ -4237,7 +4237,7 @@
 					)
 				)
 			)
-			(symbol "TA48033S_1_1"
+			(symbol "LM2940T-3.3_1_1"
 				(pin power_in line
 					(at -7.62 0 0)
 					(length 2.54)
@@ -4266,7 +4266,7 @@
 							)
 						)
 					)
-					(number "2"
+					(number "3"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -4284,7 +4284,7 @@
 							)
 						)
 					)
-					(number "3"
+					(number "2"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -6760,7 +6760,7 @@
 		)
 		(uuid "8186fdbd-6633-4f74-b61e-8b3a29c18140")
 	)
-	(text "U2: 13.8V(+12V)を5VへLDO変換(L7805)。発熱(13.8V-5V)*0.2A=約1.76Wのため放熱器を使用。\nU1: 上記5VをさらにW5500(A1)専用の+3V3_Aへ変換(TA48033S)。発熱(5V-3.3V)*0.2A=約0.34W。放熱器を使用。\n放熱器: U1・U2・Q5とも秋月[105054] 20×20×25mm(20PB020-01025、15.8℃/W)。\nESP32側(J1の3V3、DevKitC基板のオンボードLDO経由)とは完全に独立した系統。"
+	(text "U2: 13.8V(+12V)を5VへLDO変換(L7805)。発熱(13.8V-5V)*0.2A=約1.76Wのため放熱器を使用。\nU1: 上記5VをさらにW5500(A1)専用の+3V3_Aへ変換(LM2940T-3.3)。発熱(5V-3.3V)*0.2A=約0.34W。放熱器を使用。\n放熱器: U1・U2・Q5とも秋月[105054] 20×20×25mm(20PB020-01025、15.8℃/W)。\nESP32側(J1の3V3、DevKitC基板のオンボードLDO経由)とは完全に独立した系統。"
 		(exclude_from_sim no)
 		(at 256.794 139.954 0)
 		(effects
@@ -10634,7 +10634,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Regulator_Linear:TA48033S")
+		(lib_id "project_symbols:LM2940T-3.3")
 		(at 271.78 160.02 0)
 		(unit 1)
 		(body_style 1)
@@ -10654,7 +10654,7 @@
 				)
 			)
 		)
-		(property "Value" "TA48033S"
+		(property "Value" "LM2940T-3.3"
 			(at 267.716 155.702 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10676,7 +10676,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "https://akizukidenshi.com/catalog/g/g100534/"
+		(property "Datasheet" "https://www.ti.com/lit/ds/symlink/lm2940-n.pdf"
 			(at 271.78 158.73 0)
 			(hide yes)
 			(show_name yes)
@@ -10687,7 +10687,7 @@
 				)
 			)
 		)
-		(property "Description" "Low dropout 3-terminal positive regulator, 3.3V 1A. IN=+12V(13.8V), OUT=+3V3_A (W5500 only). Pinout 1=IN 2=OUT 3=GND. Heatsink required (~2.1W dissipation)."
+		(property "Description" "Low dropout 3-terminal positive regulator, 3.3V 1A. IN=+5V (U2 output), OUT=+3V3_A (W5500 only). Pinout 1=IN 2=GND 3=OUT. Heatsink attached."
 			(at 271.78 160.02 0)
 			(hide yes)
 			(show_name yes)
@@ -10739,7 +10739,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "0.33uF"
+		(property "Value" "0.47uF"
 			(at 264.16 167.6399 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -10772,7 +10772,7 @@
 				)
 			)
 		)
-		(property "Description" "U2 output / U1 input capacitor (TA48033S datasheet: CIN=0.33uF), 16V or higher"
+		(property "Description" "U2 output / U1 input capacitor (LM2940 datasheet: CIN=0.47uF), 16V or higher"
 			(at 260.35 166.37 0)
 			(hide yes)
 			(show_name yes)
@@ -10854,7 +10854,7 @@
 				)
 			)
 		)
-		(property "Description" "U1 output capacitor, electrolytic 33uF 10V or higher (TA48033S datasheet standard circuit: COUT=33uF; required for LDO stability)"
+		(property "Description" "U1 output capacitor, electrolytic 33uF 10V or higher (LM2940 datasheet: COUT>=22uF, ESR 0.1-1 ohm; required for LDO stability)"
 			(at 288.29 166.37 0)
 			(hide yes)
 			(show_name yes)

@@ -15,9 +15,9 @@ This document is the same-named document of Shonan_Lite-RasPI5 (same board, same
 
 | 項目<br>Item | 内容<br>Details |
 |---|---|
-| 版数<br>Revision | Rev.2.7 |
-| 基板の版数(シルク表記)<br>Board revision (silkscreen) | Rev.1.1(仕様書の版数とは別の番号。対応は下の「版数の対応表」を参照)<br>Rev.1.1 (a number separate from this document's revision; see "Revision Correspondence" below) |
-| 作成日<br>Created | 2026-08-07（Rev.2.0更新: 2026-08-30、実機回路(KiCad)に合わせて全面改訂／Rev.2.1更新: 2026-08-30、電源系統を訂正。J3(外付けDCDCバックコンバータ)は廃止し、U2(L7805)の+5VをMCU1とU1(TA48033S)の両方に供給する単一系統に修正／Rev.2.2更新: 2026-08-31、J1をFreenove実機の40pin DevKitCソケット配列に修正しMCU1もJ1と同じピン番号・信号名に統一。Power(スイッチ後12V)系統に赤色LED(D1)、+12V(入力側)系統に緑色LED(D2)の表示回路を追加／Rev.2.3更新: 2026-09-30、R8を100Ωに変更(KiCad回路図に合わせる)しR9を追記、IPアドレスの記述を固定IP方式に統一、12V電源ONまでの遅延を実装値(5秒)に訂正、Shonan_lite-PI4側の「ESP32 W5500を使用する」設定とPi4 GPIO21によるPTT出力を追記／Rev.2.4更新: 2026-09-30、R8を1kΩ(1/2W推奨)に変更、Q1のベースをGNDへプルダウンするR12(10kΩ)を追加、KiCadのQ5シンボルを2SJ334の足の並び(1=G、2=D、3=S)に合わせて修正、U1・U2・Q5に放熱器を追加／Rev.2.5更新: 2026-09-30、前面・背面の丸型コネクタの裏に配線用の空き(内壁から20mm)を確保するため、放熱器の列を下へ移し(間隔22mm)、トランジスタ・LED・J5・J6を空きの手前へ移動／Rev.2.6更新: 2026-09-30、回路図の一部のGND記号の値が空で別ネットになっていたのを修正、内層をGND・+12Vの全面ベタにし12V出力を幅4mmで引いたうえで残りを自動配線、Q1・Q3を足の間隔2.54mmのTO-92に変更、Power表示LED(D1)・+12V表示LED(D2)を外付けにしてそれぞれJ7・J8で接続、J6・J7・J8をJST XHコネクタ(B2B-XH-A)に変更、R8の基板の穴を1/2W抵抗用に変更、C2をTA48033Sのデータシートどおり33µF・C1とC3を0.33µFに変更、Q3のベースにプルダウン抵抗R13(10kΩ)を追加、J1のGNDピン21〜24・40を接続、Q5の発熱の目安を高温時のオン抵抗で見直し／2026-10-01追記: J1の35番ピン(W5500 RST)の配線が+5Vのビアに0.3mmまで近づいていたため、+5V(`/+5v0`)を信号線から0.5mm以上離し(線幅0.6mm)、J1のピンとピンの間に配線を通さないよう再配線(基板の版数表記はRev.1.0)／Rev.2.7更新: 2026-10-01、放熱器(20PB020)の取付ピン(φ1.4mm、間隔12.5mm)用のめっき無し穴(φ1.8mm、周囲1mmは全層で銅箔なし)を追加し、M3穴の高さを基板から19mmに訂正(基板の版数をRev.1.1に変更)）<br>2026-08-07 (Rev.2.0 update: 2026-08-30, fully revised to match the actual circuit (KiCad) / Rev.2.1 update: 2026-08-30, power system corrected: J3 (external DC-DC buck converter) removed, and the +5 V from U2 (L7805) now feeds both MCU1 and U1 (TA48033S) as a single system / Rev.2.2 update: 2026-08-31, J1 corrected to the pinout of the actual Freenove 40-pin DevKitC socket and MCU1 unified with J1's pin numbers and signal names; indicator circuits added: a red LED (D1) on the Power (switched 12 V) line and a green LED (D2) on the +12 V (input side) line / Rev.2.3 update: 2026-09-30, R8 changed to 100 Ω (to match the KiCad schematic) and R9 added, IP address description unified to the fixed-IP method, the delay until the 12 V power turns ON corrected to the implemented value (5 seconds), and the "Use ESP32 W5500" setting and PTT output via Pi 4 GPIO21 on the Shonan_lite-PI4 side added / Rev.2.4 update: 2026-09-30, R8 changed to 1 kΩ (1/2 W recommended), R12 (10 kΩ) added to pull Q1's base down to GND, the KiCad symbol of Q5 corrected to the 2SJ334 pinout (1 = G, 2 = D, 3 = S), and heatsinks added to U1, U2 and Q5 / Rev.2.5 update: 2026-09-30, to leave 20 mm of wiring space (from the inner wall) behind the front and back round connectors, the heatsink column moved down (22 mm pitch) and the transistors, LEDs, J5 and J6 moved in front of that space / Rev.2.6 update: 2026-09-30, fixed GND symbols in the schematic whose value was empty (they formed a separate net), made the inner layers full GND and +12 V planes, laid the 12 V output as a 4 mm trace and autorouted the rest, changed Q1 and Q3 to the TO-92 footprint with 2.54 mm lead pitch, made the Power indicator LED (D1) and the +12 V indicator LED (D2) external, connected through J7 and J8, changed J6, J7 and J8 to JST XH connectors (B2B-XH-A), changed the R8 footprint to one for a 1/2 W resistor, changed C2 to 33 µF as in the TA48033S datasheet and C1 and C3 to 0.33 µF, added a pull-down resistor R13 (10 kΩ) on Q3's base, connected J1's GND pins 21–24 and 40, and revised the Q5 heat estimate using the on-resistance at high temperature / added 2026-10-01: because the trace from J1 pin 35 (W5500 RST) came within 0.3 mm of a +5 V via, re-routed so that +5 V (`/+5v0`) is at least 0.5 mm from signal traces (0.6 mm wide) and no trace passes between the pins of J1 (the board is marked Rev.1.0) / Rev.2.7 update: 2026-10-01, added non-plated holes (1.8 mm, no copper on any layer within 1 mm) for the heatsink (20PB020) mounting pins (1.4 mm dia., 12.5 mm pitch), and corrected the M3 hole height to 19 mm above the board (board revision changed to Rev.1.1)) |
+| 版数<br>Revision | Rev.2.8 |
+| 基板の版数(シルク表記)<br>Board revision (silkscreen) | Rev.1.2(仕様書の版数とは別の番号。対応は下の「版数の対応表」を参照)<br>Rev.1.2 (a number separate from this document's revision; see "Revision Correspondence" below) |
+| 作成日<br>Created | 2026-08-07（Rev.2.0更新: 2026-08-30、実機回路(KiCad)に合わせて全面改訂／Rev.2.1更新: 2026-08-30、電源系統を訂正。J3(外付けDCDCバックコンバータ)は廃止し、U2(L7805)の+5VをMCU1とU1(TA48033S)の両方に供給する単一系統に修正／Rev.2.2更新: 2026-08-31、J1をFreenove実機の40pin DevKitCソケット配列に修正しMCU1もJ1と同じピン番号・信号名に統一。Power(スイッチ後12V)系統に赤色LED(D1)、+12V(入力側)系統に緑色LED(D2)の表示回路を追加／Rev.2.3更新: 2026-09-30、R8を100Ωに変更(KiCad回路図に合わせる)しR9を追記、IPアドレスの記述を固定IP方式に統一、12V電源ONまでの遅延を実装値(5秒)に訂正、Shonan_lite-PI4側の「ESP32 W5500を使用する」設定とPi4 GPIO21によるPTT出力を追記／Rev.2.4更新: 2026-09-30、R8を1kΩ(1/2W推奨)に変更、Q1のベースをGNDへプルダウンするR12(10kΩ)を追加、KiCadのQ5シンボルを2SJ334の足の並び(1=G、2=D、3=S)に合わせて修正、U1・U2・Q5に放熱器を追加／Rev.2.5更新: 2026-09-30、前面・背面の丸型コネクタの裏に配線用の空き(内壁から20mm)を確保するため、放熱器の列を下へ移し(間隔22mm)、トランジスタ・LED・J5・J6を空きの手前へ移動／Rev.2.6更新: 2026-09-30、回路図の一部のGND記号の値が空で別ネットになっていたのを修正、内層をGND・+12Vの全面ベタにし12V出力を幅4mmで引いたうえで残りを自動配線、Q1・Q3を足の間隔2.54mmのTO-92に変更、Power表示LED(D1)・+12V表示LED(D2)を外付けにしてそれぞれJ7・J8で接続、J6・J7・J8をJST XHコネクタ(B2B-XH-A)に変更、R8の基板の穴を1/2W抵抗用に変更、C2をTA48033Sのデータシートどおり33µF・C1とC3を0.33µFに変更、Q3のベースにプルダウン抵抗R13(10kΩ)を追加、J1のGNDピン21〜24・40を接続、Q5の発熱の目安を高温時のオン抵抗で見直し／2026-10-01追記: J1の35番ピン(W5500 RST)の配線が+5Vのビアに0.3mmまで近づいていたため、+5V(`/+5v0`)を信号線から0.5mm以上離し(線幅0.6mm)、J1のピンとピンの間に配線を通さないよう再配線(基板の版数表記はRev.1.0)／Rev.2.7更新: 2026-10-01、放熱器(20PB020)の取付ピン(φ1.4mm、間隔12.5mm)用のめっき無し穴(φ1.8mm、周囲1mmは全層で銅箔なし)を追加し、M3穴の高さを基板から19mmに訂正(基板の版数をRev.1.1に変更)／Rev.2.8更新: 2026-10-03、3.3VレギュレータU1をTA48033SからLM2940T-3.3(TO-220、1=IN・2=GND・3=OUT)に変更。足の並びが違うためU1の2番をGND・3番を+3V3_Aにつなぎ替えて裏面の配線を引き直し、C1をLM2940のデータシートどおり0.47µFに変更(基板の版数をRev.1.2に変更)）<br>2026-08-07 (Rev.2.0 update: 2026-08-30, fully revised to match the actual circuit (KiCad) / Rev.2.1 update: 2026-08-30, power system corrected: J3 (external DC-DC buck converter) removed, and the +5 V from U2 (L7805) now feeds both MCU1 and U1 (TA48033S) as a single system / Rev.2.2 update: 2026-08-31, J1 corrected to the pinout of the actual Freenove 40-pin DevKitC socket and MCU1 unified with J1's pin numbers and signal names; indicator circuits added: a red LED (D1) on the Power (switched 12 V) line and a green LED (D2) on the +12 V (input side) line / Rev.2.3 update: 2026-09-30, R8 changed to 100 Ω (to match the KiCad schematic) and R9 added, IP address description unified to the fixed-IP method, the delay until the 12 V power turns ON corrected to the implemented value (5 seconds), and the "Use ESP32 W5500" setting and PTT output via Pi 4 GPIO21 on the Shonan_lite-PI4 side added / Rev.2.4 update: 2026-09-30, R8 changed to 1 kΩ (1/2 W recommended), R12 (10 kΩ) added to pull Q1's base down to GND, the KiCad symbol of Q5 corrected to the 2SJ334 pinout (1 = G, 2 = D, 3 = S), and heatsinks added to U1, U2 and Q5 / Rev.2.5 update: 2026-09-30, to leave 20 mm of wiring space (from the inner wall) behind the front and back round connectors, the heatsink column moved down (22 mm pitch) and the transistors, LEDs, J5 and J6 moved in front of that space / Rev.2.6 update: 2026-09-30, fixed GND symbols in the schematic whose value was empty (they formed a separate net), made the inner layers full GND and +12 V planes, laid the 12 V output as a 4 mm trace and autorouted the rest, changed Q1 and Q3 to the TO-92 footprint with 2.54 mm lead pitch, made the Power indicator LED (D1) and the +12 V indicator LED (D2) external, connected through J7 and J8, changed J6, J7 and J8 to JST XH connectors (B2B-XH-A), changed the R8 footprint to one for a 1/2 W resistor, changed C2 to 33 µF as in the TA48033S datasheet and C1 and C3 to 0.33 µF, added a pull-down resistor R13 (10 kΩ) on Q3's base, connected J1's GND pins 21–24 and 40, and revised the Q5 heat estimate using the on-resistance at high temperature / added 2026-10-01: because the trace from J1 pin 35 (W5500 RST) came within 0.3 mm of a +5 V via, re-routed so that +5 V (`/+5v0`) is at least 0.5 mm from signal traces (0.6 mm wide) and no trace passes between the pins of J1 (the board is marked Rev.1.0) / Rev.2.7 update: 2026-10-01, added non-plated holes (1.8 mm, no copper on any layer within 1 mm) for the heatsink (20PB020) mounting pins (1.4 mm dia., 12.5 mm pitch), and corrected the M3 hole height to 19 mm above the board (board revision changed to Rev.1.1) / Rev.2.8 update: 2026-10-03, the 3.3 V regulator U1 changed from the TA48033S to the LM2940T-3.3 (TO-220, 1 = IN, 2 = GND, 3 = OUT); because the pinout differs, U1 pin 2 was reconnected to GND and pin 3 to +3V3_A and the bottom-layer trace re-routed, and C1 changed to 0.47 µF as in the LM2940 datasheet (board revision changed to Rev.1.2)) |
 | 対象ボード<br>Target board | ESP32 (WROVER系、無印ESP32) + W5500 イーサネットモジュール<br>ESP32 (WROVER family, plain ESP32) + W5500 Ethernet module |
 | 対象スケッチ<br>Target sketch | `hardware/W5500_PA_PTT_Control/W5500_PA_PTT_Control.ino` |
 | 連携先<br>Connected apps | shonan-android（DATV送信アプリ）、Shonan_lite-PI4（pi4/gui、送信画面のTX開始/終了およびアプリ起動/終了に連動）<br>shonan-android (DATV transmit app), Shonan_lite-PI4 (pi4/gui; linked to TX start/stop on the transmit screen and to app start/exit) |
@@ -38,7 +38,8 @@ board is changed and manufactured again, raise the board revision and add a row 
 | Rev.1.0〜1.1 | 2026-08-07〜 | —(プリント基板なし)<br>— (no PCB) | LNA/PTT/PAの3チャンネル構成の旧仕様。KiCadで回路図を作る前<br>Old specification with three channels (LNA/PTT/PA), before the schematic was drawn in KiCad |
 | Rev.2.0〜2.5 | 2026-08-30〜2026-09-30 | —(未製造)<br>— (not manufactured) | KiCadで回路図・基板を設計中<br>Schematic and PCB being designed in KiCad |
 | Rev.2.6 | 2026-09-30(2026-10-01追記を含む)<br>2026-09-30 (including the 2026-10-01 additions) | Rev.1.0 | 放熱器の取付ピン用の穴なし<br>No holes for the heatsink mounting pins |
-| Rev.2.7 | 2026-10-01 | **Rev.1.1** | 放熱器の取付ピン用のめっき無し穴を追加。`fabrication/jlcpcb/`の発注データはこの版<br>Non-plated holes for the heatsink mounting pins added. The order data in `fabrication/jlcpcb/` is for this revision |
+| Rev.2.7 | 2026-10-01 | Rev.1.1 | 放熱器の取付ピン用のめっき無し穴を追加。U1はTA48033S(1=IN・2=OUT・3=GND)の足の並び<br>Non-plated holes for the heatsink mounting pins added. U1 uses the TA48033S pinout (1 = IN, 2 = OUT, 3 = GND) |
+| Rev.2.8 | 2026-10-03 | **Rev.1.2** | U1をLM2940T-3.3(1=IN・2=GND・3=OUT)に変更し配線を引き直し、C1を0.47µFに変更。`fabrication/jlcpcb/`の発注データはこの版。Rev.1.1の基板にLM2940T-3.3を載せると出力とGNDが逆になるので使わない<br>U1 changed to the LM2940T-3.3 (1 = IN, 2 = GND, 3 = OUT) with re-routed traces, and C1 changed to 0.47 µF. The order data in `fabrication/jlcpcb/` is for this revision. Do not fit an LM2940T-3.3 on a Rev.1.1 board, as its output and GND would be swapped |
 
 ---
 
@@ -81,10 +82,10 @@ Up to Rev.1.1, 3-channel LNA/PTT/PA sequence control was assumed (e.g. disconnec
 | R9 (10kΩ)<br>R9 (10 kΩ) | W5500(A1)のRST(GPIO21と同一ネット)を+3V3_Aへプルアップする抵抗<br>Pull-up resistor from the W5500 (A1) RST (same net as GPIO21) to +3V3_A |
 | J2 (DC_IN_13V8) | 外部電源(13.8V/12V系)の入力コネクタ<br>Input connector for the external power supply (13.8 V/12 V) |
 | U2 (L7805) | +12V→+5Vのリニアレギュレータ(TO-220)。生成した+5V(`+5v0`)はMCU1(J1)とU1の両方に供給される<br>+12 V → +5 V linear regulator (TO-220). The generated +5 V (`+5v0`) feeds both MCU1 (J1) and U1 |
-| U1 (TA48033S) | U2出力の+5V→+3.3Vのリニアレギュレータ(TO-220)。W5500(A1)のVCC(+3V3_A)専用<br>+5 V (U2 output) → +3.3 V linear regulator (TO-220). Dedicated to the W5500 (A1) VCC (+3V3_A) |
+| U1 (LM2940T-3.3) | U2出力の+5V→+3.3Vのリニアレギュレータ(TO-220、1A、足は1=IN・2=GND・3=OUT)。W5500(A1)のVCC(+3V3_A)専用<br>+5 V (U2 output) → +3.3 V linear regulator (TO-220, 1 A, pins 1 = IN, 2 = GND, 3 = OUT). Dedicated to the W5500 (A1) VCC (+3V3_A) |
 | C3 (0.33µF、25V以上)<br>C3 (0.33 µF, 25 V or higher) | U2(L7805)の入力(+12V)側コンデンサ<br>Input (+12 V) capacitor of U2 (L7805) |
-| C1 (0.33µF、16V以上)<br>C1 (0.33 µF, 16 V or higher) | U2の出力・U1の入力(+5V)側コンデンサ(TA48033Sデータシートの推奨CIN=0.33µF)<br>Capacitor on U2's output / U1's input (+5 V) (CIN = 0.33 µF recommended in the TA48033S datasheet) |
-| C2 (33µF、10V以上の電解コンデンサ)<br>C2 (33 µF, electrolytic, 10 V or higher) | U1(TA48033S)の出力(+3.3V)側コンデンサ。TA48033Sは出力コンデンサが小さいと発振するおそれがあるため、データシートの標準回路どおり33µFとする(0.1µFでは不足)。+側が+3.3V<br>Output (+3.3 V) capacitor of U1 (TA48033S). The TA48033S may oscillate with a small output capacitor, so 33 µF is used as in the datasheet's standard circuit (0.1 µF is not enough). The + side goes to +3.3 V |
+| C1 (0.47µF、16V以上)<br>C1 (0.47 µF, 16 V or higher) | U2の出力・U1の入力(+5V)側コンデンサ(LM2940データシートのCIN=0.47µF。U1が電源のフィルタから離れているときは必要)<br>Capacitor on U2's output / U1's input (+5 V) (CIN = 0.47 µF in the LM2940 datasheet; required when U1 is far from the supply filter) |
+| C2 (33µF、10V以上の電解コンデンサ)<br>C2 (33 µF, electrolytic, 10 V or higher) | U1(LM2940T-3.3)の出力(+3.3V)側コンデンサ。LM2940は出力コンデンサが22µF以上でESRが0.1〜1Ωでないと発振するおそれがあるため、33µFの電解コンデンサとする(0.1µFのセラミックでは不足)。+側が+3.3V<br>Output (+3.3 V) capacitor of U1 (LM2940T-3.3). The LM2940 may oscillate unless the output capacitor is at least 22 µF with an ESR of 0.1–1 Ω, so a 33 µF electrolytic capacitor is used (a 0.1 µF ceramic is not enough). The + side goes to +3.3 V |
 | J1 (ESP32_DevKitC_Socket_40P) | Freenove ESP32-WROOM-32E DevKitC(40pin、25.4mm幅)を直接プラグインするメスソケット<br>Female socket into which a Freenove ESP32-WROOM-32E DevKitC (40 pins, 25.4 mm wide) plugs directly |
 | J7 (LED_PWR) + R10 (10kΩ)<br>J7 (LED_PWR) + R10 (10 kΩ) | Power(Q5出力・スイッチ後12V)系統の通電表示。表示LED(赤)は基板に載せず外付けとし、JST XHコネクタ(J7)で接続する。J7の1番=LEDのアノード(R10(10kΩ)で電流制限)、2番=カソード(GND)<br>Power indicator for the Power line (Q5 output, switched 12 V). The indicator LED (red) is not mounted on the board; it is external and connected through J7, a JST XH connector. J7 pin 1 = LED anode (current-limited by R10, 10 kΩ), pin 2 = cathode (GND) |
 | J8 (LED_12V) + R11 (10kΩ)<br>J8 (LED_12V) + R11 (10 kΩ) | +12V(J2入力・未スイッチ)系統の通電表示。表示LED(緑)は基板に載せず外付けとし、JST XHコネクタ(J8)で接続する。J8の1番=LEDのアノード(R11(10kΩ)で電流制限)、2番=カソード(GND)<br>Power indicator for the +12 V line (J2 input, unswitched). The indicator LED (green) is not mounted on the board; it is external and connected through J8, a JST XH connector. J8 pin 1 = LED anode (current-limited by R11, 10 kΩ), pin 2 = cathode (GND) |
@@ -119,10 +120,10 @@ Up to Rev.1.1, 3-channel LNA/PTT/PA sequence control was assumed (e.g. disconnec
 ### 2.4 電源系統 / Power System
 
 外部から供給される+12V(13.8V)を起点に、**U2(L7805)が生成する+5V(`+5v0`)を
-MCU1(DevKitC基板)とU1(TA48033S)の両方に分岐供給**する、単一系統の構成である。
+MCU1(DevKitC基板)とU1(LM2940T-3.3)の両方に分岐供給**する、単一系統の構成である。
 
 Starting from the externally supplied +12 V (13.8 V), it is a single-system configuration in which **the +5 V (`+5v0`)
-generated by U2 (L7805) is branched to both MCU1 (DevKitC board) and U1 (TA48033S)**.
+generated by U2 (L7805) is branched to both MCU1 (DevKitC board) and U1 (LM2940T-3.3)**.
 
 ```
 J2(+12V,13.8V)
@@ -131,13 +132,13 @@ J2(+12V,13.8V)
    │
    +5V(`+5v0`ネット / net) ──┬── J1(1) → MCU1(DevKitC基板 / board) ※基板内蔵LDOで3.3Vに変換しESP32モジュールへ
                                │                                     (converted to 3.3 V by the on-board LDO for the ESP32 module)
-                               └── U1(TA48033S、5V→3.3V) → A1(VCC、W5500)
+                               └── U1(LM2940T-3.3、5V→3.3V) → A1(VCC、W5500)
 ```
 
 | 供給先<br>Supplied to | 経路<br>Path | 備考<br>Notes |
 |---|---|---|
 | MCU1(DevKitC)用<br>MCU1 (DevKitC) | +12V → U2(L7805、12V→5V) → J1(1) | DevKitC基板上のオンボードLDOがこの5Vを3.3Vに変換しESP32モジュールへ供給する<br>The on-board LDO of the DevKitC converts this 5 V to 3.3 V for the ESP32 module |
-| W5500用<br>W5500 | +12V → U2(L7805、12V→5V) → U1(TA48033S、5V→3.3V) → A1(VCC) | U2出力の`+5v0`をU1がさらに3.3Vへ降圧しW5500(A1)のVCCへ供給<br>U1 further steps the `+5v0` output of U2 down to 3.3 V for the W5500 (A1) VCC |
+| W5500用<br>W5500 | +12V → U2(L7805、12V→5V) → U1(LM2940T-3.3、5V→3.3V) → A1(VCC) | U2出力の`+5v0`をU1がさらに3.3Vへ降圧しW5500(A1)のVCCへ供給<br>U1 further steps the `+5v0` output of U2 down to 3.3 V for the W5500 (A1) VCC |
 
 MCU1用・W5500用いずれも起点はU2(L7805)の+5V出力であり、外付けのDCDCバックコンバータ
 モジュールは使用しない（旧Rev.2.0で存在したJ3は廃止）。詳細な接続関係は
@@ -149,9 +150,9 @@ Details" in [`MCU1_J1_W5500_接続一覧.md`](MCU1_J1_W5500_接続一覧.md).
 
 ### 2.5 放熱器 / Heatsinks
 
-U2(L7805)・U1(TA48033S)・Q5(2SJ334)には、それぞれ放熱器を付ける。
+U2(L7805)・U1(LM2940T-3.3)・Q5(2SJ334)には、それぞれ放熱器を付ける。
 
-A heatsink is attached to each of U2 (L7805), U1 (TA48033S) and Q5 (2SJ334).
+A heatsink is attached to each of U2 (L7805), U1 (LM2940T-3.3) and Q5 (2SJ334).
 
 | 項目<br>Item | 内容<br>Details |
 |---|---|
@@ -165,7 +166,7 @@ A heatsink is attached to each of U2 (L7805), U1 (TA48033S) and Q5 (2SJ334).
 
 - U2(L7805): 出力電流を最大約0.25A(ESP32 DevKitCとW5500の合計の目安)とすると、損失は(14V−5V)×0.25A≒2.3W。
   放熱器15.8℃/W+接合部〜ケース間(約5℃/W)で温度上昇は約50℃。
-- U1(TA48033S): (5V−3.3V)×約0.13A(W5500)≒0.2Wと小さい。
+- U1(LM2940T-3.3): (5V−3.3V)×約0.13A(W5500)≒0.2Wと小さい。
 - Q5(2SJ334): 損失はオン抵抗(最大38mΩ@VGS=−10V)×電流²。放熱器15.8℃/W+接合部〜ケース間2.78℃/Wで約19℃/Wとして、5Aで約1W。高温時はオン抵抗が約1.5倍になるので約1.4Wとみると、温度上昇は約27℃。閉じたケース内の気温を約45℃(室温30℃+L7805等の発熱による上昇約15℃)として、接合部は約70℃(上限150℃)、放熱器表面は約65〜70℃で余裕がある。
   10Aでは高温時に約5.7W・温度上昇約110℃となりこの放熱器では不足するため、この放熱器での目安は約7Aまで。タブと放熱器の間には放熱グリスを塗る。PA等の実際の負荷電流に合わせて確認すること。
 
@@ -173,7 +174,7 @@ Rough heat estimate (at 14 V input):
 
 - U2 (L7805): with a maximum output current of about 0.25 A (rough total of the ESP32 DevKitC and the W5500), the loss is
   (14 V − 5 V) × 0.25 A ≈ 2.3 W. With the heatsink's 15.8 °C/W plus junction-to-case (about 5 °C/W), the temperature rise is about 50 °C.
-- U1 (TA48033S): (5 V − 3.3 V) × about 0.13 A (W5500) ≈ 0.2 W, which is small.
+- U1 (LM2940T-3.3): (5 V − 3.3 V) × about 0.13 A (W5500) ≈ 0.2 W, which is small.
 - Q5 (2SJ334): the loss is on-resistance (max 38 mΩ at VGS = −10 V) × current². Taking about 19 °C/W (heatsink 15.8 °C/W plus junction-to-case 2.78 °C/W),
   about 1 W at 5 A. The on-resistance rises to about 1.5 times at high temperature, so taking about 1.4 W, the rise is about 27 °C. Assuming the air inside the closed case is about 45 °C (30 °C room plus about 15 °C from the heat of L7805, etc.), the junction is about 70 °C (limit 150 °C) and the heatsink surface about 65–70 °C, which leaves margin.
   At 10 A the loss at high temperature is about 5.7 W with a rise of about 110 °C, which this heatsink cannot handle, so the guideline with this heatsink is up to about 7 A. Apply thermal grease between the tab and the heatsink. Check against the actual load current of the PA, etc.
