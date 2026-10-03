@@ -688,7 +688,7 @@
       "include_excluded_from_bom": true,
       "name": "Default Editing",
       "sort_asc": true,
-      "sort_field": "\u30ea\u30d5\u30a1\u30ec\u30f3\u30b9"
+      "sort_field": "リファレンス"
     },
     "bus_aliases": {},
     "connection_grid_size": 50.0,
@@ -727,7 +727,7 @@
     "top_level_sheets": [
       {
         "filename": "w5500-esp32.kicad_sch",
-        "name": "\u30eb\u30fc\u30c8",
+        "name": "ルート",
         "uuid": "0100d23c-65ba-4b48-9527-fff8f2d69db1"
       }
     ],
@@ -737,7 +737,7 @@
   "sheets": [
     [
       "0100d23c-65ba-4b48-9527-fff8f2d69db1",
-      "\u30eb\u30fc\u30c8"
+      "ルート"
     ]
   ],
   "text_variables": {},
