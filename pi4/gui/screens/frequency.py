@@ -123,7 +123,7 @@ class FrequencyScreen(SettingsSubScreen):
             if info["lo_hz"] is None:
                 continue
             mhz = info["lo_hz"] / 1_000_000
-            chip = QtWidgets.QPushButton(f"{info['label_ja']}\n{mhz:g} MHz")
+            chip = QtWidgets.QPushButton(f"{tr(info['label_ja'], info['label_en'])}\n{mhz:g} MHz")
             chip.setCheckable(True)
             chip.setStyleSheet(_CHIP_STYLE)
             # ★toggledではなくclickedを使う。on_show()でのsetChecked()では発火させず
@@ -161,7 +161,7 @@ class FrequencyScreen(SettingsSubScreen):
         lnb_chip = self._band_buttons.get(_LNB_BAND)
         if lnb_chip is not None:
             info = BAND_PROFILES[_LNB_BAND]
-            label = info["label_ja"]
+            label = tr(info["label_ja"], info["label_en"])
             if settings.lnb_active() and not settings.use_custom_lo_frequency:
                 lnb_chip.setText(f"{label} (LNB)\n{settings.effective_lo_hz() / 1_000_000:g} MHz")
             else:
