@@ -16,9 +16,10 @@
 #      サービスからのsudo reboot/shutdownがPAM認証で失敗する不具合の対策)
 #   8. 電源電圧警告(稲妻アイコン)表示の抑制(/boot/firmware/config.txtにavoid_warnings=1追記)
 #   9. shonan-gui.service / langstone.service(systemd)を作成・有効化
-#      (Home画面の「Langstone V2Modify」ボタンでの切替はreboot方式。両サービスとも
-#      マーカーファイル~/.pi4_boot_mode_langstoneの有無をConditionPathExistsで見て
-#      片方だけが起動する)
+#      (Home画面の「Langstone V2Modify」ボタンでの切替は、相手側のサービスを
+#      起動しConflicts=で今の側を止める方式で、Pi4は再起動しない。電源投入時は
+#      両サービスともマーカーファイル~/.pi4_boot_mode_langstoneの有無を
+#      ConditionPathExistsで見て、片方だけが起動する)
 #
 # 使い方:
 #   ./pi4/scripts/install.sh            # 通常インストール(HTTPSでclone)
@@ -209,10 +210,10 @@ else
 fi
 
 log "6/9 起動時コンソール表示の抑制"
-# ★Home画面の「Langstone V2Modify」ボタン/Langstone側の「戻る」ボタンによる切替は
-# 毎回Pi4をrebootする方式のため、素のRaspberry Pi OSのまま(getty@tty1が
-# 有効)だと切替のたびにカーネル起動ログやログインプロンプト/シェルの
-# コンソール出力が実機LCDに一瞬映り込み、Langstone/Shonan_Lite本来の画面と
+# ★素のRaspberry Pi OSのまま(getty@tty1が有効)だと、電源投入時や、Home画面の
+# 「Langstone V2Modify」ボタン/Langstone側の「戻る」ボタンでアプリを切り替える
+# (サービスの切替。以前は毎回Pi4をrebootしていた)合間に、カーネル起動ログや
+# ログインプロンプト/シェルのコンソール出力が実機LCDに一瞬映り込み、Langstone/Shonan_Lite本来の画面と
 # 無関係な文字が見えてしまう(実機で確認)。tty1のgettyを無効化し、
 # カーネルの起動メッセージも抑制する。
 sudo systemctl disable --now getty@tty1.service 2>/dev/null || true
@@ -262,10 +263,11 @@ fi
 log "9/9 systemdサービス登録"
 # ★Langstone V2Modifyとshonan-gui.serviceは同じ画面(/dev/fb0とeglfs/DRM)を排他的に
 # 使うため同時起動できない。Home画面の「Langstone V2Modify」ボタン、およびLangstone側の
-# 「戻る」ボタンは、マーカーファイル(~/.pi4_boot_mode_langstone)を作成/削除して
-# rebootする(pi4/gui/screens/home.py、LangstoneGUI_Pluto.c参照)。両サービスとも
-# ConditionPathExistsでマーカーの有無を見て、起動すべきでない側は何もせず正常終了
-# (skipped)扱いになるようにする。
+# 「戻る」ボタンは、マーカーファイル(~/.pi4_boot_mode_langstone)を作成/削除してから
+# 相手側のサービスを起動する。Conflicts=により今動いている側は自動的に止まり、
+# Pi4は再起動しない(pi4/gui/screens/home.py、LangstoneGUI_Pluto.c参照)。電源投入時は
+# 両サービスともConditionPathExistsでマーカーの有無を見て、起動すべきでない側は
+# 何もせず正常終了(skipped)扱いになるようにする。
 LANGSTONE_BOOT_MARKER="${HOME}/.pi4_boot_mode_langstone"
 
 SERVICE_FILE="/etc/systemd/system/${SERVICE_NAME}"
