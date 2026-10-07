@@ -72,7 +72,7 @@ class RssiGraphWidget(QtWidgets.QWidget):
             font = painter.font()
             font.setPixelSize(13)
             painter.setFont(font)
-            painter.drawText(self.rect(), QtCore.Qt.AlignCenter, tr("検索開始でRSSIを表示します", "RSSI appears after you start a search"))
+            painter.drawText(self.rect(), QtCore.Qt.AlignCenter, tr("測定開始でRSSIを表示します", "RSSI appears after you start a measurement"))
             return
 
         start_hz, end_hz = self._freq_range
@@ -220,7 +220,7 @@ class RssiScreen(SettingsSubScreen):
         left_layout = QtWidgets.QVBoxLayout(left)
         left_layout.setContentsMargins(8, 6, 8, 6)
         left_layout.setSpacing(4)
-        title = QtWidgets.QLabel(tr("検索条件", "Search Conditions"))
+        title = QtWidgets.QLabel(tr("測定条件", "Measurement Conditions"))
         title.setStyleSheet("font-size: 15px; font-weight: bold; color: #54bce0;")
         left_layout.addWidget(title)
         self.start_edit = QtWidgets.QLabel("435000")
@@ -283,7 +283,7 @@ class RssiScreen(SettingsSubScreen):
             keypad_grid.addWidget(button, row, column)
         left_layout.addWidget(keypad, 0, QtCore.Qt.AlignHCenter)
         left_layout.addStretch(1)
-        self.search_btn = QtWidgets.QPushButton(tr("検索開始", "Start Search"))
+        self.search_btn = QtWidgets.QPushButton(tr("測定開始", "Start Measurement"))
         self.search_btn.setFixedHeight(36)
         self.search_btn.clicked.connect(self._on_start_stop)
         self.search_btn.setStyleSheet(self._SEARCH_BTN_STYLE)
@@ -295,7 +295,7 @@ class RssiScreen(SettingsSubScreen):
         right_layout = QtWidgets.QVBoxLayout(right)
         right_layout.setContentsMargins(10, 8, 10, 8)
         right_layout.setSpacing(4)
-        result_title = QtWidgets.QLabel(tr("検索結果", "Search Result"))
+        result_title = QtWidgets.QLabel(tr("測定結果", "Measurement Result"))
         result_title.setStyleSheet("font-size: 15px; font-weight: bold; color: #54bce0;")
         right_layout.addWidget(result_title)
         self.rssi_graph = RssiGraphWidget()
@@ -312,7 +312,7 @@ class RssiScreen(SettingsSubScreen):
         # 検索の繰り返し方: 連続(「検索停止」まで繰り返す)/ 1回(範囲の終わりで自動停止)。
         # 検索中に切り替えた場合は、実行中の周回が終わった時点から反映される。
         mode_row = QtWidgets.QHBoxLayout()
-        mode_title = QtWidgets.QLabel(tr("検索方法", "Search Mode"))
+        mode_title = QtWidgets.QLabel(tr("測定方法", "Measurement Mode"))
         mode_title.setStyleSheet("color: #eeeeee; font-size: 13px; font-weight: bold;")
         mode_row.addWidget(mode_title)
         mode_row.addStretch(1)
@@ -382,7 +382,7 @@ class RssiScreen(SettingsSubScreen):
         columns.addWidget(right, 2)
 
         bottom = QtWidgets.QHBoxLayout()
-        self.status_label = QtWidgets.QLabel(tr("検索待機中", "Search idle"))
+        self.status_label = QtWidgets.QLabel(tr("測定待機中", "Measurement idle"))
         self.status_label.setStyleSheet("color: #176f94; font-size: 14px; font-weight: bold;")
         bottom.addWidget(self.status_label)
         bottom.addStretch(1)
@@ -477,7 +477,7 @@ class RssiScreen(SettingsSubScreen):
         # 実際に信号を見つけられることを実機で確認済み)。RxController(shonan_rx.py、
         # gr-iio)はRX側のIIOコンテキストを排他的に握るため、これとは同時実行できない。
         if self.main_window.rx_controller.is_running():
-            error_dialog(self, tr("検索不可", "Cannot Search"), tr("受信中は開始できません", "Cannot start while receiving"))
+            error_dialog(self, tr("測定不可", "Cannot Measure"), tr("受信中は開始できません", "Cannot start while receiving"))
             return
         try:
             start_khz = int(self.start_edit.text())
@@ -502,8 +502,8 @@ class RssiScreen(SettingsSubScreen):
         self._apply_rx_gain()
         self._begin_sweep()
         self._scanning = True
-        self.status_label.setText(tr("検索中...", "Searching..."))
-        self.search_btn.setText(tr("検索停止", "Stop Search"))
+        self.status_label.setText(tr("測定中...", "Measuring..."))
+        self.search_btn.setText(tr("測定停止", "Stop Measurement"))
         self.search_btn.setStyleSheet(self._SEARCH_BTN_STYLE_RUNNING)
         if settings.use_on_device_demod and self.main_window.tx_controller.is_running():
             # ★検索が管理する送信として状態を揃えるため、既存の送信を一旦止めてから
@@ -555,8 +555,8 @@ class RssiScreen(SettingsSubScreen):
             self._tx_started_by_scan = False
             self._stop_scan()
             error_dialog(self, tr("送信を開始できません", "Cannot Start TX"),
-                                           tr("送信の自動開始に失敗したため、検索を中止しました。",
-                                              "Automatic TX start failed, so the search was canceled."))
+                                           tr("送信の自動開始に失敗したため、測定を中止しました。",
+                                              "Automatic TX start failed, so the measurement was canceled."))
             return
         self.timer.start(STEP_INTERVAL_MS)
 
@@ -566,8 +566,8 @@ class RssiScreen(SettingsSubScreen):
         if self._tx_started_by_scan:
             self._tx_started_by_scan = False
             self.main_window.tx_controller.stop()
-        self.status_label.setText(tr("検索待機中", "Search idle"))
-        self.search_btn.setText(tr("検索開始", "Start Search"))
+        self.status_label.setText(tr("測定待機中", "Measurement idle"))
+        self.search_btn.setText(tr("測定開始", "Start Measurement"))
         self.search_btn.setStyleSheet(self._SEARCH_BTN_STYLE)
         self._commit_scan_result()
 
@@ -693,8 +693,8 @@ class RssiScreen(SettingsSubScreen):
         if rssi is not None and (self._scan_best_rssi is None or rssi < self._scan_best_rssi):
             self._scan_best_rssi = rssi
             self._scan_best_freq = freq
-            self.status_label.setText(tr(f"検索中: {freq / 1000:.0f} kHz / RSSI {rssi:g}",
-                                          f"Searching: {freq / 1000:.0f} kHz / RSSI {rssi:g}"))
+            self.status_label.setText(tr(f"測定中: {freq / 1000:.0f} kHz / RSSI {rssi:g}",
+                                          f"Measuring: {freq / 1000:.0f} kHz / RSSI {rssi:g}"))
         self._current_freq += self._step_hz
 
 
