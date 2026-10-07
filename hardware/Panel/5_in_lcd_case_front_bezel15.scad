@@ -31,20 +31,30 @@ guide_h   = 4;               // ガイドの高さ (板の上面から。液晶�
 panel_t     = 1;       // 挟むパネルの厚さ
 bc_wall     = 2;       // 裏蓋の壁厚
 bc_plate    = 2;       // 裏蓋の背面の板の厚さ
-bc_clear    = 2;       // Pi4 の一番高い部品(USB)と背面の板のすき間
+bc_clear    = 1;       // 裏蓋の中で一番高い部品と背面の板のすき間
 m3_clear_d  = 3.4;     // M3 ネジの通し穴
 m3_head_d   = 6.5;     // M3 ネジ頭の座ぐり
-m3_seat     = 3;       // 座ぐりの底の厚さ (ネジは M3×8 くらい)
+m3_seat     = 5;       // 座ぐりの底の厚さ (ネジは M3×10。座ぐり底 5 + パネル 1 + インサートに 4。最長 11)
 col_d       = 8;       // M3 ネジ用の柱の径
 dfr_post    = true;    // DFR0550 の外側取付穴(113×68)の支柱を裏から押さえる柱を付ける
 post_d      = 6;       // その柱の径
 post_gap    = 0.2;     // 柱の先と DFR0550 の支柱の先のすき間
 m25_clear_d = 2.7;     // M2.5 ネジの通し穴 (柱から DFR0550 の支柱にネジ止めもできる)
 m25_head_d  = 5;       // M2.5 ネジ頭の座ぐり
-vent        = true;    // 背面の板に通気用のスリットをあける
+vent        = false;   // 背面の板に通気用の小さい丸穴をあける (千鳥配置)。ファンの φ25 の穴だけにするので使わない
+vent_d      = 3;       // 丸穴の径
+vent_pitch  = 5;       // 丸穴の間隔
+fan         = true;    // 背面に 30mm ファンを付ける穴 (ネジ穴 4 つと、風を通す大きな丸穴)
+fan_hole_d  = 25;      // ファンの下の風を通す丸穴の径
+fan_size    = 30;      // ファンの外形
+fan_pitch   = 24;      // ファンのネジ穴の間隔
+fan_screw_d = 3.2;     // ファンのネジ穴 (M3 の通し穴。タッピングなら 2.6 くらい)
+fan_keepout = 6;       // ファンのネジ穴の中心からこの半径の中には通気穴をあけない (ファンの外形の中にも小さい通気穴はあけない)
 gpio_slot   = true;    // GPIO の配線を出すスリット (+Y の壁)
 gpio_window = true;    // GPIO ヘッダーの真上の背面に窓をあけ、裏蓋を付けたまま外からコネクタを差せるようにする
-usbc_direct = true;    // Pi4 の USB-C の正面に、外から普通のケーブルをまっすぐ差せる筒状の穴を作る
+usb_notch   = true;    // 裏蓋を浅くし、背の高い USB/LAN の上は背面ごと切り欠いて外へ出す (false で USB/LAN が入る深さ)
+usbc_notch  = true;    // HDMI・音声の切り欠きを USB-C の前まで延ばし、外からまっすぐ差せるようにする
+usbc_direct = false;   // 切り欠きの代わりに、USB-C の正面に筒状の穴を作る
 usbc_tunnel = [16, 11];// 筒の内側の幅・高さ (プラグの根元のモールドが通る大きさ)
 usbc_tube_t = 1.5;     // 筒の壁厚
 usbc_panel  = false;   // パネル取り付け型 USB-C 延長ケーブルのメス側を -Y の壁に付ける穴 (筒を使わないとき)
@@ -59,6 +69,8 @@ dfr_pcb_t = 1.6;       // 基板の厚さ
 dfr_so_h  = 5;         // 裏の支柱の長さ (M2.5)
 pi_pcb_t  = 1.4;       // Pi4 の基板の厚さ
 pi_tall   = 16;        // Pi4 の一番高い部品 (USB) の基板からの高さ
+pi_low    = 8.5;       // USB/LAN 以外で一番高い部品 (GPIO ヘッダー) の基板からの高さ
+pi_usb_l  = 21;        // USB/LAN の部分の長さ (基板の +X 端から)
 // Pi4 は DFR0550 の内側取付穴(58×49)に、部品面を裏蓋側に向けて付ける。
 // DSI コネクタが DFR0550 の DISPLAY コネクタ(-X 側)に近い向きで、USB/LAN は +X、USB-C/HDMI は -Y を向く。
 pi_org = [dfr_c[0] - 34.32, dfr_c[1] - 28.0];   // Pi4 の基板の角 (USB-C/HDMI 側・DSI 側) の位置
@@ -139,7 +151,7 @@ z_panel  = height;                                   // パネルの表面 (ベ�
 z_bc     = height + panel_t;                         // 裏蓋がパネルに当たる面
 z_dfr_so = plate + dfr_lcd_t + dfr_pcb_t + dfr_so_h; // DFR0550 の支柱の先 (Pi4 の基板の下面)
 z_pi_top = z_dfr_so + pi_pcb_t + pi_tall;            // Pi4 の一番高い部品の上
-z_bc_in  = z_pi_top + bc_clear;                      // 裏蓋の内側の天井
+z_bc_in  = (usb_notch ? z_dfr_so + pi_pcb_t + pi_low : z_pi_top) + bc_clear;   // 裏蓋の内側の天井
 z_bc_top = z_bc_in + bc_plate;                       // 裏蓋の背面
 dfr_holes = [for (sx=[1,-1], sy=[1,-1]) [dfr_c[0] + sx*56.5, dfr_c[1] + sy*34]];
 echo(str("裏蓋の高さ = ", z_bc_top - z_bc, "  (パネル裏から背面まで)"));
@@ -148,11 +160,13 @@ echo(str("裏蓋の高さ = ", z_bc_top - z_bc, "  (パネル裏から背面ま�
 pi_x1 = pi_org[0] + 85;
 // プラグの根元のモールドが当たらないよう、壁の開口は下の縁(パネル側)まで切り欠く
 op_usb   = [pi_x1 - 1, outer[0], pi_org[1] + 1, pi_org[1] + 55, z_bc - 1, z_pi_top + 1.3];                    // USB/LAN (+X)
-op_power = [pi_org[0] + 21.5, pi_org[0] + 61, -outer[1], pi_org[1] + 1, z_bc - 1, z_dfr_so + pi_pcb_t + 8];      // HDMI・音声 (-Y)
+op_power = [pi_org[0] + (usbc_notch ? 1.5 : 21.5), pi_org[0] + 61, -outer[1], pi_org[1] + 1, z_bc - 1, z_dfr_so + pi_pcb_t + 8];      // USB-C・HDMI・音声 (-Y)
+fan_c    = [pi_org[0] + 29, pi_org[1] + 29];                  // ファンの中心 (Pi4 の CPU の上。GPIO の窓から 3.5 離す)
+vent_area = [pi_org[0] + 12, pi_org[0] + 60, pi_org[1] + 6, pi_org[1] + 44.5];   // 丸穴をあける範囲 [x0, x1, y0, y1]
 z_usbc   = (z_bc + z_bc_in) / 2;                                                                               // USB-C 延長のメス側の高さ
 usbc_c   = [pi_org[0] + 11.2, z_dfr_so + pi_pcb_t + 1.6];   // Pi4 の USB-C の中心 (X, Z)
 usbc_y1  = pi_org[1] - 1.5;                                  // 筒の奥の端 (Pi4 の基板の縁の少し手前)
-op_gpio  = [pi_org[0] + 18, pi_org[0] + 48, pi_org[1] + 40, outer[1], z_pi_top - 8, z_pi_top - 1];          // GPIO の配線 (+Y)
+op_gpio  = [pi_org[0] + 18, pi_org[0] + 48, pi_org[1] + 40, outer[1], z_bc_in - 7, z_bc_in - 0.5];          // GPIO の配線 (+Y)
 
 module box_cut(o) { translate([o[0], o[2], o[4]]) cube([o[1]-o[0], o[3]-o[2], o[5]-o[4]]); }
 
@@ -187,6 +201,8 @@ module back_cover() {
       translate([0, 0, z_dfr_so + post_gap + 3]) cylinder(d=m25_head_d, h=100);
     }
     box_cut(op_usb);
+    if (usb_notch)   // USB/LAN の上を背面の板・壁ごと切り欠く
+      translate([pi_x1 - pi_usb_l - 1, op_usb[2], z_bc - 1]) cube([outer[0], op_usb[3] - op_usb[2], z_bc_top - z_bc + 2]);
     box_cut(op_power);
     if (gpio_slot) box_cut(op_gpio);
     if (gpio_window) translate([pi_org[0] + 4, pi_org[1] + 47.5, z_bc_in - 1]) cube([57, 10, bc_plate + 2]);   // GPIO の窓 (40ピンのフラットケーブル用コネクタも通る幅)
@@ -197,7 +213,15 @@ module back_cover() {
       hull() for (s=[-1,1]) translate([s*(usbc_cut[0]-usbc_cut[1])/2, 0, 0]) cylinder(d=usbc_cut[1], h=bc_wall + 2);
       if (usbc_pitch > 0) for (s=[-1,1]) translate([s*usbc_pitch/2, 0, 0]) cylinder(d=usbc_screw, h=bc_wall + 2);
     }
-    if (vent) for (i=[0:6]) translate([pi_org[0] + 12 + i*9, pi_org[1] + 6, z_bc_in - 1]) cube([3, 36, bc_plate + 2]);
+    if (vent) for (iy=[0:floor((vent_area[3]-vent_area[2])/(vent_pitch*0.866))], ix=[0:floor((vent_area[1]-vent_area[0])/vent_pitch)])
+      let(x = vent_area[0] + ix*vent_pitch + (iy%2)*vent_pitch/2, y = vent_area[2] + iy*vent_pitch*0.866)
+        if (x <= vent_area[1] && (!fan || ((abs(x - fan_c[0]) > fan_size/2 + vent_d/2 || abs(y - fan_c[1]) > fan_size/2 + vent_d/2)
+                                           && min([for (sx=[-1,1], sy=[-1,1]) norm([x - fan_c[0] - sx*fan_pitch/2, y - fan_c[1] - sy*fan_pitch/2])]) > fan_keepout + vent_d/2)))
+          translate([x, y, z_bc_in - 1]) cylinder(d=vent_d, h=bc_plate + 2, $fn=24);
+    if (fan) {
+      for (sx=[-1,1], sy=[-1,1]) translate([fan_c[0] + sx*fan_pitch/2, fan_c[1] + sy*fan_pitch/2, z_bc_in - 1]) cylinder(d=fan_screw_d, h=bc_plate + 2, $fn=24);
+      translate([fan_c[0], fan_c[1], z_bc_in - 1]) cylinder(d=fan_hole_d, h=bc_plate + 2, $fn=96);   // ファンの風を通す丸穴
+    }
   }
 }
 
