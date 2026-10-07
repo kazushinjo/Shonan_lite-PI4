@@ -18,7 +18,7 @@ MANUAL_SCREENSHOTS = {
 MANUAL_SECTIONS = [
     ("重要", [
         ("Plutoのユーザー名・パスワード",
-         "Plutoのユーザー名(root)とパスワード(analog)は、デフォルト値のまま変更しないでください。本アプリとLangstoneは、SSHでPlutoにログインしてリブートや設定ファイルの書き込みを行っています(アプリ起動時・アプリ再起動・機器試験・送受信開始時・Langstone終了時)。変更するとPlutoをリブートできなくなります。"),
+         "Plutoのユーザー名(root)とパスワード(analog)は、デフォルト値のまま変更しないでください。本アプリとLangstoneは、SSHでPlutoにログインしてリブートや設定ファイルの書き込みを行っています(アプリ再起動・機器試験・送受信開始時・Langstone終了時)。変更するとPlutoをリブートできなくなります。"),
     ]),
     ("1. 画面構成", [
         ("このアプリでできること",
@@ -32,7 +32,7 @@ MANUAL_SECTIONS = [
         ("起動前の接続",
          "Plutoを起動し、Pi 4とEthernet接続します。PlutoのIPアドレスは環境に合わせて設定します。TXとRXを試験する場合は、TXとRXを直結せず、必ず外部アッテネータを用意します。"),
         ("電源投入後の動作",
-         "電源投入後は起動メニューでShonan_LiteまたはLangstoneを選択します。Shonan_Lite起動時は、ホーム画面表示前にPlutoの再起動、オフライン確認、再接続確認、設定再適用を行います。Pluto確認に20秒以上かかる場合は確認をスキップしてホーム画面を表示します。"),
+         "電源投入後は起動メニューでShonan_LiteまたはLangstoneを選択します。Shonan_Liteは起動するとすぐにホーム画面を表示します(起動時にPlutoは再起動しません。Plutoを再起動したい場合はホーム画面の「アプリ再起動」を使います)。"),
         ("アプリの終了",
          "送信中・受信中の場合は、先にそれぞれの停止ボタンを押します。停止を確認してからホーム画面の「電源オフ」を使用します。"),
         ("安全上の注意",
@@ -122,7 +122,7 @@ MANUAL_SECTIONS = [
         ("基本操作",
          "Langstone画面下部のBAND、MODE、SET、BEACON、PTTなどをタップして操作します。"),
         ("Shonan_Liteへ戻る",
-         "LangstoneのSET画面で「GOTO SHONAN_LITE」を押します。Langstoneを停止してShonan_Liteへ切り替えます。切替時間を短くするため、切替のときはPlutoを再起動しません(Langstoneが止めた送信LOは元に戻します)。電源投入時・アプリ再起動などでは従来どおりPlutoを再起動します。"),
+         "LangstoneのSET画面で「GOTO SHONAN_LITE」を押します。Langstoneを停止してShonan_Liteへ切り替えます。切替時間を短くするため、切替のときはPlutoを再起動しません(Langstoneが止めた送信LOは元に戻します)。Shonan_Liteの起動時もPlutoは再起動しません(「アプリ再起動」では再起動します)。"),
         ("10GHz受信(衛星をタップ)",
          "ホーム画面の背景右側の衛星をタップすると、Langstoneを10GHz受信用のバンド(表示10236.5 MHz、Pluto受信486.5 MHz、LNB局部発振9750 MHz)で開きます。このバンドは受信専用で、PTTボタンは灰色の「RX ONLY」表示になり、PTT・CWキー・ビーコンのいずれでも送信しません。普通のLangstoneカードで開くと、衛星の前に使っていたバンドに戻ります。"),
     ]),
@@ -162,7 +162,7 @@ MANUAL_SECTIONS = [
 # 日本語章とは項目数が異なる(日本語の方が詳しい)。
 MANUAL_SECTIONS_EN = [
     ("Important", [
-        ("Pluto username and password", "Keep the Pluto's username (root) and password (analog) at their default values. This app and Langstone log in to the Pluto via SSH to reboot it and write its settings file (at app start, app restart, equipment test, TX/RX start and Langstone exit). If they are changed, the Pluto cannot be rebooted."),
+        ("Pluto username and password", "Keep the Pluto's username (root) and password (analog) at their default values. This app and Langstone log in to the Pluto via SSH to reboot it and write its settings file (at app restart, equipment test, TX/RX start and Langstone exit). If they are changed, the Pluto cannot be rebooted."),
     ]),
     ("1. Overview", [
         ("What this app does", "Shonan_Lite is a DVB-S2 DATV transmitter, receiver, and RF loopback test tool for ADALM-Pluto."),
@@ -171,7 +171,7 @@ MANUAL_SECTIONS_EN = [
     ]),
     ("2. Startup and shutdown", [
         ("Before startup", "Power on Pluto and connect it to Pi 4 over Ethernet. Set the Pluto address for your network."),
-        ("Startup sequence", "The startup menu selects Shonan_Lite or Langstone. Shonan_Lite restarts Pluto, checks the connection, and reapplies settings before showing Home. If confirmation takes over 20 seconds, it continues to Home."),
+        ("Startup sequence", "The startup menu selects Shonan_Lite or Langstone. Shonan_Lite shows Home right away when it starts (the Pluto is not rebooted at startup; use \"App Restart\" on Home to reboot it)."),
         ("Shutdown", "Stop transmit and receive, then use Power Off from Home."),
         ("RF safety", "Never connect TX directly to RX. Use TX → external attenuator of at least 40 dB → RX."),
     ]),
@@ -217,7 +217,7 @@ MANUAL_SECTIONS_EN = [
     ]),
     ("9. Langstone", [
         ("Switching", "Select Langstone from the startup menu or Home. Only one application uses Pluto at a time."),
-        ("Return", "Use GOTO SHONAN_LITE in Langstone to stop it and return to Shonan_Lite. To shorten the switching time, the Pluto is not rebooted when switching (the TX LO that Langstone powered down is restored). The Pluto is still rebooted at power-up and app restart."),
+        ("Return", "Use GOTO SHONAN_LITE in Langstone to stop it and return to Shonan_Lite. To shorten the switching time, the Pluto is not rebooted when switching (the TX LO that Langstone powered down is restored). The Pluto is not rebooted when Shonan_Lite starts either (it is rebooted by \"App Restart\")."),
         ("10 GHz reception (tap the satellite)", "Tapping the satellite on the right of the Home screen background opens Langstone on the band for 10 GHz reception (displayed 10236.5 MHz, Pluto RX 486.5 MHz, LNB local oscillator 9750 MHz). This band is receive only: the PTT button is shown grayed out as RX ONLY, and it does not transmit from PTT, the CW key or the beacon. Opening Langstone from the normal Langstone card returns to the band used before the satellite."),
     ]),
     ("10. Help, diagnostics, and restart", [

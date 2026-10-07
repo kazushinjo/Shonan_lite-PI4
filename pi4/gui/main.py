@@ -63,9 +63,7 @@ MCU1_GPIO26_OFF_DELAY_SEC = 3
 VOLUME_KNOB_STEP_PERCENT = 2
 
 # Langstone V2の「GOTO SHONAN_LITE」で切り替えてきたときにLangstone側
-# (LangstoneGUI_Pluto.c)が作る印。あれば起動時のPluto+再起動を省き、使ったら消す
-# (その後のアプリ再起動では従来どおりPluto+を再起動する)。/tmp配下なので
-# Pi4の再起動でも消え、電源投入時は必ず再起動する。
+# (LangstoneGUI_Pluto.c)が作る印。あれば起動時にPlutoの送信LOを元に戻し、使ったら消す。
 LANGSTONE_SWITCH_MARKER = Path("/tmp/shonan_switch_from_langstone")
 
 SCREEN_ROUTES = [
@@ -114,9 +112,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self._restart_title = "アプリ再起動"
         self._build_screens()
         self._startup_restart_pending = False
-        # 起動直後にPlutoを再起動し、復旧確認と設定再適用が完了してから
-        # ホーム画面を表示する。Pluto再起動中にRX確認は実行しない。
-        QtCore.QTimer.singleShot(0, self._startup_reboot_pluto)
+        # ★ユーザー指示(2026-10-07)により、アプリ起動時のPluto再起動はやめた(iPad版と同じ)。
+        # 送信開始時は毎回Plutoへ設定を書き込むため、起動時の設定再適用も不要。
+        # ホーム画面の「アプリ再起動」では従来どおりPlutoを再起動する。
+        QtCore.QTimer.singleShot(0, self._show_home_at_startup)
         # 電源投入(アプリ起動)からMCU1_GPIO26_ON_DELAY_MS後にMCU1(ESP32)のGPIO26
         # (12V電源チャンネル)をONにする。Pi4本体のGPIOは使用しない。
         QtCore.QTimer.singleShot(MCU1_GPIO26_ON_DELAY_MS, self._power_on_mcu1_gpio26)
@@ -505,29 +504,26 @@ class MainWindow(QtWidgets.QMainWindow):
         self.stack.hide()
         self._begin_pluto_restart("アプリ再起動", "アプリを再起動しています…")
 
-    def _startup_reboot_pluto(self) -> None:
-        self._startup_restart_pending = True
-        try:
-            host = self.settings.pluto_host()
-        except ValueError:
-            host = ""
-        if host and LANGSTONE_SWITCH_MARKER.exists():
-            # ★Langstone V2からの切替ではPluto+を再起動しない(切替時間の短縮。
-            # Pi5版で、再起動しなくてもDATVの送受信は正常に動くことを確認済み)。
-            # ただしLangstoneは送信LOをpowerdownしたまま終了することがあり、
-            # そのままではDATV送信の電波が出ないため、送信LOだけは必ず元に戻す
+    def _show_home_at_startup(self) -> None:
+        if LANGSTONE_SWITCH_MARKER.exists():
+            # ★Langstoneは送信LOをpowerdownしたまま終了することがあり、そのままでは
+            # DATV送信の電波が出ないため、Langstoneからの切替では送信LOを必ず元に戻す
             # (Langstone側も終了時に戻すが、念のためこちらでも行う)。
-            print("[pluto-startup] switched from Langstone; skipping Pluto reboot", flush=True)
+            print("[pluto-startup] switched from Langstone; restoring TX LO", flush=True)
             LANGSTONE_SWITCH_MARKER.unlink(missing_ok=True)
             threading.Thread(target=self._restore_pluto_tx_lo, daemon=True).start()
-            host = ""
-        if not host:
-            self._startup_restart_pending = False
-            self.navigate_to("home")
-            self.stack.show()
-            self.rx_controller.run_iio_preflight(self.settings)
-            return
-        self._begin_pluto_restart("起動時Pluto再起動", "アプリ起動時にPlutoも再起動しています…")
+        # ★起動直後(showFullScreen()直後)はウィンドウがまだ実際の画面サイズになっておらず、
+        # そのままホーム画面を出すと左上に小さく描かれる(Langstoneからの切替で実機確認)。
+        # 表示前にウィンドウを画面の大きさへ合わせ、レイアウトを確定させてから出す。
+        screen = QtWidgets.QApplication.primaryScreen()
+        if screen is not None:
+            self.setGeometry(screen.geometry())
+        self.navigate_to("home")
+        self.stack.show()
+        self.centralWidget().updateGeometry()
+        if self.layout() is not None:
+            self.layout().activate()
+        self.rx_controller.run_iio_preflight(self.settings)
 
     def _restore_pluto_tx_lo(self) -> None:
         """Plutoの送信LO(altvoltage1)のpowerdownを解除する。"""
@@ -563,7 +559,7 @@ class MainWindow(QtWidgets.QMainWindow):
         outer = QtWidgets.QVBoxLayout(overlay)
         outer.setContentsMargins(0, 0, 0, 0)
         panel = QtWidgets.QFrame(overlay)
-        panel.setFixedSize(500, 240 if title in ("起動時Pluto再起動", "アプリ再起動") else 210)
+        panel.setFixedSize(500, 240 if title == "アプリ再起動" else 210)
         panel.setStyleSheet(
             "QFrame { background: #0a0c0d; color: white; border-radius: 12px; } "
             "QLabel { color: white; }"
@@ -579,7 +575,7 @@ class MainWindow(QtWidgets.QMainWindow):
         message.setAlignment(QtCore.Qt.AlignCenter)
         message.setStyleSheet("font-size: 18px; font-weight: bold;")
         layout.addWidget(message)
-        if title in ("起動時Pluto再起動", "アプリ再起動"):
+        if title == "アプリ再起動":
             sub_message = QtWidgets.QLabel("Plutoも再起動しています…")
             sub_message.setAlignment(QtCore.Qt.AlignCenter)
             sub_message.setStyleSheet("font-size: 14px; color: #0c9bc0;")
@@ -600,7 +596,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.restart_finished.connect(self._finish_app_restart)
         overlay.show()
         overlay.raise_()
-        if title in ("起動時Pluto再起動", "アプリ再起動"):
+        if title == "アプリ再起動":
             QtCore.QTimer.singleShot(20000, self._skip_startup_restart)
         threading.Thread(target=self._restart_pluto_and_restore, daemon=True).start()
 

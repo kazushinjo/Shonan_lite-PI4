@@ -13,11 +13,11 @@ official DSI touch display). Ports to other platforms (Android/iOS) are maintain
 > [!IMPORTANT]
 > **Plutoのユーザー名(`root`)・パスワード(`analog`)はデフォルト値のまま変更しないでください。**
 > 本アプリとLangstone V2Modifyは、SSHでPlutoにログインしてリブートや設定ファイルの書き込みを行っています
-> (アプリ起動時・アプリ再起動・機器試験・送受信開始時・Langstone終了時)。変更するとPlutoをリブートできなくなります。
+> (アプリ再起動・機器試験・送受信開始時・Langstone終了時)。変更するとPlutoをリブートできなくなります。
 >
 > **Keep the Pluto's username (`root`) and password (`analog`) at their default values.**
 > This app and Langstone V2Modify log in to the Pluto via SSH to reboot it and write its settings file
-> (at app start, app restart, equipment test, TX/RX start and Langstone exit). If they are changed, the Pluto cannot be rebooted.
+> (at app restart, equipment test, TX/RX start and Langstone exit). If they are changed, the Pluto cannot be rebooted.
 
 ## 主な機能 / Features
 
@@ -305,8 +305,8 @@ Pi4自体は再起動せず、サービスを直接切り替える。
 
 切替時間を短くするため、切替のときはPluto+を再起動しない(Pi5版で、再起動しなくても両アプリの
 送受信が正常に動くことを確認済み)。ただしLangstoneは受信中に送信LOを止めたまま終了するため、
-戻るときはLangstone側・Shonan_Lite側の両方で送信LOを元に戻す。切替以外(電源投入時・アプリ再起動・
-Langstoneを「GOTO SHONAN_LITE」以外で終了したとき)は、従来どおりPluto+を再起動する。
+戻るときはLangstone側・Shonan_Lite側の両方で送信LOを元に戻す。Shonan_Liteは起動時(電源投入時を含む)に
+Pluto+を再起動しない(ホーム画面の「アプリ再起動」と、Langstoneを「GOTO SHONAN_LITE」以外で終了したときは再起動する)。
 Langstone側は`/tmp/langstone_goto_shonan`、Shonan_Lite側は`/tmp/shonan_switch_from_langstone`
 の印で切替かどうかを判断する。
 
@@ -319,8 +319,9 @@ exclusive through systemd's `Conflicts=`, so the services are switched directly 
 
 To shorten the switching time, the Pluto+ is not rebooted when switching (confirmed on the Pi 5 version that both apps
 transmit and receive normally without a reboot). However, Langstone exits with the TX LO powered down while receiving,
-so the TX LO is restored on both the Langstone side and the Shonan_Lite side when returning. Other than when switching
-(power-up, app restart, or when Langstone exits other than via "GOTO SHONAN_LITE"), the Pluto+ is rebooted as before.
+so the TX LO is restored on both the Langstone side and the Shonan_Lite side when returning. Shonan_Lite does not
+reboot the Pluto+ when it starts (including at power-up); it is rebooted by "App Restart" on Home and when Langstone
+exits other than via "GOTO SHONAN_LITE".
 The Langstone side uses the `/tmp/langstone_goto_shonan` marker and the Shonan_Lite side uses
 `/tmp/shonan_switch_from_langstone` to tell whether it is a switch.
 

@@ -506,6 +506,10 @@ class HomeScreen(QtWidgets.QWidget):
         canvas = QtWidgets.QWidget(self)
         canvas.setStyleSheet("background-color: black;")
         self._mock_canvas = canvas
+        # ★キャンバスの大きさはホーム画面自体のresizeEventの後で変わることがある
+        # (起動直後の全画面化の途中で表示した場合、左上に小さく描かれたままになった)。
+        # キャンバス自身の大きさが変わるたびに置き直す。
+        canvas.installEventFilter(self)
 
         background = QtWidgets.QLabel(canvas)
         background.setPixmap(QtGui.QPixmap(str(image_path)))
@@ -619,6 +623,15 @@ class HomeScreen(QtWidgets.QWidget):
     def resizeEvent(self, event) -> None:
         super().resizeEvent(event)
         self._position_mock_home()
+
+    def showEvent(self, event) -> None:
+        super().showEvent(event)
+        self._position_mock_home()
+
+    def eventFilter(self, watched, event) -> bool:
+        if watched is self._mock_canvas and event.type() in (QtCore.QEvent.Resize, QtCore.QEvent.Show):
+            self._position_mock_home()
+        return super().eventFilter(watched, event)
 
     def _on_transmit_clicked(self) -> None:
         self.main_window.navigate_to("tx")
