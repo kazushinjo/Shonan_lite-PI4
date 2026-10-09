@@ -672,7 +672,7 @@
       "include_excluded_from_bom": true,
       "name": "Default Editing",
       "sort_asc": true,
-      "sort_field": "\u30ea\u30d5\u30a1\u30ec\u30f3\u30b9"
+      "sort_field": "リファレンス"
     },
     "bus_aliases": {},
     "connection_grid_size": 50.0,
