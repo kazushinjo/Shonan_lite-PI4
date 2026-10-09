@@ -1,0 +1,4 @@
+(sym_lib_table
+	(version 7)
+	(lib (name "LangStone_Blocks")(type "KiCad")(uri "${KIPRJMOD}/LangStone_Blocks.kicad_sym")(options "")(descr "BSch3V block outlines"))
+)
