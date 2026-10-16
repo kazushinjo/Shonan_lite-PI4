@@ -3,7 +3,7 @@ W5500_Lite,A1,W5500_Lite_USR-ES1_2x06_P2.54mm_20.32mm,1,W5500 Lite (USR-ES1互�
 0.47uF,C1,CP_Radial_D5.0mm_P2.00mm,1,0.47µF 16V以上(LM2940データシートの入力コンデンサ。フィルムまたはセラミック、電解でも可)
 0.33uF,C3,CP_Radial_D5.0mm_P2.00mm,1,0.33µF 25V以上(フィルムまたはセラミック、電解でも可)
 33uF,C2,CP_Radial_D5.0mm_P2.00mm,1,33µF 10V以上 電解(極性あり、+側=+3.3V。LM2940は22µF以上・ESR 0.1〜1Ωが必要)
-ESP32_DevKitC_Socket_40P_25.4mm,J1,Socket_2x20_P2.54mm_25.4mm_DevKitC,1,2.54mm 1x20 ピンソケット×2(列間隔25.4mm)でFreenove ESP32 WROOMを挿す
+ESP32_DevKitC_Socket_40P_25.4mm,J1,Socket_2x20_P2.54mm_25.4mm_DevKitC,1,Freenove ESP32 WROOMを直接はんだ付け(ピンソケットは使わない、列間隔25.4mm)
 DC_IN_13V8,J2,SolderWire-1sqmm_1x02_P5.4mm_D1.4mm_OD2.7mm,1,電線直付け(1mm²)
 Power,J5,SolderWire-1sqmm_1x02_P5.4mm_D1.4mm_OD2.7mm,1,電線直付け(1mm²)
 PTT_ON,J6,JST_XH_B2B-XH-A_1x02_P2.50mm_Vertical,1,JST B2B-XH-A
