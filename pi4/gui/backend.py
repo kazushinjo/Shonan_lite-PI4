@@ -231,14 +231,15 @@ def _video_encoder_args(settings: AppSettings, video_kbps: int) -> list[str]:
     """送信映像の符号化引数。settings.video_codecでH.264/H.265を切り替える。"""
     if settings.video_codec == "h265":
         # Pi4にHEVCハードウェアエンコーダは無いため、libx265のCPU符号化になる。
-        # 1920x1080ではPi4のCPUが追いつかないため、H.265のときは1280x720へ縮小して符号化する。
+        # Pi4のCPUではH.265の720p以上が実時間で追いつかない(Pi5でも720pでCPU 345%)ため、
+        # H.265のときは854x480へ縮小して符号化する。
         # ★repeat-headers=1必須: RXは毎回TXの途中から視聴を始めるため、キーフレームごとに
         # VPS/SPS/PPSを付けないと途中から復号できない。log-level=warningはx265の起動時
         # infoログでTXログが埋まるのを防ぐ。
         codec_args = [
             "-c:v", "libx265", "-preset", "ultrafast", "-tune", "zerolatency",
             "-x265-params", "repeat-headers=1:strict-cbr=1:log-level=warning",
-            "-s", "1280x720",
+            "-s", "854x480",
         ]
     else:
         # Raspberry Pi 4のVideoCore H.264ハードウェアエンコーダを使用する。
