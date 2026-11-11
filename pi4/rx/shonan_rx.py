@@ -95,7 +95,13 @@ def main():
     # 毎秒10回近く発生し、PLフレーム同期が一度もlockedへ遷移できなくなっていた。
     # 0x40000(262144サンプル/read)へ拡大しネットワーク経由の読み出し頻度を下げたところ、
     # 大幅に改善しlocked到達・複数フレーム連続デコードを確認(real_pluto_bringup_status.md参照)。
-    src = iio.fmcomms2_source_fc32(args.pluto_uri, [True, True, False, False], 0x40000)
+    # ★2026-11-11 実機(Pluto+ FPGA版・1000kS/s)で、32APSKのように復調が重い組み合わせでは
+    # 0x40000(約0.13秒分)だとLDPC処理の間にIIOの受信バッファがあふれ('O')、受信開始から
+    # 約3秒でSNRが落ちて以後まったく復号できなくなった(記録したIQなら同じ処理で復号できる)。
+    # バッファをサンプルレートの約1秒分(2のべき乗に切り上げ、最小は従来の0x40000)にすると
+    # 32APSK 5/6は誤りなし、8/9・9/10も誤り約3%まで改善した。
+    rx_buffer_samples = max(0x40000, 1 << max(0, int(args.sample_rate_hz) - 1).bit_length())
+    src = iio.fmcomms2_source_fc32(args.pluto_uri, [True, True, False, False], rx_buffer_samples)
     src.set_frequency(args.lo_hz)
     src.set_samplerate(args.sample_rate_hz)
     if args.agc:
