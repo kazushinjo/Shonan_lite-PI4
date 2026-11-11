@@ -63,6 +63,36 @@ TX_SUPPORTED_MODCODS = [
 RX_SUPPORTED_MODCODS = list(TX_SUPPORTED_MODCODS)
 
 
+# 16APSK・32APSKを正しく送れるのはPluto+のFPGA版ファーム(fw_versionに"FPGA"を含む)だけ。
+# 無印Pluto・Pluto+の通常版はARMのソフト変調(pluto_dvb)で、APSKは振幅が潰れて受信できない
+# (2026-11-11 実機試験)。それらのPlutoでは変調方式を8PSKまでにする。
+APSK_MODULATIONS = ("16APSK", "32APSK")
+
+
+def available_modulation_schemes(pluto_apsk_capable: bool) -> list[str]:
+    """接続するPlutoで送れる変調方式。APSK対応(FPGA版ファーム)ならすべて、それ以外は8PSKまで。"""
+    if pluto_apsk_capable:
+        return list(MODULATION_SCHEMES)
+    return [m for m in MODULATION_SCHEMES if m not in APSK_MODULATIONS]
+
+
+def detect_pluto_apsk_capable(pluto_uri: str, timeout: float = 4.0):
+    """Plutoのファームの版(IIOコンテキスト属性fw_version)からAPSK対応かを調べる。
+
+    戻り値: True=FPGA版ファーム(32APSKまで)、False=それ以外(8PSKまで)、None=読めなかった。
+    """
+    import subprocess
+    try:
+        result = subprocess.run(["iio_attr", "-u", pluto_uri, "-C", "fw_version"],
+                                capture_output=True, text=True, timeout=timeout)
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    text = result.stdout.strip()
+    if result.returncode != 0 or "fw_version" not in text:
+        return None
+    return "FPGA" in text.split(":", 1)[-1]
+
+
 def supported_fec_rates(modulation: str) -> list[str]:
     """指定した変調方式でTX_SUPPORTED_MODCODSが実際に対応するFEC符号化率一覧。
 
@@ -229,6 +259,8 @@ class AppSettings:
     rssi_repeat_scan: bool = True
     # True=シンボルレート・変調方式に合わせてFECを自動で選ぶ(auto_fec_rate)。False=手動。
     fec_auto: bool = True
+    # 最後に調べたPlutoがAPSK(16/32APSK)を送れるか(FPGA版ファームか)。つながらないときはこの値を使う。
+    pluto_apsk_capable: bool = False
 
     # RFループバック自己申告フラグ(Android版のRF loopback警告と同じ、インターロックなし)
     rf_loopback_enabled: bool = False
@@ -292,6 +324,16 @@ class AppSettings:
 
     def symbol_rate_hz(self) -> int:
         return round(self.symbol_rate_msps * 1_000_000)
+
+    def apply_pluto_capability(self, capable: bool) -> bool:
+        """Plutoの判定を反映する。APSKを選んでいてそのPlutoで使えない場合は8PSKへ変え、Trueを返す。"""
+        self.pluto_apsk_capable = capable
+        if capable or self.modulation_scheme not in APSK_MODULATIONS:
+            return False
+        self.modulation_scheme = "8PSK"
+        if not self.apply_auto_fec() and self.fec_rate not in supported_fec_rates("8PSK"):
+            self.fec_rate = supported_fec_rates("8PSK")[0]
+        return True
 
     def apply_auto_fec(self) -> bool:
         """FEC自動のとき、今のシンボルレート・変調方式に合うFECへ合わせる。変えたらTrue。"""

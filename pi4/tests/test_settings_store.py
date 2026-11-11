@@ -109,3 +109,24 @@ class AutoFecTest(unittest.TestCase):
         s.fec_auto = True
         self.assertTrue(s.apply_auto_fec())
         self.assertEqual(s.fec_rate, "1/3")
+
+
+class PlutoCapabilityTest(unittest.TestCase):
+    def test_available_modulations(self):
+        self.assertEqual(settings_store.available_modulation_schemes(False), ["QPSK", "8PSK"])
+        self.assertEqual(settings_store.available_modulation_schemes(True),
+                         ["QPSK", "8PSK", "16APSK", "32APSK"])
+
+    def test_apsk_is_changed_to_8psk_on_non_fpga_pluto(self):
+        s = settings_store.AppSettings(symbol_rate_msps=1.0, modulation_scheme="32APSK", fec_rate="3/4")
+        self.assertTrue(s.apply_pluto_capability(False))
+        self.assertEqual(s.modulation_scheme, "8PSK")
+        self.assertIn(s.fec_rate, settings_store.supported_fec_rates("8PSK"))
+        self.assertFalse(s.pluto_apsk_capable)
+
+    def test_qpsk_is_kept_and_fpga_allows_apsk(self):
+        s = settings_store.AppSettings(modulation_scheme="QPSK")
+        self.assertFalse(s.apply_pluto_capability(False))
+        s.modulation_scheme = "16APSK"
+        self.assertFalse(s.apply_pluto_capability(True))
+        self.assertEqual(s.modulation_scheme, "16APSK")

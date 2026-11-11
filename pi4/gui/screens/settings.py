@@ -256,6 +256,8 @@ class SettingsScreen(SettingsSubScreen):
             return
         self.main_window.settings.pluto_uri = f"ip:{host}"
         self.main_window.save_settings()
+        # Plutoを替えたら、変調方式の選択肢(8PSKまで/32APSKまで)を調べ直す。
+        self.main_window.refresh_pluto_capability()
 
     def _save_ptt_controller_ip(self) -> None:
         value = self.ptt_controller_ip_edit.text().strip()

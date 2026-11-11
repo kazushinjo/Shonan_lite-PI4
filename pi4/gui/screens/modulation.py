@@ -5,7 +5,7 @@ import math
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from settings_store import MODULATION_SCHEMES, supported_fec_rates
+from settings_store import MODULATION_SCHEMES, APSK_MODULATIONS, available_modulation_schemes, supported_fec_rates
 from i18n import tr
 from widgets import SettingsSubScreen
 
@@ -99,6 +99,7 @@ class ModulationScreen(SettingsSubScreen):
         label.setStyleSheet("font-size: 13px; font-weight: bold; color: #54bce0;")
         left_layout.addWidget(label)
         self._group = QtWidgets.QButtonGroup(self)
+        self._buttons = {}
         for scheme in MODULATION_SCHEMES:
             button = QtWidgets.QPushButton(scheme)
             button.setCheckable(True)
@@ -114,7 +115,15 @@ class ModulationScreen(SettingsSubScreen):
             button.setChecked(main_window.settings.modulation_scheme == scheme)
             button.toggled.connect(lambda checked, s=scheme: checked and self._select(s))
             self._group.addButton(button)
+            self._buttons[scheme] = button
             left_layout.addWidget(button)
+        # 接続中のPlutoがAPSKを送れない(FPGA版ファームでない)ときの説明。
+        self.apsk_note = QtWidgets.QLabel(tr(
+            "16APSK・32APSKはPluto+のFPGA版ファームのときだけ選べます",
+            "16APSK/32APSK need the Pluto+ FPGA firmware"))
+        self.apsk_note.setWordWrap(True)
+        self.apsk_note.setStyleSheet("font-size: 11px; color: #aeb9bd; border: none;")
+        left_layout.addWidget(self.apsk_note)
         left_layout.addStretch(1)
         columns.addWidget(left, 1)
 
@@ -144,6 +153,20 @@ class ModulationScreen(SettingsSubScreen):
         home_btn.clicked.connect(lambda: self.main_window.navigate_to("home"))
         bottom.addWidget(home_btn)
         outer.addLayout(bottom)
+        self._update_view()
+
+    def on_show(self) -> None:
+        self.on_pluto_capability()
+        self.main_window.refresh_pluto_capability()
+
+    def on_pluto_capability(self) -> None:
+        """Plutoの判定に合わせて16APSK・32APSKのボタンを押せる/押せないにする。"""
+        settings = self.main_window.settings
+        allowed = available_modulation_schemes(settings.pluto_apsk_capable)
+        for scheme, button in self._buttons.items():
+            button.setEnabled(scheme in allowed)
+            button.setChecked(settings.modulation_scheme == scheme)
+        self.apsk_note.setVisible(not settings.pluto_apsk_capable)
         self._update_view()
 
     def _select(self, scheme: str) -> None:

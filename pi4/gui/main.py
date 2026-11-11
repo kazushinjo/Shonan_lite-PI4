@@ -75,6 +75,7 @@ SCREEN_ROUTES = [
 
 class MainWindow(QtWidgets.QMainWindow):
     restart_finished = QtCore.pyqtSignal(bool, str)
+    pluto_capability_detected = QtCore.pyqtSignal(object)
     CONTROL_SOCKET = "/tmp/shonan-pi4-gui.sock"
 
     def __init__(self):
@@ -90,6 +91,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.settings.simultaneous_tx_rx_test = self.settings.use_on_device_demod
         settings_store.save(self.settings)
         self.tx_controller = TxController(self)
+        self.pluto_capability_detected.connect(self._on_pluto_capability)
         self.rx_controller = RxController(self)
         # 前回異常終了でPi4のTX出力GPIOがHIGHのまま残っていてもPA/LNAが送信側に
         # 切り替わったままにならないよう、起動時にLOW(受信)へ戻しておく。
@@ -616,6 +618,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self._app_restarting = False
         self.navigate_to("home")
         self.stack.show()
+        # Plutoはまだ再起動中のことが多いので、読めるまで繰り返し調べる。
+        self.refresh_pluto_capability(attempts=8)
 
     def _restart_pluto_and_restore(self) -> None:
         try:
@@ -760,6 +764,42 @@ class MainWindow(QtWidgets.QMainWindow):
             self.rx_controller.run_iio_preflight(self.settings)
         if not success:
             error_dialog(self, self._restart_title, detail)
+        self.refresh_pluto_capability(attempts=4)
+
+    def refresh_pluto_capability(self, attempts: int = 1) -> None:
+        """接続中のPlutoのファームを裏で調べ、変調方式(8PSKまで/32APSKまで)の選択肢に反映する。
+
+        attempts回まで5秒おきに試し、読めたところで反映する(読めなければ前回の判定のまま)。
+        """
+        uri = self.settings.pluto_uri
+
+        def worker():
+            for i in range(attempts):
+                capable = settings_store.detect_pluto_apsk_capable(uri)
+                if capable is not None:
+                    self.pluto_capability_detected.emit(capable)
+                    return
+                if i + 1 < attempts:
+                    time.sleep(5)
+
+        threading.Thread(target=worker, daemon=True).start()
+
+    def _on_pluto_capability(self, capable) -> None:
+        if capable is None:
+            return  # 読めなかったときは前回の判定(settings.pluto_apsk_capable)のまま
+        changed = capable != self.settings.pluto_apsk_capable
+        forced = self.settings.apply_pluto_capability(bool(capable))
+        if changed or forced:
+            self.save_settings()
+        current = self.stack.currentWidget()
+        if hasattr(current, "on_pluto_capability"):
+            current.on_pluto_capability()
+        if forced:
+            QtWidgets.QMessageBox.information(self, tr("変調方式", "Modulation"), tr(
+                "接続中のPlutoは16APSK・32APSKを送れないため、変調方式を8PSKにしました"
+                f"(FECは{self.settings.fec_rate})。16APSK・32APSKはPluto+のFPGA版ファームで使えます。",
+                "The connected Pluto cannot transmit 16APSK/32APSK, so the modulation was changed to 8PSK"
+                f" (FEC {self.settings.fec_rate}). 16APSK/32APSK need the Pluto+ FPGA firmware."))
 
     def capture_screenshot(self) -> None:
         screen = QtWidgets.QApplication.primaryScreen()

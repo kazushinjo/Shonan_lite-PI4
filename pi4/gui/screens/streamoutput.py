@@ -135,6 +135,8 @@ class StreamOutputScreen(SettingsSubScreen):
         self.main_window.settings.pluto_uri = f"ip:{host}"
         self.main_window.save_settings()
         self.info_labels["ip"].setText(self.main_window.settings.pluto_uri)
+        # Plutoを替えたら、変調方式の選択肢(8PSKまで/32APSKまで)を調べ直す。
+        self.main_window.refresh_pluto_capability()
 
     def _search_pluto_ip(self) -> None:
         if not self.pluto_search_btn.isEnabled():
