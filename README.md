@@ -21,10 +21,10 @@ official DSI touch display). Ports to other platforms (Android/iOS) are maintain
 
 ## 主な機能 / Features
 
-- **送信**: 周波数・シンボルレート(250k〜2 Msym/s)・FEC・変調方式(QPSK/8PSK)・出力減衰量を画面で設定し、
+- **送信**: 周波数・シンボルレート(250k〜2 Msym/s)・FEC・変調方式(QPSK/8PSK/16APSK/32APSK)・出力減衰量を画面で設定し、
   UDP-TSでPluto+へ送ってPluto内蔵の変調器(`pluto_dvb`)で送信する(Plutoの設定はSSHで`/www/settings.txt`へ
-  書き込み、送信先ポートは8282固定)。FECは変調方式ごとに動作する組み合わせだけを選べる
-  (QPSK: 1/2・3/5・8/9、8PSK: 3/5・8/9)。H.264はPi 4内蔵のハードウェアエンコーダ(`h264_v4l2m2m`)で符号化し、
+  書き込み、送信先ポートは8282固定)。FECはDVB-S2の全28組み合わせから選べる
+  (QPSK: 1/4〜9/10、8PSK: 3/5〜9/10、16APSK: 2/3〜9/10、32APSK: 3/4〜9/10。16/32APSKの受信は`pi4/docs/patches/gr-dvbs2rx_apsk.patch`をinstall.shが自動で当てる)。H.264はPi 4内蔵のハードウェアエンコーダ(`h264_v4l2m2m`)で符号化し、
   送信映像はフルHD(1920x1080)固定。音声はカメラ内蔵マイクをAAC(モノラル16kbps)で映像と一緒に送信する(マイクが無ければ無音)。送信画面には出力減衰(dB)、
   Plutoへ送ったUDPパケット数、符号化したフレーム数を表示する。
 - **映像ソース**: USBカメラ・画像ファイル(静止画を反復送信)・テストパターンから選ぶ。USBカメラは
@@ -48,10 +48,10 @@ official DSI touch display). Ports to other platforms (Android/iOS) are maintain
 
 <!-- English -->
 
-- **Transmit**: Set the frequency, symbol rate (250k–2 Msym/s), FEC, modulation (QPSK/8PSK) and attenuation on screen,
+- **Transmit**: Set the frequency, symbol rate (250k–2 Msym/s), FEC, modulation (QPSK/8PSK/16APSK/32APSK) and attenuation on screen,
   send UDP-TS to the Pluto+ and transmit with the Pluto's built-in modulator (`pluto_dvb`) (the Pluto settings are
-  written to `/www/settings.txt` via SSH; the destination port is fixed at 8282). Only FEC rates that work with each
-  modulation can be selected (QPSK: 1/2, 3/5, 8/9; 8PSK: 3/5, 8/9). H.264 is encoded with the Pi 4's hardware encoder
+  written to `/www/settings.txt` via SSH; the destination port is fixed at 8282). All 28 DVB-S2
+  MOD-CODs can be selected (QPSK: 1/4-9/10; 8PSK: 3/5-9/10; 16APSK: 2/3-9/10; 32APSK: 3/4-9/10; 16/32APSK reception uses `pi4/docs/patches/gr-dvbs2rx_apsk.patch`, applied automatically by install.sh). H.264 is encoded with the Pi 4's hardware encoder
   (`h264_v4l2m2m`), and the transmitted video is fixed at Full HD (1920x1080). Audio from the camera's built-in microphone is sent with the video as AAC (mono, 16 kbps); silence if no microphone is found. The TX screen shows
   the attenuation (dB), the number of UDP packets sent to the Pluto and the number of encoded frames.
 - **Video source**: Choose from a USB camera, an image file (a still image transmitted repeatedly) or a test pattern.

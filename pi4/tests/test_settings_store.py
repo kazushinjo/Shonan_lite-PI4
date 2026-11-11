@@ -1,3 +1,4 @@
+import ast
 import json
 import sys
 import tempfile
@@ -36,6 +37,28 @@ class SettingsStoreTest(unittest.TestCase):
         settings = settings_store.AppSettings(modulation_scheme="32APSK", fec_rate="1/4")
         self.assertFalse(settings.tx_mod_cod_supported())
         self.assertFalse(settings.rx_mod_cod_supported())
+
+    def test_all_dvbs2_modcods_are_supported(self):
+        self.assertEqual(len(settings_store.TX_SUPPORTED_MODCODS), 28)
+        for mod_cod in ("QPSK-S_1/4", "QPSK-S_9/10", "8PSK-S_9/10",
+                        "16APSK-S_2/3", "16APSK-S_9/10", "32APSK-S_3/4", "32APSK-S_9/10"):
+            self.assertIn(mod_cod, settings_store.TX_SUPPORTED_MODCODS)
+            self.assertIn(mod_cod, settings_store.RX_SUPPORTED_MODCODS)
+        self.assertEqual(settings_store.supported_fec_rates("16APSK"),
+                         ["2/3", "3/4", "4/5", "5/6", "8/9", "9/10"])
+
+    def test_rx_modcod_table_matches_gui(self):
+        # shonan_rx.pyはGNU Radioを読み込むためimportせず、定義部分だけを評価して照合する
+        rx_source = (GUI_DIR.parent / "rx" / "shonan_rx.py").read_text(encoding="utf-8")
+        tree = ast.parse(rx_source)
+        for node in tree.body:
+            if (isinstance(node, ast.Assign) and isinstance(node.targets[0], ast.Name)
+                    and node.targets[0].id == "_MODCOD_FEC_RATES"):
+                rx_rates = ast.literal_eval(node.value)
+                break
+        else:
+            self.fail("_MODCOD_FEC_RATES not found in shonan_rx.py")
+        self.assertEqual(rx_rates, settings_store.MODULATION_FEC_RATES)
 
     def test_loopback_destination_and_frequency_fallback(self):
         settings = settings_store.AppSettings(

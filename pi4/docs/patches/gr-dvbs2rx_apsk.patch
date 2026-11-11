@@ -1,0 +1,539 @@
+diff --git a/apps/dvbs2-rx b/apps/dvbs2-rx
+index 7403b73..4759ae8 100755
+--- a/apps/dvbs2-rx
++++ b/apps/dvbs2-rx
+@@ -131,7 +131,8 @@ class DVBS2RxTopBlock(gr.top_block, Qt.QWidget):
+         ##################################################
+         # Variables
+         ##################################################
+-        code_rate = self.modcod.upper().replace("8PSK", "").replace("QPSK", "")
++        code_rate = self.modcod.upper().replace("16APSK", "").replace(
++            "32APSK", "").replace("8PSK", "").replace("QPSK", "")
+         self.code_rate = code_rate
+         self.constellation = self.modcod.replace(code_rate, "")
+         self.samp_rate = self.sym_rate * self.sps
+diff --git a/apps/dvbs2-tx b/apps/dvbs2-tx
+index 5859e1a..aa9b696 100755
+--- a/apps/dvbs2-tx
++++ b/apps/dvbs2-tx
+@@ -149,7 +149,8 @@ class dvbs2_tx(gr.top_block, Qt.QWidget):
+         ##################################################
+         # Variables
+         ##################################################
+-        code_rate = self.modcod.upper().replace("8PSK", "").replace("QPSK", "")
++        code_rate = self.modcod.upper().replace("16APSK", "").replace(
++            "32APSK", "").replace("8PSK", "").replace("QPSK", "")
+         self.code_rate = code_rate
+         self.samp_rate = self.sym_rate * self.sps
+         self.constellation = self.modcod.replace(code_rate, "")
+diff --git a/lib/CMakeLists.txt b/lib/CMakeLists.txt
+index b53dd31..a610448 100644
+--- a/lib/CMakeLists.txt
++++ b/lib/CMakeLists.txt
+@@ -87,6 +87,7 @@ include(GrTest)
+ #include_directories()
+ # List all files that contain Boost.UTF unit tests here
+ list(APPEND test_dvbs2rx_sources
++  qa_apsk.cc
+   qa_bch.cc
+   qa_cdeque.cc
+   qa_crc.cc
+diff --git a/lib/apsk.hh b/lib/apsk.hh
+new file mode 100644
+index 0000000..ea80643
+--- /dev/null
++++ b/lib/apsk.hh
+@@ -0,0 +1,221 @@
++/* -*- c++ -*- */
++/*
++ * Copyright 2026 Kazu Shinjo.
++ *
++ * This file is part of gr-dvbs2rx.
++ *
++ * SPDX-License-Identifier: GPL-3.0-or-later
++ */
++
++#ifndef APSK_HH
++#define APSK_HH
++
++#include "modulation.hh"
++#include <gnuradio/dvbs2rx/dvb_config.h>
++#include <gnuradio/gr_complex.h>
++#include <algorithm>
++#include <cmath>
++#include <limits>
++#include <stdexcept>
++#include <type_traits>
++#include <vector>
++
++/**
++ * @brief DVB-S2 16APSK (4+12) and 32APSK (4+12+16) constellations.
++ *
++ * The constellation points, the ring radius ratios and the bit labels follow ETSI EN
++ * 302 307-1 (Section 5.4.3 and 5.4.4) as implemented by the gr-dtv DVB-S2 modulator
++ * (dvbs2_modulator_bc_impl.cc), so that a gr-dtv transmitter can be used as reference.
++ * Only the DVB-S2 (non-S2X) code rates are supported. The average symbol energy is
++ * normalized to one, as in the transmitter.
++ *
++ * Bit convention: same as the PSK classes, i.e., code value +1 for bit 0 and -1 for bit
++ * 1, and b[0] is the most significant bit of the symbol label (the first column of the
++ * bit interleaver).
++ */
++template <typename TYPE, typename CODE>
++struct AmplitudePhaseShiftKeying : public Modulation<TYPE, CODE> {
++    typedef TYPE complex_type;
++    typedef typename TYPE::value_type value_type;
++    typedef CODE code_type;
++
++    AmplitudePhaseShiftKeying(gr::dvbs2rx::dvb_constellation_t constellation,
++                              gr::dvbs2rx::dvb_code_rate_t rate)
++    {
++        using namespace gr::dvbs2rx;
++        if (constellation == MOD_16APSK) {
++            d_bits = 4;
++            double gamma;
++            switch (rate) {
++            case C2_3:
++                gamma = 3.15;
++                break;
++            case C3_4:
++                gamma = 2.85;
++                break;
++            case C4_5:
++                gamma = 2.75;
++                break;
++            case C5_6:
++                gamma = 2.70;
++                break;
++            case C8_9:
++                gamma = 2.60;
++                break;
++            case C9_10:
++                gamma = 2.57;
++                break;
++            default:
++                throw std::runtime_error("Unsupported 16APSK code rate");
++            }
++            double r2 = 1.0;
++            double r1 = r2 / gamma;
++            double r0 = std::sqrt(4.0 / ((r1 * r1) + 3.0 * (r2 * r2)));
++            r1 *= r0;
++            r2 *= r0;
++            // Phase of each point in units of pi/12 (label order)
++            static const int ring[16] = { 2, 2, 2, 2, 2, 2, 2, 2,
++                                          2, 2, 2, 2, 1, 1, 1, 1 };
++            static const int phase[16] = { 3, -3, 9,  -9, 1,  -1, 11, -11,
++                                           5, -5, 7, -7, 3,  -3, 9,  -9 };
++            d_points.resize(16);
++            for (int i = 0; i < 16; i++) {
++                double r = ring[i] == 1 ? r1 : r2;
++                double a = phase[i] * M_PI / 12.0;
++                d_points[i] = complex_type(r * std::cos(a), r * std::sin(a));
++            }
++        } else if (constellation == MOD_32APSK) {
++            d_bits = 5;
++            double gamma1, gamma2;
++            switch (rate) {
++            case C3_4:
++                gamma1 = 2.84;
++                gamma2 = 5.27;
++                break;
++            case C4_5:
++                gamma1 = 2.72;
++                gamma2 = 4.87;
++                break;
++            case C5_6:
++                gamma1 = 2.64;
++                gamma2 = 4.64;
++                break;
++            case C8_9:
++                gamma1 = 2.54;
++                gamma2 = 4.33;
++                break;
++            case C9_10:
++                gamma1 = 2.53;
++                gamma2 = 4.30;
++                break;
++            default:
++                throw std::runtime_error("Unsupported 32APSK code rate");
++            }
++            double r3 = 1.0;
++            double r1 = r3 / gamma2;
++            double r2 = r1 * gamma1;
++            double r0 =
++                std::sqrt(8.0 / ((r1 * r1) + 3.0 * (r2 * r2) + 4.0 * (r3 * r3)));
++            r1 *= r0;
++            r2 *= r0;
++            r3 *= r0;
++            // Phase of each point in units of pi/24 (label order)
++            static const int ring[32] = { 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3,
++                                          2, 1, 2, 1, 2, 1, 2, 1, 3, 3, 3, 3, 3, 3, 3, 3 };
++            static const int phase[32] = { 6,   10,  -6, -10, 18, 14,  -18, -14,
++                                           3,   9,   -6, -12, 18, 12,  -21, -15,
++                                           2,   6,   -2, -6,  22, 18,  -22, -18,
++                                           0,   6,   -3, -9,  21, 15,  24,  -18 };
++            d_points.resize(32);
++            for (int i = 0; i < 32; i++) {
++                double r = ring[i] == 1 ? r1 : (ring[i] == 2 ? r2 : r3);
++                double a = phase[i] * M_PI / 24.0;
++                d_points[i] = complex_type(r * std::cos(a), r * std::sin(a));
++            }
++        } else {
++            throw std::runtime_error("Unsupported APSK constellation");
++        }
++    }
++
++    int bits() { return d_bits; }
++
++    const std::vector<complex_type>& points() const { return d_points; }
++
++    /**
++     * @brief Index of the constellation point closest to the given symbol.
++     */
++    int nearest(complex_type c) const
++    {
++        int best = 0;
++        value_type best_d = std::numeric_limits<value_type>::max();
++        for (size_t i = 0; i < d_points.size(); i++) {
++            value_type d = std::norm(c - d_points[i]);
++            if (d < best_d) {
++                best_d = d;
++                best = i;
++            }
++        }
++        return best;
++    }
++
++    void hard(code_type* b, complex_type c)
++    {
++        int idx = nearest(c);
++        for (int k = 0; k < d_bits; k++)
++            b[k] = ((idx >> (d_bits - 1 - k)) & 1) ? code_type(-1) : code_type(1);
++    }
++
++    /**
++     * @brief Max-log soft demapping.
++     *
++     * The precision argument is 4/N0, as used by the PSK classes. The output keeps the
++     * same scale as the PSK classes, namely twice the max-log LLR, so that the LDPC
++     * decoder sees comparable values for all constellations.
++     */
++    void soft(code_type* b, complex_type c, value_type precision)
++    {
++        value_type min0[5], min1[5];
++        for (int k = 0; k < d_bits; k++) {
++            min0[k] = std::numeric_limits<value_type>::max();
++            min1[k] = std::numeric_limits<value_type>::max();
++        }
++        for (size_t i = 0; i < d_points.size(); i++) {
++            value_type d = std::norm(c - d_points[i]);
++            for (int k = 0; k < d_bits; k++) {
++                if ((i >> (d_bits - 1 - k)) & 1) {
++                    if (d < min1[k])
++                        min1[k] = d;
++                } else {
++                    if (d < min0[k])
++                        min0[k] = d;
++                }
++            }
++        }
++        // LLR = (min1 - min0) / N0 and precision = 4 / N0, hence 2 * LLR is given by:
++        for (int k = 0; k < d_bits; k++)
++            b[k] = quantize(0.5 * precision * (min1[k] - min0[k]));
++    }
++
++    complex_type map(code_type* b)
++    {
++        int idx = 0;
++        for (int k = 0; k < d_bits; k++)
++            idx = (idx << 1) | (b[k] < 0 ? 1 : 0);
++        return d_points[idx];
++    }
++
++private:
++    int d_bits;
++    std::vector<complex_type> d_points;
++
++    static code_type quantize(value_type value)
++    {
++        if (std::is_integral<code_type>::value)
++            value = std::nearbyint(value);
++        if (std::is_same<code_type, int8_t>::value)
++            value = std::min<value_type>(std::max<value_type>(value, -128), 127);
++        return value;
++    }
++};
++
++#endif
+diff --git a/lib/qa_apsk.cc b/lib/qa_apsk.cc
+new file mode 100644
+index 0000000..da287dc
+--- /dev/null
++++ b/lib/qa_apsk.cc
+@@ -0,0 +1,97 @@
++/* -*- c++ -*- */
++/*
++ * Copyright 2026 Kazu Shinjo.
++ *
++ * This file is part of gr-dvbs2rx.
++ *
++ * SPDX-License-Identifier: GPL-3.0-or-later
++ */
++
++#include "apsk.hh"
++#include <boost/test/unit_test.hpp>
++#include <random>
++
++namespace gr {
++namespace dvbs2rx {
++
++typedef AmplitudePhaseShiftKeying<gr_complex, int8_t> Apsk;
++
++static const std::vector<std::pair<dvb_constellation_t, dvb_code_rate_t>> all_modcods = {
++    { MOD_16APSK, C2_3 }, { MOD_16APSK, C3_4 }, { MOD_16APSK, C4_5 },
++    { MOD_16APSK, C5_6 }, { MOD_16APSK, C8_9 }, { MOD_16APSK, C9_10 },
++    { MOD_32APSK, C3_4 }, { MOD_32APSK, C4_5 }, { MOD_32APSK, C5_6 },
++    { MOD_32APSK, C8_9 }, { MOD_32APSK, C9_10 }
++};
++
++BOOST_AUTO_TEST_CASE(test_apsk_unit_energy)
++{
++    for (const auto& mc : all_modcods) {
++        Apsk apsk(mc.first, mc.second);
++        float e = 0;
++        for (const auto& p : apsk.points())
++            e += std::norm(p);
++        BOOST_CHECK_CLOSE(e / apsk.points().size(), 1.0, 1e-3);
++    }
++}
++
++BOOST_AUTO_TEST_CASE(test_apsk_16_points)
++{
++    // ETSI EN 302 307-1 Figure 13: label 0000 on the outer ring at pi/4 and label 1100
++    // on the inner ring at pi/4 (rate 2/3, gamma = 3.15)
++    Apsk apsk(MOD_16APSK, C2_3);
++    const auto& p = apsk.points();
++    BOOST_CHECK_CLOSE(std::arg(p[0]), M_PI / 4, 1e-3);
++    BOOST_CHECK_CLOSE(std::arg(p[12]), M_PI / 4, 1e-3);
++    BOOST_CHECK_CLOSE(std::abs(p[0]) / std::abs(p[12]), 3.15, 1e-3);
++}
++
++BOOST_AUTO_TEST_CASE(test_apsk_32_points)
++{
++    // ETSI EN 302 307-1 Figure 14 (rate 3/4: gamma1 = 2.84, gamma2 = 5.27)
++    Apsk apsk(MOD_32APSK, C3_4);
++    const auto& p = apsk.points();
++    BOOST_CHECK_CLOSE(std::abs(p[0]) / std::abs(p[17]), 2.84, 1e-3);
++    BOOST_CHECK_CLOSE(std::abs(p[24]) / std::abs(p[17]), 5.27, 1e-3);
++    BOOST_CHECK_SMALL(std::arg(p[24]), 1e-6f);
++}
++
++BOOST_AUTO_TEST_CASE(test_apsk_map_hard_roundtrip)
++{
++    for (const auto& mc : all_modcods) {
++        Apsk apsk(mc.first, mc.second);
++        const int n = apsk.bits();
++        int8_t b[5], b2[5];
++        for (int idx = 0; idx < (1 << n); idx++) {
++            for (int k = 0; k < n; k++)
++                b[k] = ((idx >> (n - 1 - k)) & 1) ? -1 : 1;
++            gr_complex s = apsk.map(b);
++            BOOST_CHECK_EQUAL(s, apsk.points()[idx]);
++            apsk.hard(b2, s);
++            BOOST_CHECK_EQUAL_COLLECTIONS(b, b + n, b2, b2 + n);
++        }
++    }
++}
++
++BOOST_AUTO_TEST_CASE(test_apsk_soft_sign)
++{
++    // With moderate noise, the soft decisions must match the transmitted bits in sign
++    std::mt19937 gen(1234);
++    std::normal_distribution<float> noise(0, 0.02);
++    for (const auto& mc : all_modcods) {
++        Apsk apsk(mc.first, mc.second);
++        const int n = apsk.bits();
++        const float N0 = 2 * 0.02 * 0.02;
++        int8_t b[5], soft[5];
++        for (int idx = 0; idx < (1 << n); idx++) {
++            for (int k = 0; k < n; k++)
++                b[k] = ((idx >> (n - 1 - k)) & 1) ? -1 : 1;
++            gr_complex y = apsk.map(b) + gr_complex(noise(gen), noise(gen));
++            apsk.soft(soft, y, 4.0 / N0);
++            for (int k = 0; k < n; k++)
++                BOOST_CHECK(soft[k] * b[k] > 0);
++        }
++    }
++}
++
++} // namespace dvbs2rx
++} // namespace gr
+diff --git a/lib/xfecframe_demapper_cb_impl.cc b/lib/xfecframe_demapper_cb_impl.cc
+index d12e267..7794969 100644
+--- a/lib/xfecframe_demapper_cb_impl.cc
++++ b/lib/xfecframe_demapper_cb_impl.cc
+@@ -67,11 +67,17 @@ xfecframe_demapper_cb_impl::xfecframe_demapper_cb_impl(dvb_framesize_t framesize
+             d_rowaddr1 = rows;
+             d_rowaddr2 = rows * 2;
+         }
++    } else if (constellation == MOD_16APSK || constellation == MOD_32APSK) {
++        d_apsk = std::make_unique<AmplitudePhaseShiftKeying<gr_complex, int8_t>>(
++            constellation, rate);
++        d_mod = d_apsk.get();
+     } else {
+         throw std::runtime_error("Unsupported constellation");
+     }
+ 
+     d_xfecframe_len = d_fecframe_len / d_mod->bits();
++    if (d_apsk)
++        d_apsk_buffer.resize(d_xfecframe_len);
+     d_aux_8i_buffer.resize(d_fecframe_len);
+     d_aux_8i_buffer_2.resize(d_fecframe_len);
+ 
+@@ -90,7 +96,50 @@ xfecframe_demapper_cb_impl::xfecframe_demapper_cb_impl(dvb_framesize_t framesize
+     set_msg_handler(d_pdu_port_id, [this](pmt::pmt_t pdu) { this->handle_llr_pdu(pdu); });
+ }
+ 
+-xfecframe_demapper_cb_impl::~xfecframe_demapper_cb_impl() {}
++xfecframe_demapper_cb_impl::~xfecframe_demapper_cb_impl()
++{
++    // d_mod is owned by d_apsk on APSK
++    if (!d_apsk)
++        delete d_mod;
++}
++
++float xfecframe_demapper_cb_impl::apsk_normalize(const gr_complex* in)
++{
++    // Unlike PSK, the APSK decision regions depend on the symbol amplitude, which is
++    // not normalized upstream (the AGC acts on the raw samples). Estimate the gain
++    // decision-directed over a subset of the XFECFRAME, starting from the total power,
++    // then scale the frame to the unit average energy of the transmitted constellation.
++    static constexpr unsigned int step = 8;
++    const auto& points = d_apsk->points();
++    float p = 0;
++    unsigned int n = 0;
++    for (unsigned int j = 0; j < d_xfecframe_len; j += step, n++)
++        p += std::norm(in[j]);
++    float g = std::sqrt(p / n);
++    for (int it = 0; it < 2 && g > 0; it++) {
++        float num = 0;
++        float den = 0;
++        for (unsigned int j = 0; j < d_xfecframe_len; j += step) {
++            const gr_complex& s = points[d_apsk->nearest(in[j] / g)];
++            num += std::real(in[j] * std::conj(s));
++            den += std::norm(s);
++        }
++        g = num / den;
++    }
++    if (!(g > 0))
++        g = 1;
++
++    // Normalize and measure the decision-directed noise energy
++    float np = 0;
++    for (unsigned int j = 0; j < d_xfecframe_len; j++) {
++        d_apsk_buffer[j] = in[j] / g;
++        np += std::norm(d_apsk_buffer[j] - points[d_apsk->nearest(d_apsk_buffer[j])]);
++    }
++    np /= d_xfecframe_len;
++    if (!(np > 0))
++        np = 1e-12;
++    return 1.0 / np; // linear SNR (unit symbol energy)
++}
+ 
+ void xfecframe_demapper_cb_impl::forecast(int noutput_items,
+                                           gr_vector_int& ninput_items_required)
+@@ -125,7 +174,14 @@ int xfecframe_demapper_cb_impl::general_work(int noutput_items,
+         // Compute an initial SNR estimate if we are still waiting for the first batch of
+         // post-decoder LLRs for SNR estimation refinement.
+         float snr_lin;
+-        if (d_waiting_first_llr) {
++        if (d_apsk) {
++            // There is no post-decoder SNR refinement for APSK. Normalize the
++            // amplitude and use the decision-directed estimate on every frame.
++            snr_lin = apsk_normalize(in);
++            d_snr = 10 * std::log10(snr_lin);
++            d_N0 = Es / snr_lin;
++            d_precision = 4.0 / d_N0;
++        } else if (d_waiting_first_llr) {
+             if (d_constellation == MOD_QPSK) {
+                 snr_lin = d_qpsk->estimate_snr(in, d_xfecframe_len);
+             } else {
+@@ -151,6 +207,11 @@ int xfecframe_demapper_cb_impl::general_work(int noutput_items,
+         // Soft constellation demapping
+         if (d_constellation == MOD_QPSK) {
+             d_qpsk->demap_soft(out, in, d_xfecframe_len, d_N0);
++        } else if (d_apsk) {
++            int8_t* p_soft_out = d_aux_8i_buffer.data();
++            for (unsigned int j = 0; j < d_xfecframe_len; j++) {
++                d_mod->soft(p_soft_out + (j * n_mod), d_apsk_buffer[j], d_precision);
++            }
+         } else {
+             int8_t* p_soft_out = d_aux_8i_buffer.data();
+             for (unsigned int j = 0; j < d_xfecframe_len; j++) {
+@@ -173,6 +234,14 @@ int xfecframe_demapper_cb_impl::general_work(int noutput_items,
+                 c2[j] = p_soft[indexin++];
+                 c3[j] = p_soft[indexin++];
+             }
++        } else if (d_apsk) {
++            // DVB-S2 16APSK and 32APSK (non-S2X rates) use the natural column order,
++            // i.e., column k holds the codeword bits from k * rows to (k + 1) * rows.
++            const int8_t* p_soft = d_aux_8i_buffer.data();
++            for (unsigned int j = 0; j < d_xfecframe_len; j++) {
++                for (int k = 0; k < n_mod; k++)
++                    out[k * d_xfecframe_len + j] = p_soft[j * n_mod + k];
++            }
+         }
+ 
+         in += d_xfecframe_len;
+@@ -190,6 +259,10 @@ void xfecframe_demapper_cb_impl::handle_llr_pdu(pmt::pmt_t pdu)
+     static constexpr float Es = 1.0; // again, assume unitary symbol energy
+     gr::thread::scoped_lock l(d_mutex);
+ 
++    // APSK keeps the per-frame decision-directed SNR estimate (see general_work)
++    if (d_apsk)
++        return;
++
+     if (!(pmt::is_pdu(pdu))) {
+         d_logger->error("PMT is not a PDU. Dropping...");
+         return;
+diff --git a/lib/xfecframe_demapper_cb_impl.h b/lib/xfecframe_demapper_cb_impl.h
+index 3fb7dbd..7d80e39 100644
+--- a/lib/xfecframe_demapper_cb_impl.h
++++ b/lib/xfecframe_demapper_cb_impl.h
+@@ -9,6 +9,7 @@
+ #define INCLUDED_DVBS2RX_XFECFRAME_DEMAPPER_CB_IMPL_H
+ 
+ #include "cpu_features_macros.h"
++#include "apsk.hh"
+ #include "psk.hh"
+ #include "qpsk.h"
+ #include <gnuradio/dvbs2rx/xfecframe_demapper_cb.h>
+@@ -49,6 +50,9 @@ private:
+     volk::vector<int8_t> d_aux_8i_buffer_2;
+     Modulation<gr_complex, int8_t>* d_mod;
+     std::unique_ptr<QpskConstellation> d_qpsk;
++    std::unique_ptr<AmplitudePhaseShiftKeying<gr_complex, int8_t>> d_apsk;
++    volk::vector<gr_complex> d_apsk_buffer; /**< Amplitude-normalized XFECFRAME */
++    float apsk_normalize(const gr_complex* in);
+     gr::thread::mutex d_mutex;
+ 
+     // Used for measuring the post-decoder SNR using the LLRs reported by the LDPC decoder
+diff --git a/python/dvbs2rx/defs.py b/python/dvbs2rx/defs.py
+index 971d20a..a204db0 100644
+--- a/python/dvbs2rx/defs.py
++++ b/python/dvbs2rx/defs.py
+@@ -30,6 +30,14 @@ constellations = {
+     '8PSK': {
+         'def': 'MOD_8PSK',
+         'standard': ['DVB-S2']
++    },
++    '16APSK': {
++        'def': 'MOD_16APSK',
++        'standard': ['DVB-S2']
++    },
++    '32APSK': {
++        'def': 'MOD_32APSK',
++        'standard': ['DVB-S2']
+     }
+ }
+ 

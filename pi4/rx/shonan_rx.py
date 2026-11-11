@@ -25,18 +25,20 @@ import time
 
 from gnuradio import gr, analog, blocks, iio, dvbs2rx
 
-# TX(Pluto内蔵変調器pluto_dvb、GUIのbackend.py参照)が生成するMOD-CODのうち、
-# 実際にgr-dvbs2rxで受信・復調できることを配線した組み合わせ。旧shonan_tx/aff3ct
-# (conf/ファイル制約でQPSK-S_3/5・8/9等に限定されていた)はGUIから廃止済みのため、
-# ここでの制約はpluto_dvb側の対応FEC(pi5版と共通)に合わせて随時追加してよい。
+# DVB-S2ロングフレームの全28 MOD-COD(GUIのsettings_store.MODULATION_FEC_RATESと同じ内容)。
+# 16/32APSKはV2のパッチ(docs/patches/gr-dvbs2rx_apsk.patch)を当てたgr-dvbs2rxが必要。
+_MODCOD_FEC_RATES = {
+    "QPSK": ["1/4", "1/3", "2/5", "1/2", "3/5", "2/3", "3/4", "4/5", "5/6", "8/9", "9/10"],
+    "8PSK": ["3/5", "2/3", "3/4", "5/6", "8/9", "9/10"],
+    "16APSK": ["2/3", "3/4", "4/5", "5/6", "8/9", "9/10"],
+    "32APSK": ["3/4", "4/5", "5/6", "8/9", "9/10"],
+}
 # 第3・4要素はdvbs2rx.dvbs2_pls()に渡す文字列(dvbs2rx.paramsのAPI表記に合わせる)。
 _MODCOD_TABLE = {
-    "QPSK-S_1/2": (dvbs2rx.MOD_QPSK, dvbs2rx.C1_2, "QPSK", "1/2"),
-    "QPSK-S_3/5": (dvbs2rx.MOD_QPSK, dvbs2rx.C3_5, "QPSK", "3/5"),
-    "QPSK-S_8/9": (dvbs2rx.MOD_QPSK, dvbs2rx.C8_9, "QPSK", "8/9"),
-    "8PSK-S_3/5": (dvbs2rx.MOD_8PSK, dvbs2rx.C3_5, "8PSK", "3/5"),
-    "8PSK-S_8/9": (dvbs2rx.MOD_8PSK, dvbs2rx.C8_9, "8PSK", "8/9"),
-    "16APSK-S_8/9": (dvbs2rx.MOD_16APSK, dvbs2rx.C8_9, "16APSK", "8/9"),
+    f"{modulation}-S_{rate}": (getattr(dvbs2rx, f"MOD_{modulation}"),
+                                getattr(dvbs2rx, "C" + rate.replace("/", "_")),
+                                modulation, rate)
+    for modulation, rates in _MODCOD_FEC_RATES.items() for rate in rates
 }
 
 

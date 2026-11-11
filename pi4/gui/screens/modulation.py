@@ -5,12 +5,35 @@ import math
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from settings_store import MODULATION_SCHEMES
-from widgets import SettingsSubScreen
+from settings_store import MODULATION_SCHEMES, supported_fec_rates
 from i18n import tr
+from widgets import SettingsSubScreen
 
 
-_MOCK_SCHEMES = ("QPSK", "8PSK")
+# APSKのリング半径比(ETSI EN 302 307-1)。FEC画面の符号化率に合わせて描く。
+# 16APSK: 外側/内側、32APSK: (中間/内側, 外側/内側)。
+_APSK16_GAMMA = {"2/3": 3.15, "3/4": 2.85, "4/5": 2.75, "5/6": 2.70, "8/9": 2.60, "9/10": 2.57}
+_APSK32_GAMMA = {"3/4": (2.84, 5.27), "4/5": (2.72, 4.87), "5/6": (2.64, 4.64),
+                 "8/9": (2.54, 4.33), "9/10": (2.53, 4.30)}
+
+
+def _ring(count: int, radius: float, offset: float) -> list[tuple[float, float]]:
+    return [(radius * math.cos(offset + 2 * math.pi * i / count),
+             radius * math.sin(offset + 2 * math.pi * i / count)) for i in range(count)]
+
+
+def constellation_points(scheme: str, fec_rate: str) -> list[tuple[float, float]]:
+    """コンステレーション図の点(最外周を半径1とする)。"""
+    if scheme == "QPSK":
+        return _ring(4, 1.0, math.pi / 4)
+    if scheme == "16APSK":
+        gamma = _APSK16_GAMMA.get(fec_rate, 2.85)
+        return _ring(4, 1 / gamma, math.pi / 4) + _ring(12, 1.0, math.pi / 12)
+    if scheme == "32APSK":
+        gamma1, gamma2 = _APSK32_GAMMA.get(fec_rate, (2.84, 5.27))
+        return (_ring(4, 1 / gamma2, math.pi / 4) + _ring(12, gamma1 / gamma2, math.pi / 12)
+                + _ring(16, 1.0, 0.0))
+    return _ring(8, 1.0, 0.0)
 
 
 class ConstellationWidget(QtWidgets.QWidget):
@@ -33,15 +56,8 @@ class ConstellationWidget(QtWidgets.QWidget):
         painter.drawLine(center.x(), rect.top() + 6, center.x(), rect.top())
         painter.drawLine(center.x(), rect.bottom() - 6, center.x(), rect.bottom())
 
-        scheme = self.screen.main_window.settings.modulation_scheme
-        if scheme == "BPSK":
-            points = [(-1, 0), (1, 0)]
-        elif scheme == "QPSK":
-            points = [(-.72, -.72), (.72, -.72), (-.72, .72), (.72, .72)]
-        else:
-            count = {"8PSK": 8, "16APSK": 16, "32APSK": 32, "64APSK": 64}.get(scheme, 4)
-            points = [(math.cos(2 * math.pi * i / count),
-                       math.sin(2 * math.pi * i / count)) for i in range(count)]
+        settings = self.screen.main_window.settings
+        points = constellation_points(settings.modulation_scheme, settings.fec_rate)
 
         painter.setPen(QtCore.Qt.NoPen)
         painter.setBrush(QtGui.QColor("#38b8e3"))
@@ -83,7 +99,7 @@ class ModulationScreen(SettingsSubScreen):
         label.setStyleSheet("font-size: 13px; font-weight: bold; color: #54bce0;")
         left_layout.addWidget(label)
         self._group = QtWidgets.QButtonGroup(self)
-        for scheme in _MOCK_SCHEMES:
+        for scheme in MODULATION_SCHEMES:
             button = QtWidgets.QPushButton(scheme)
             button.setCheckable(True)
             button.setMinimumHeight(28)
@@ -96,11 +112,7 @@ class ModulationScreen(SettingsSubScreen):
                 "QPushButton:disabled { color: #777777; background-color: #171a1c; }"
             )
             button.setChecked(main_window.settings.modulation_scheme == scheme)
-            if scheme not in MODULATION_SCHEMES:
-                button.setEnabled(False)
-                button.setToolTip(tr("現在の送受信経路では未対応", "Not supported by the current TX/RX path"))
-            else:
-                button.toggled.connect(lambda checked, s=scheme: checked and self._select(s))
+            button.toggled.connect(lambda checked, s=scheme: checked and self._select(s))
             self._group.addButton(button)
             left_layout.addWidget(button)
         left_layout.addStretch(1)
@@ -135,13 +147,19 @@ class ModulationScreen(SettingsSubScreen):
         self._update_view()
 
     def _select(self, scheme: str) -> None:
-        self.main_window.settings.modulation_scheme = scheme
+        settings = self.main_window.settings
+        settings.modulation_scheme = scheme
+        rates = supported_fec_rates(scheme)
+        if settings.fec_rate not in rates:
+            # その変調方式に無いFECのままだと送受信開始時に拒否されるため、
+            # 最も誤りに強い(先頭の)符号化率へ合わせる。
+            settings.fec_rate = rates[0]
         self.main_window.save_settings()
         self._update_view()
 
     def _update_view(self) -> None:
         scheme = self.main_window.settings.modulation_scheme
-        bits = {"BPSK": 1, "QPSK": 2, "8PSK": 3, "16APSK": 4, "32APSK": 5, "64APSK": 6}.get(scheme, 0)
+        bits = {"QPSK": 2, "8PSK": 3, "16APSK": 4, "32APSK": 5}.get(scheme, 0)
         self.bits_label.setText(str(bits))
         self.scheme_label.setText(scheme)
         self.constellation.update()
