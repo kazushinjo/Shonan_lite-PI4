@@ -227,6 +227,32 @@ _OVERLAY_CJK_FONT_PATH = "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.
 _OVERLAY_IMAGE_NAME = "shonan_overlay.png"
 
 
+def _video_encoder_args(settings: AppSettings, video_kbps: int) -> list[str]:
+    """送信映像の符号化引数。settings.video_codecでH.264/H.265を切り替える。"""
+    if settings.video_codec == "h265":
+        # Pi4にHEVCハードウェアエンコーダは無いため、libx265のCPU符号化になる。
+        # 1920x1080ではPi4のCPUが追いつかないため、H.265のときは1280x720へ縮小して符号化する。
+        # ★repeat-headers=1必須: RXは毎回TXの途中から視聴を始めるため、キーフレームごとに
+        # VPS/SPS/PPSを付けないと途中から復号できない。log-level=warningはx265の起動時
+        # infoログでTXログが埋まるのを防ぐ。
+        codec_args = [
+            "-c:v", "libx265", "-preset", "ultrafast", "-tune", "zerolatency",
+            "-x265-params", "repeat-headers=1:strict-cbr=1:log-level=warning",
+            "-s", "1280x720",
+        ]
+    else:
+        # Raspberry Pi 4のVideoCore H.264ハードウェアエンコーダを使用する。
+        # dump_extraで各キーフレームへSPS/PPSを付加し、途中視聴でも復号可能にする。
+        codec_args = [
+            "-c:v", "h264_v4l2m2m", "-bf", "0",
+            "-bsf:v", "dump_extra=freq=keyframe",
+        ]
+    return codec_args + [
+        "-b:v", f"{video_kbps}k", "-maxrate", f"{video_kbps}k", "-bufsize", f"{video_kbps}k",
+        "-g", "30", "-pix_fmt", "yuv420p",
+    ]
+
+
 def _split_font_runs(text: str) -> list[tuple[str, bool]]:
     """textを(区間文字列, 日本語グリフが必要か)のリストへ分割する。"""
     runs: list[tuple[str, bool]] = []
@@ -777,12 +803,7 @@ class TxController(QtCore.QObject):
         self.log_line.emit(audio_message)
         args = video_args + overlay_input_args + audio_args + overlay_filter_args + [
             "-map", video_map, "-map", f"{audio_index}:a",
-            # Raspberry Pi 4のVideoCore H.264ハードウェアエンコーダを使用する。
-            # dump_extraで各キーフレームへSPS/PPSを付加し、途中視聴でも復号可能にする。
-            "-c:v", "h264_v4l2m2m", "-bf", "0",
-            "-bsf:v", "dump_extra=freq=keyframe",
-            "-b:v", f"{video_kbps}k", "-maxrate", f"{video_kbps}k", "-bufsize", f"{video_kbps}k",
-            "-g", "30", "-pix_fmt", "yuv420p",
+        ] + _video_encoder_args(settings, video_kbps) + [
             # 16kbpsを左右2chで分け合うと音質が落ちるため、声の送信はモノラルに固定する。
             "-c:a", "aac", "-ac", "1", "-b:a", f"{audio_kbps}k",
             "-f", "mpegts", output_url,
@@ -932,10 +953,7 @@ class TxController(QtCore.QObject):
         args = _camera_input_args(settings.camera_device) + overlay_input_args + \
             audio_args + overlay_filter_args + [
             "-map", video_map, "-map", f"{audio_index}:a",
-            "-c:v", "h264_v4l2m2m", "-bf", "0",
-            "-bsf:v", "dump_extra=freq=keyframe",
-            "-b:v", f"{video_kbps}k", "-maxrate", f"{video_kbps}k", "-bufsize", f"{video_kbps}k",
-            "-g", "30", "-pix_fmt", "yuv420p",
+        ] + _video_encoder_args(settings, video_kbps) + [
             "-c:a", "aac", "-ac", "1", "-b:a", f"{audio_kbps}k", "-af", "ashowinfo",
             "-f", "mpegts", udp_ts_url,
         ]

@@ -106,6 +106,9 @@ def supported_fec_rates(modulation: str) -> list[str]:
 SYMBOL_RATE_CANDIDATES_MSPS = [0.25, 0.333, 0.5, 0.666, 1.0, 2.0]
 
 TX_VIDEO_BITRATE_BPS = 400_000
+# 送信映像のコーデック(Pi5版と同じ)。h265は同じビットレートで画質が上がる代わりに
+# 符号化が重い(libx265のCPU符号化)。受信側はTSから自動判別する。
+VIDEO_CODECS = ("h264", "h265")
 TX_AUDIO_BITRATE_BPS = 16_000
 # 送信音声の入力。camera=USBカメラ内蔵マイク、usb=USBオーディオ(外付けマイク等)。
 TX_AUDIO_INPUTS = ("camera", "usb")
@@ -222,6 +225,8 @@ class AppSettings:
     video_source: str = "colorbar"  # camera | file | colorbar
     video_file_path: str = ""
     use_color_bar_source: bool = True
+    # 送信映像のコーデック(VIDEO_CODECSのいずれか)。受信側はTSから自動判別する。
+    video_codec: str = "h264"
     audio_enabled: bool = False
     # 送信音声の入力(TX_AUDIO_INPUTSのいずれか)。映像ソースとは独立に設定画面で選ぶ。
     # 選んだ側のデバイスが見つからない場合は無音で送信する(もう一方へは切り替えない)。
@@ -363,6 +368,8 @@ def load() -> AppSettings:
             defaults["video_source"] = "colorbar"
         elif defaults.get("video_source") == "colorbar":
             defaults["use_color_bar_source"] = True
+        if defaults.get("video_codec") not in VIDEO_CODECS:
+            defaults["video_codec"] = AppSettings.video_codec
         if defaults.get("tx_audio_input") not in TX_AUDIO_INPUTS:
             defaults["tx_audio_input"] = AppSettings.tx_audio_input
         for key in ("tx_audio_volume_camera", "tx_audio_volume_usb"):

@@ -90,6 +90,18 @@ class VideoSourceScreen(SettingsSubScreen):
                          checked=(current_source == "file"))
         self._add_source(left_layout, tr("テストパターン", "Test Pattern"), "colorbar",
                          enabled=True, checked=(current_source == "colorbar"))
+        # 送信映像のコーデック(Pi5版と同じ)。受信側はTSから自動判別するため受信の設定は不要。
+        codec_title = QtWidgets.QLabel(tr("映像コーデック", "Video Codec"))
+        codec_title.setStyleSheet("font-size: 13px; font-weight: bold; color: #54bce0;")
+        left_layout.addSpacing(6)
+        left_layout.addWidget(codec_title)
+        self.codec_combo = QtWidgets.QComboBox()
+        self.codec_combo.setMinimumHeight(32)
+        for label, codec in (("H.264", "h264"), ("H.265 (HEVC)", "h265")):
+            self.codec_combo.addItem(label, codec)
+        self.codec_combo.activated.connect(self._save_video_codec)
+        left_layout.addWidget(self.codec_combo)
+        self._load_video_codec()
         left_layout.addStretch(1)
         # カメラ映像を静止画(JPG)として撮影・保存する。保存した画像は「ファイル選択」で
         # 送信画像として選べる。映像ソースが「カメラ」のときだけ表示する。
@@ -214,6 +226,7 @@ class VideoSourceScreen(SettingsSubScreen):
         self.overlay_callsign_edit.setText(settings.overlay_callsign)
         self.overlay_note_edit.setText(settings.overlay_note)
         self._load_overlay_sizes()
+        self._load_video_codec()
         # レイアウト確定後の実サイズでプレビュー枠へ描画する。
         self._update_preview()
         QtCore.QTimer.singleShot(0, self._refresh_still_preview)
@@ -300,6 +313,14 @@ class VideoSourceScreen(SettingsSubScreen):
         for (ja, en), color in _OVERLAY_COLORS:
             combo.addItem(self._color_icon(color), tr(ja, en), color)
         return combo
+
+    def _load_video_codec(self) -> None:
+        index = self.codec_combo.findData(self.main_window.settings.video_codec)
+        self.codec_combo.setCurrentIndex(max(index, 0))
+
+    def _save_video_codec(self, _index: int) -> None:
+        self.main_window.settings.video_codec = str(self.codec_combo.currentData())
+        self.main_window.save_settings()
 
     def _save_overlay_callsign_color(self, _index: int) -> None:
         self.main_window.settings.overlay_callsign_color = str(self.overlay_callsign_color.currentData())
