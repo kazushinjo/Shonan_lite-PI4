@@ -226,27 +226,20 @@ _OVERLAY_IMAGE_NAME = "shonan_overlay.png"
 
 
 def _video_encoder_args(settings: AppSettings, video_kbps: int) -> list[str]:
-    """送信映像の符号化引数。settings.video_codecでH.264/H.265を切り替える。"""
-    if settings.video_codec == "h265":
-        # Pi4にHEVCハードウェアエンコーダは無いため、libx265のCPU符号化になる。
-        # Pi4のCPUではH.265の720p以上が実時間で追いつかない(Pi5でも720pでCPU 345%)ため、
-        # H.265のときは854x480へ縮小して符号化する。
-        # ★repeat-headers=1必須: RXは毎回TXの途中から視聴を始めるため、キーフレームごとに
-        # VPS/SPS/PPSを付けないと途中から復号できない。log-level=warningはx265の起動時
-        # infoログでTXログが埋まるのを防ぐ。
-        codec_args = [
-            "-c:v", "libx265", "-preset", "ultrafast", "-tune", "zerolatency",
-            "-x265-params", "repeat-headers=1:strict-cbr=1:log-level=warning",
-            "-s", "854x480",
-        ]
-    else:
-        # Raspberry Pi 4のVideoCore H.264ハードウェアエンコーダを使用する。
-        # dump_extraで各キーフレームへSPS/PPSを付加し、途中視聴でも復号可能にする。
-        codec_args = [
-            "-c:v", "h264_v4l2m2m", "-bf", "0",
-            "-bsf:v", "dump_extra=freq=keyframe",
-        ]
-    return codec_args + [
+    """送信映像の符号化引数。Raspberry Pi 4のVideoCore H.264ハードウェアエンコーダを使い、
+    settings.tx_video_heightで1080p/720pを切り替える(Pi5版と同じ選択肢)。
+
+    ★H.265は扱わない。Pi4にHEVCエンコーダは無く、libx265のCPU符号化では480pでも
+    実時間に間に合わなかった(2026-11-11実機測定)。H.264は1080p・720pとも実時間で送れる。
+    """
+    # dump_extraで各キーフレームへSPS/PPSを付加し、途中視聴でも復号可能にする。
+    codec_args = [
+        "-c:v", "h264_v4l2m2m", "-bf", "0",
+        "-bsf:v", "dump_extra=freq=keyframe",
+    ]
+    # 720p選択時は、フルHDで合成済みの映像を符号化直前に縮小する(Pi5版と同じ)。
+    size_args = ["-s", "1280x720"] if settings.tx_video_height == 720 else []
+    return codec_args + size_args + [
         "-b:v", f"{video_kbps}k", "-maxrate", f"{video_kbps}k", "-bufsize", f"{video_kbps}k",
         "-g", "30", "-pix_fmt", "yuv420p",
     ]

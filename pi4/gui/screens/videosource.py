@@ -90,18 +90,18 @@ class VideoSourceScreen(SettingsSubScreen):
                          checked=(current_source == "file"))
         self._add_source(left_layout, tr("テストパターン", "Test Pattern"), "colorbar",
                          enabled=True, checked=(current_source == "colorbar"))
-        # 送信映像のコーデック(Pi5版と同じ)。受信側はTSから自動判別するため受信の設定は不要。
-        codec_title = QtWidgets.QLabel(tr("映像コーデック", "Video Codec"))
-        codec_title.setStyleSheet("font-size: 13px; font-weight: bold; color: #54bce0;")
+        # 送信映像の解像度(Pi5版と同じ1080p/720p)。Pi4はH.264(ハードウェア)のみで送る。
+        resolution_title = QtWidgets.QLabel(tr("送信解像度 (H.264)", "TX Resolution (H.264)"))
+        resolution_title.setStyleSheet("font-size: 13px; font-weight: bold; color: #54bce0;")
         left_layout.addSpacing(6)
-        left_layout.addWidget(codec_title)
-        self.codec_combo = QtWidgets.QComboBox()
-        self.codec_combo.setMinimumHeight(32)
-        for label, codec in (("H.264", "h264"), ("H.265 (HEVC)", "h265")):
-            self.codec_combo.addItem(label, codec)
-        self.codec_combo.activated.connect(self._save_video_codec)
-        left_layout.addWidget(self.codec_combo)
-        self._load_video_codec()
+        left_layout.addWidget(resolution_title)
+        self.resolution_combo = QtWidgets.QComboBox()
+        self.resolution_combo.setMinimumHeight(32)
+        for label, height in (("1080p", 1080), ("720p", 720)):
+            self.resolution_combo.addItem(label, height)
+        self.resolution_combo.activated.connect(self._save_tx_video_height)
+        left_layout.addWidget(self.resolution_combo)
+        self._load_tx_video_height()
         left_layout.addStretch(1)
         # カメラ映像を静止画(JPG)として撮影・保存する。保存した画像は「ファイル選択」で
         # 送信画像として選べる。映像ソースが「カメラ」のときだけ表示する。
@@ -226,7 +226,7 @@ class VideoSourceScreen(SettingsSubScreen):
         self.overlay_callsign_edit.setText(settings.overlay_callsign)
         self.overlay_note_edit.setText(settings.overlay_note)
         self._load_overlay_sizes()
-        self._load_video_codec()
+        self._load_tx_video_height()
         # レイアウト確定後の実サイズでプレビュー枠へ描画する。
         self._update_preview()
         QtCore.QTimer.singleShot(0, self._refresh_still_preview)
@@ -314,12 +314,12 @@ class VideoSourceScreen(SettingsSubScreen):
             combo.addItem(self._color_icon(color), tr(ja, en), color)
         return combo
 
-    def _load_video_codec(self) -> None:
-        index = self.codec_combo.findData(self.main_window.settings.video_codec)
-        self.codec_combo.setCurrentIndex(max(index, 0))
+    def _load_tx_video_height(self) -> None:
+        index = self.resolution_combo.findData(self.main_window.settings.tx_video_height)
+        self.resolution_combo.setCurrentIndex(max(index, 0))
 
-    def _save_video_codec(self, _index: int) -> None:
-        self.main_window.settings.video_codec = str(self.codec_combo.currentData())
+    def _save_tx_video_height(self, _index: int) -> None:
+        self.main_window.settings.tx_video_height = int(self.resolution_combo.currentData())
         self.main_window.save_settings()
 
     def _save_overlay_callsign_color(self, _index: int) -> None:
