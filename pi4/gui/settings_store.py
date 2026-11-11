@@ -169,23 +169,6 @@ def normalize_pluto_host(value: str) -> str:
         raise ValueError("Pluto接続先が不正です")
 
 
-def normalize_ptt_controller_host(value: str) -> str:
-    """Return a safe PTT controller (ESP32+W5500) host, or "" to disable the feature."""
-    host = str(value).strip()
-    if not host:
-        return ""
-    if any(ord(char) < 32 or char.isspace() for char in host):
-        raise ValueError("PTTコントローラ接続先に空白または制御文字が含まれています")
-    try:
-        ipaddress.ip_address(host)
-        return host
-    except ValueError:
-        if len(host) <= 253 and re.fullmatch(
-                r"[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?", host):
-            return host
-    raise ValueError("PTTコントローラ接続先はIPアドレスまたはホスト名で入力してください")
-
-
 @dataclass
 class AppSettings:
     language: str = "JAPANESE"  # JAPANESE | ENGLISH
@@ -200,11 +183,6 @@ class AppSettings:
     # Pluto+接続(Pi4はローカル直結のためURI形式。Android版のtxDestinationIP/Port相当を代替)
     pluto_uri: str = "ip:192.168.0.10"
 
-    # PA_Power/PTTコントローラ(ESP32+W5500、hardware/W5500_PA_PTT_Control)のIPアドレス。
-    # 空文字なら連携しない(未接続環境でもTX/RXの動作に影響しない)。
-    ptt_controller_host: str = "192.168.0.100"
-    # 設定画面の「ESP32 W5500を使用する」。OFFならIPアドレスを保持したまま連携しない。
-    use_ptt_controller: bool = True
     tx_destination_port: int = 7272
     rx_listen_port: int = 4003
     rx_status_port: int = 4002
@@ -316,10 +294,6 @@ class AppSettings:
     def effective_loopback_host(self) -> str:
         return "127.0.0.1" if self.loopback_use_localhost else self.loopback_target_ip
 
-    def active_ptt_controller_host(self) -> str:
-        """PTTコントローラ連携に使う接続先。未使用設定またはIP未設定なら""。"""
-        return self.ptt_controller_host if self.use_ptt_controller else ""
-
     def mod_cod(self) -> str:
         """FEC + Modulation を合成した --mod-cod 文字列(aff3ct/gr-dvbs2rx共通の命名)。"""
         return f"{self.modulation_scheme}-S_{self.fec_rate}"
@@ -376,11 +350,6 @@ def load() -> AppSettings:
             value = defaults.get(key)
             if not isinstance(value, int) or not 0 <= value <= 100:
                 defaults[key] = getattr(AppSettings, key)
-        try:
-            defaults["ptt_controller_host"] = normalize_ptt_controller_host(
-                defaults.get("ptt_controller_host", ""))
-        except (TypeError, ValueError):
-            defaults["ptt_controller_host"] = AppSettings.ptt_controller_host
         # 選択肢から外した変調方式(16APSK等)で保存された設定はQPSKへ移行し、
         # FECもQPSKで使えない値なら既定値へ戻す(Pi5版と同じ)。
         if defaults.get("modulation_scheme") not in MODULATION_SCHEMES:

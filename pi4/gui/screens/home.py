@@ -1,16 +1,13 @@
 """Homeメニュー。Android版 ui/HomeScreen.kt の homeMenuButtons 相当。"""
 from __future__ import annotations
 
-import http.client
 import subprocess
-import urllib.error
 from pathlib import Path
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 import langstone_config
 
-from backend import PTT_CHANNEL_POWER, _send_ptt_channel_state
 from i18n import is_english
 from widgets import NavButton, _run_as_overlay, confirm_dialog, error_dialog
 
@@ -33,7 +30,6 @@ _BUTTONS = [
     ("電源オフ", "Power Off", "shutdown"),
     ("Langstone", "SDR Transceiver", "langstone"),
     ("プリセット", "Presets", "presets"),
-    ("Pluto電源", "Pluto Power", "pluto_power_cycle"),
 ]
 
 # Pluto+のdatvplutofrmファームウェアの既定rootクレデンシャル(Dropbear SSH)。
@@ -172,77 +168,6 @@ class PresetCard(QtWidgets.QWidget):
         painter.end()
 
 
-class PlutoPowerCard(QtWidgets.QWidget):
-    """PresetCardと同様、モック画像上の空きスロットに描画する電源サイクルカード。"""
-
-    def __init__(self, parent=None, english: bool = False) -> None:
-        super().__init__(parent)
-        self._english = english
-
-    def paintEvent(self, _event) -> None:
-        painter = QtGui.QPainter(self)
-        painter.setRenderHint(QtGui.QPainter.Antialiasing)
-        # PresetCardと同じ322x107基準にし、カード枠・文字サイズを完全に揃える。
-        painter.scale(self.width() / 322.0, self.height() / 107.0)
-        inner = QtCore.QRectF(4, 4, 314, 99)
-        fill = QtGui.QLinearGradient(inner.topLeft(), inner.bottomLeft())
-        fill.setColorAt(0.0, QtGui.QColor("#071a2c"))
-        fill.setColorAt(1.0, QtGui.QColor("#030b16"))
-        painter.setBrush(QtGui.QBrush(fill))
-        painter.setPen(QtCore.Qt.NoPen)
-        painter.drawRoundedRect(inner, 12, 12)
-
-        # 電源アイコン(上部を開けた円弧+縦線。他画面の電源オフダイアログと同系統)。
-        # PresetCardのアイコン(icon_center=52,52)と同じ位置に合わせる。
-        icon_center = QtCore.QPointF(52, 52)
-        radius = 18.0
-        pen = QtGui.QPen(QtGui.QColor("white"), 3, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap)
-        painter.setPen(pen)
-        painter.setBrush(QtCore.Qt.NoBrush)
-        arc_rect = QtCore.QRectF(icon_center.x() - radius, icon_center.y() - radius,
-                                  radius * 2, radius * 2)
-        painter.drawArc(arc_rect, 100 * 16, 340 * 16)
-        painter.drawLine(QtCore.QPointF(icon_center.x(), icon_center.y() - radius - 4),
-                          QtCore.QPointF(icon_center.x(), icon_center.y() - 2))
-
-        # 文字サイズ・位置はPresetCardと同一(タイトル26px/サブ16px、開始位置108,27/108,56)。
-        painter.setPen(QtGui.QColor("white"))
-        if self._english:
-            font = QtGui.QFont("Noto Sans CJK JP")
-            font.setPixelSize(26)
-            font.setStyleStrategy(QtGui.QFont.PreferAntialias)
-            painter.setFont(font)
-            painter.drawText(QtCore.QRectF(108, 27, 205, 30),
-                             QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter, "Pluto Power")
-            small_font = QtGui.QFont("Noto Sans CJK JP")
-            small_font.setPixelSize(16)
-            small_font.setStyleStrategy(QtGui.QFont.PreferAntialias)
-            painter.setFont(small_font)
-            painter.drawText(QtCore.QRectF(108, 56, 205, 25),
-                             QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter, "Power Cycle")
-        else:
-            font = QtGui.QFont("Noto Sans CJK JP")
-            font.setPixelSize(26)
-            font.setWeight(QtGui.QFont.Thin)
-            font.setStyleStrategy(QtGui.QFont.PreferAntialias)
-            painter.setFont(font)
-            painter.drawText(QtCore.QRectF(108, 27, 205, 30),
-                             QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter, "Pluto電源")
-            small_font = QtGui.QFont("Noto Sans CJK JP")
-            small_font.setPixelSize(16)
-            small_font.setWeight(QtGui.QFont.Thin)
-            small_font.setStyleStrategy(QtGui.QFont.PreferAntialias)
-            painter.setFont(small_font)
-            painter.drawText(QtCore.QRectF(108, 56, 205, 25),
-                             QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter, "OFF→ON")
-        painter.end()
-
-
-# ---- ホームのカード(全カード共通の描画) ----
-# ★以前はカードの文字・アイコンを背景画像に焼き込んだものをそのまま使い、一部のカードだけ
-# Qtで上書きしていたため、カードごとに文字の大きさ・アイコンの大きさと位置がばらばらだった。
-# 全カードをこのHomeCardで描き直し、アイコン・日本語/英語の文字の大きさと位置を統一する。
-# 座標は322x107基準(PresetCardと同じ)で、実際の大きさに合わせて拡大縮小する。
 _CARD_BASE_W = 322.0
 _CARD_BASE_H = 107.0
 _CARD_ICON_CENTER = QtCore.QPointF(55, 53.5)
@@ -280,16 +205,6 @@ def _icon_presets(painter: QtGui.QPainter, box: QtCore.QRectF) -> None:
         painter.drawEllipse(QtCore.QPointF(cx + knob * half, cy + dy), 3.8, 3.8)
 
 
-def _icon_pluto_power(painter: QtGui.QPainter, box: QtCore.QRectF) -> None:
-    """Pluto電源: 上部を開けた円弧+縦線(PlutoPowerCardと同じ形)。"""
-    painter.setPen(QtGui.QPen(QtGui.QColor("white"), 3, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap))
-    painter.setBrush(QtCore.Qt.NoBrush)
-    r = box.width() / 2 - 3
-    c = box.center()
-    painter.drawArc(QtCore.QRectF(c.x() - r, c.y() - r + 2, r * 2, r * 2), 115 * 16, 310 * 16)
-    painter.drawLine(QtCore.QPointF(c.x(), c.y() - r - 1), QtCore.QPointF(c.x(), c.y() + 1))
-
-
 class _PowerSymbol(QtWidgets.QWidget):
     """電源オフ確認ダイアログの電源マーク。★以前は文字"⏻"で表示していたが、Pi4のフォントに
     このグリフが無く四角(□)に化けていた(実機で確認)ため、Qtで描画する。"""
@@ -312,7 +227,7 @@ class _PowerSymbol(QtWidgets.QWidget):
         painter.end()
 
 
-_VECTOR_ICONS = {"fec": _icon_fec, "presets": _icon_presets, "pluto_power_cycle": _icon_pluto_power}
+_VECTOR_ICONS = {"fec": _icon_fec, "presets": _icon_presets}
 
 
 class HomeCard(QtWidgets.QWidget):
@@ -440,8 +355,6 @@ class HomeScreen(QtWidgets.QWidget):
                 btn.clicked.connect(self._on_shutdown_clicked)
             elif route == "pluto_reboot":
                 btn.clicked.connect(self._on_app_restart_clicked)
-            elif route == "pluto_power_cycle":
-                btn.clicked.connect(self._on_pluto_power_cycle_clicked)
             else:
                 btn.clicked.connect(lambda _, r=route: self.main_window.navigate_to(r))
             self._buttons[route] = btn
@@ -522,18 +435,16 @@ class HomeScreen(QtWidgets.QWidget):
         # 全カード共通: 幅310x高さ111(1600x1024基準)。列は68/386/704/1022
         # (列間隔318、カード同士は重ならない)。行は183/318/453/588/723
         # (行間隔24で統一。以前は39/27/22/15pxとばらばらだった)。
-        # 5段目3枚目(Pluto電源)はタワーの絵に重なるが、ユーザー了承の上で
-        # 許容している。
         card_rects = [
             (68, 183, 310, 111), (386, 183, 310, 111), (704, 183, 310, 111), (1022, 183, 310, 111),
             (68, 318, 310, 111), (386, 318, 310, 111), (704, 318, 310, 111), (1022, 318, 310, 111),
             (68, 453, 310, 111), (386, 453, 310, 111), (704, 453, 310, 111), (1022, 453, 310, 111),
             (68, 588, 310, 111), (386, 588, 310, 111), (704, 588, 310, 111), (1022, 588, 310, 111),
-            (68, 723, 310, 111), (386, 723, 310, 111), (704, 723, 310, 111),
+            (68, 723, 310, 111), (386, 723, 310, 111),
         ]
         # 全カードをHomeCardで描く(背景画像のカード部分は完全に覆う)。表示名は_BUTTONSのまま、
         # 一部のカードだけ日本語表示のサブ行を上書きする。周波数カードのサブ行は値(on_showで更新)。
-        sub_ja_override = {"langstone": "SDRトランシーバー", "frequency": "", "pluto_power_cycle": "Pluto Power"}
+        sub_ja_override = {"langstone": "SDRトランシーバー", "frequency": ""}
         title_en_override = {"langstone": "Langstone"}
         for (ja, en, route), rect in zip(_BUTTONS, card_rects):
             card = HomeCard(canvas, route, ja, sub_ja_override.get(route, en),
@@ -580,8 +491,6 @@ class HomeScreen(QtWidgets.QWidget):
             button.clicked.connect(self._on_langstone_clicked)
         elif route == "tx":
             button.clicked.connect(self._on_transmit_clicked)
-        elif route == "pluto_power_cycle":
-            button.clicked.connect(self._on_pluto_power_cycle_clicked)
         else:
             button.clicked.connect(lambda _, r=route: self.main_window.navigate_to(r))
 
@@ -663,15 +572,6 @@ class HomeScreen(QtWidgets.QWidget):
             # 前回Langstoneから戻ったときの印を消す(次にLangstoneを「GOTO
             # SHONAN_LITE」以外で終了したときは、従来どおりPluto+を再起動させる)。
             LANGSTONE_GOTO_SHONAN_MARKER.unlink(missing_ok=True)
-            # ★Langstone V2自身は12V電源(GPIO26)に触れないため、切替時に
-            # ここで明示的にONを送っておく(Langstone側の送信でPA電源が
-            # 入っていない、という事態を避ける)。
-            host = self.main_window.settings.active_ptt_controller_host()
-            if host:
-                try:
-                    _send_ptt_channel_state(host, PTT_CHANNEL_POWER, "on")
-                except (OSError, urllib.error.URLError, http.client.HTTPException) as exc:
-                    print(f"[MCU1] GPIO26 ON通知に失敗しました(Langstone切替): {exc}", flush=True)
             Path.home().joinpath(".pi4_boot_mode_langstone").touch()
             subprocess.Popen(["sudo", "/bin/systemctl", "start", "--no-block", "langstone.service"])
         except OSError as exc:
@@ -683,29 +583,6 @@ class HomeScreen(QtWidgets.QWidget):
         ):
             return
         self.main_window.restart_app()
-
-    def _on_pluto_power_cycle_clicked(self) -> None:
-        """PA_Power/PTTコントローラ(ESP32)のGPIO26(12V電源)をOFF→3秒待ち→ONする
-        (Pluto+含む12V系統全体の電源サイクル)。"""
-        host = self.main_window.settings.active_ptt_controller_host()
-        if not host:
-            error_dialog(
-                self, "PTTコントローラ未設定",
-                "設定画面で「ESP32 W5500を使用する」をONにし、"
-                "PA_Power/PTTコントローラ(ESP32)のIPアドレスを設定してください。")
-            return
-        try:
-            _send_ptt_channel_state(host, PTT_CHANNEL_POWER, "off")
-        except (OSError, urllib.error.URLError, http.client.HTTPException) as exc:
-            error_dialog(self, "Pluto電源OFF失敗", str(exc))
-            return
-        QtCore.QTimer.singleShot(3000, lambda: self._pluto_power_on(host))
-
-    def _pluto_power_on(self, host: str) -> None:
-        try:
-            _send_ptt_channel_state(host, PTT_CHANNEL_POWER, "on")
-        except (OSError, urllib.error.URLError, http.client.HTTPException) as exc:
-            error_dialog(self, "Pluto電源ON失敗", str(exc))
 
     def on_show(self) -> None:
         settings = self.main_window.settings

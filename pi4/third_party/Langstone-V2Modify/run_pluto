@@ -17,19 +17,6 @@ except Exception:
     print('192.168.0.136')
 " 2>/dev/null)
 
-# PA_Power/PTTコントローラ(ESP32+W5500、hardware/W5500_PA_PTT_Control)のIPアドレス。
-# 空なら未接続として扱う(GUI_Pluto側でハードウェアPTT連携をスキップする)。
-export PTT_CONTROLLER_HOST=$(python3 -c "
-import json
-from pathlib import Path
-p = Path.home() / '.config' / 'shonan-pi4' / 'settings.json'
-try:
-    d = json.loads(p.read_text())
-    print(d.get('ptt_controller_host', '') if d.get('use_ptt_controller', True) else '')
-except Exception:
-    print('')
-" 2>/dev/null)
-
 #Create command pipe
 if test -e /tmp/langstoneTRx ;then
 rm /tmp/langstoneTRx

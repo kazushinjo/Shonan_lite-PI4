@@ -3,7 +3,7 @@ Wi-Fi案内・ビットレート・Pluto接続先・オンデバイス復調状�
 """
 from __future__ import annotations
 
-from settings_store import normalize_pluto_host, normalize_ptt_controller_host
+from settings_store import normalize_pluto_host
 import subprocess
 
 from PyQt5 import QtCore, QtWidgets
@@ -120,29 +120,6 @@ class SettingsScreen(SettingsSubScreen):
         audio_layout.addStretch(1)
         self.body_layout.addLayout(audio_layout)
 
-        self.body_layout.addWidget(self._section_label(
-            tr("PA_Power/PTTコントローラ (ESP32)", "PA_Power/PTT Controller (ESP32)")))
-        self.use_ptt_controller_checkbox = QtWidgets.QCheckBox(
-            tr("ESP32 W5500を使用する", "Use ESP32 W5500"))
-        self.use_ptt_controller_checkbox.setMinimumHeight(48)
-        self.use_ptt_controller_checkbox.toggled.connect(self._on_use_ptt_controller_toggled)
-        self.body_layout.addWidget(self.use_ptt_controller_checkbox)
-        self.ptt_controller_ip_edit = QtWidgets.QLineEdit()
-        self.ptt_controller_ip_edit.setMinimumHeight(48)
-        self.ptt_controller_ip_edit.setPlaceholderText(tr("未使用の場合は空欄のまま", "Leave empty if not used"))
-        self.ptt_controller_ip_edit.editingFinished.connect(self._save_ptt_controller_ip)
-        self.body_layout.addWidget(self.ptt_controller_ip_edit)
-        ptt_note = QtWidgets.QLabel(tr(
-            "hardware/W5500_PA_PTT_Control のESP32+W5500ボードのIPアドレス。"
-            "送信開始/終了に連動してPTTを、アプリ起動/終了に連動して12V電源を自動切替します。"
-            "「使用する」がOFFまたは空欄なら連携しません。",
-            "IP address of the ESP32 + W5500 board (hardware/W5500_PA_PTT_Control). "
-            "PTT follows TX start/stop and the 12 V power is switched automatically at "
-            "app start/exit. The link is disabled when \"Use\" is OFF or the address is empty."
-        ))
-        # ★長い説明文(特に英語)が折り返されずに画面の右端で切れていたため、折り返す。
-        ptt_note.setWordWrap(True)
-        self.body_layout.addWidget(ptt_note)
 
         self.body_layout.addWidget(self._section_label(tr("オンデバイス復調", "On-device Demodulation")))
         self.on_device_checkbox = QtWidgets.QCheckBox(tr("オンデバイス復調 (GNU Radio)", "On-device demodulation (GNU Radio)"))
@@ -182,11 +159,6 @@ class SettingsScreen(SettingsSubScreen):
             self.band_combo.blockSignals(False)
         self._update_band_info(settings.selected_band)
         self.pluto_ip_edit.setText(settings.pluto_host())
-        self.ptt_controller_ip_edit.setText(settings.ptt_controller_host)
-        self.use_ptt_controller_checkbox.blockSignals(True)
-        self.use_ptt_controller_checkbox.setChecked(settings.use_ptt_controller)
-        self.use_ptt_controller_checkbox.blockSignals(False)
-        self.ptt_controller_ip_edit.setEnabled(settings.use_ptt_controller)
         self.on_device_checkbox.blockSignals(True)
         self.on_device_checkbox.setChecked(settings.use_on_device_demod)
         self.on_device_checkbox.blockSignals(False)
@@ -258,22 +230,6 @@ class SettingsScreen(SettingsSubScreen):
         self.main_window.save_settings()
         # Plutoを替えたら、変調方式の選択肢(8PSKまで/32APSKまで)を調べ直す。
         self.main_window.refresh_pluto_capability()
-
-    def _save_ptt_controller_ip(self) -> None:
-        value = self.ptt_controller_ip_edit.text().strip()
-        try:
-            host = normalize_ptt_controller_host(value)
-        except ValueError as exc:
-            self.ptt_controller_ip_edit.setText(self.main_window.settings.ptt_controller_host)
-            error_dialog(self, tr("PTTコントローラ接続先エラー", "PTT Controller Destination Error"), str(exc))
-            return
-        self.main_window.settings.ptt_controller_host = host
-        self.main_window.save_settings()
-
-    def _on_use_ptt_controller_toggled(self, checked: bool) -> None:
-        self.ptt_controller_ip_edit.setEnabled(checked)
-        self.main_window.settings.use_ptt_controller = checked
-        self.main_window.save_settings()
 
     def _on_on_device_toggled(self, checked: bool) -> None:
         if checked:

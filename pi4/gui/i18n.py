@@ -192,11 +192,6 @@ _TRANSLATIONS = {
         "Cannot transmit while the LNB is in use (receive only). Turn the LNB OFF on the Frequency screen.",
     "Langstone設定失敗": "Langstone Setting Failed",
     "Langstone起動失敗": "Langstone Start Failed",
-    "PTTコントローラ未設定": "PTT Controller Not Set",
-    "設定画面で「ESP32 W5500を使用する」をONにし、PA_Power/PTTコントローラ(ESP32)のIPアドレスを設定してください。":
-        "On the Settings screen, turn on \"Use ESP32 W5500\" and set the IP address of the PA_Power/PTT controller (ESP32).",
-    "Pluto電源OFF失敗": "Pluto Power OFF Failed",
-    "Pluto電源ON失敗": "Pluto Power ON Failed",
     "シャットダウン失敗": "Shutdown Failed",
 }
 

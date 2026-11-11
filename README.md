@@ -41,8 +41,8 @@ official DSI touch display). Ports to other platforms (Android/iOS) are maintain
   Pluto受信486.5 MHz(LNB局部発振9750 MHz)の受信専用バンドで開く。Shonan_Lite(DATV)でも、
   周波数画面で「10GHz帯」を押すとLNBを使用するか確認し、使用する場合は表示周波数10.2365 GHz・
   Pluto受信486.5 MHzで受信する(受信専用、送信不可。「いいえ」なら従来どおり10180 MHz)。下記参照。
-- **PA/LNAの送受信切替**: 送信中はPi 4のGPIO21(40番ピン)がHIGHになる。ESP32 W5500
-  (PA_Power/PTTコントローラ)を使わなくても、この信号でPA・LNAを切り替えられる。下記参照。
+- **PA/LNAの送受信切替**: 送信中はPi 4のGPIO21(40番ピン)がHIGHになる。
+  この信号でPA・LNAを切り替えられる。下記参照。
 - **その他**: Pluto URIの自動検出、日本語/英語表示、日本語オンスクリーンキーボード、アプリ内Help、
   起動時のアプリ選択(Shonan_Lite / Langstone)。DFRobot DFR0550(`linuxfb`)と公式DSIタッチ画面(`eglfs`)に対応。
 
@@ -71,7 +71,7 @@ official DSI touch display). Ports to other platforms (Android/iOS) are maintain
   well, pressing "10GHz Band" on the Frequency screen asks whether to use an LNB; if so, it receives with the displayed
   frequency 10.2365 GHz and the Pluto receiving at 486.5 MHz (receive only, no transmit; "No" keeps 10180 MHz as before). See below.
 - **PA/LNA TX/RX switching**: GPIO21 (pin 40) of the Pi 4 goes HIGH while transmitting. The PA and LNA can be switched
-  with this signal even without the ESP32 W5500 (PA_Power/PTT controller). See below.
+  with this signal. See below.
 - **Other**: Automatic Pluto URI detection, Japanese/English display, Japanese on-screen keyboard, in-app Help, and
   application selection at boot (Shonan_Lite / Langstone). Supports the DFRobot DFR0550 (`linuxfb`) and the official DSI
   touch display (`eglfs`).
@@ -199,70 +199,9 @@ For a detailed explanation of each step and troubleshooting, see
 [`pi4/docs/install_script_guide.md`](pi4/docs/install_script_guide.md)
 (DOCX version: `pi4/docs/install_script_guide.docx`).
 
-## オプション: ESP32 W5500(PA_Power/PTTコントローラ) / Option: ESP32 W5500 (PA_Power/PTT controller)
+## PA/LNAの送受信切替 / PA/LNA TX/RX switching
 
-ESP32とW5500(有線LAN)で、PA等の12 V電源とPTTをLAN経由でON/OFFするオプションの制御基板。
-使わなくてもShonan_Liteは動作する(PTTだけなら下記のPi 4 GPIO21で切替できる)。
-ファームウェアは[`hardware/W5500_PA_PTT_Control/W5500_PA_PTT_Control.ino`](hardware/W5500_PA_PTT_Control/W5500_PA_PTT_Control.ino)、
-基板は[`hardware/W5500_PA_PTT_Control/kicad/`](hardware/W5500_PA_PTT_Control/kicad/)(KiCad、Rev.1.0)。基板とファームウェアはShonan_Lite-RasPI5版と共通。
-
-| 基板の3D表示 / 3D view of the board | 基板レイアウト(KiCad) / PCB layout (KiCad) | ケース(OpenSCAD) / Case (OpenSCAD) |
-| --- | --- | --- |
-| ![基板の3D表示](hardware/W5500_PA_PTT_Control/fabrication/assembly/w5500-esp32_3D_iso_全部品.png) | ![基板レイアウト](hardware/W5500_PA_PTT_Control/docs/images/w5500-esp32_pcb_layout.png) | ![ケース](hardware/W5500_PA_PTT_Control/docs/images/w5500-esp32_case.png) |
-
-| 項目<br>Item | 内容<br>Details |
-| --- | --- |
-| 構成<br>Configuration | Freenove ESP32-WROOM-32E DevKitC(ソケットに差し込み)+W5500 Lite(SPI接続)<br>Freenove ESP32-WROOM-32E DevKitC (plugged into a socket) + W5500 Lite (SPI) |
-| 12 V電源<br>12 V power | 2SJ334(Pチャネル MOSFET)のハイサイドスイッチでJ5の12 V出力をON/OFF。放熱器付きで目安は約7 Aまで<br>J5's 12 V output is switched by a 2SJ334 (P-channel MOSFET) high-side switch; with its heatsink, up to about 7 A |
-| PTT<br>PTT | 2SC1815で無線機のPTT端子をGNDへ落とす(J6)<br>A 2SC1815 pulls the radio's PTT line to GND (J6) |
-| 電源入力<br>Power input | +12 V(13.8 V系)をJ2へ。L7805で5 V(ESP32)、TA48033Sで3.3 V(W5500)を作る<br>+12 V (13.8 V class) to J2; an L7805 makes 5 V (ESP32) and a TA48033S makes 3.3 V (W5500) |
-| 表示LED<br>Indicator LEDs | 外付け。J7=12 V出力(赤)、J8=12 V入力(緑)(JST XH)<br>External; J7 = 12 V output (red), J8 = 12 V input (green) (JST XH) |
-| ネットワーク<br>Network | 固定IP(初期値`192.168.0.100`)。ブラウザで`http://<IP>/`を開くと手動でON/OFFでき、`http://<IP>/config`でIPや遅延時間を変更できる<br>Static IP (default `192.168.0.100`); open `http://<IP>/` in a browser to switch ON/OFF manually, and `http://<IP>/config` to change the IP and delays |
-| 基板<br>Board | 72×115 mm、4層(内層はGNDと+12Vのベタ)、部品はすべてスルーホール。JLCPCBの発注データは[`fabrication/jlcpcb/`](hardware/W5500_PA_PTT_Control/fabrication/jlcpcb/)<br>72×115 mm, 4 layers (inner layers are GND and +12 V planes), all through-hole parts. JLCPCB order data is in [`fabrication/jlcpcb/`](hardware/W5500_PA_PTT_Control/fabrication/jlcpcb/) |
-| ケース<br>Case | OpenSCAD(LAN_PTT.scad)、内寸80×120×35 mm。前面にRJ45の角穴と+12V入力の丸型コネクタ、背面にUSBの穴と12 V出力・PTTの丸型コネクタ<br>OpenSCAD (LAN_PTT.scad), inside 80×120×35 mm. RJ45 opening and +12 V input circular connector on the front; USB opening and 12 V output/PTT circular connector on the back |
-
-Shonan_Liteでの使い方:
-
-- 設定画面の「PA_Power/PTTコントローラ (ESP32)」で「ESP32 W5500を使用する」をONにし、ESP32のIPアドレスを入力する。
-- アプリの起動/終了に連動して12 V電源(Pluto含む)を、送信開始/終了に連動してPTTを自動でON/OFFする(Langstone V2Modifyの送信でもPTTが切り替わる)。
-- ホーム画面の「Pluto電源」カードで、12 V系統を手動で電源サイクル(OFF→3秒待機→ON)できる。
-
-詳しくは[仕様書](hardware/W5500_PA_PTT_Control/docs/W5500_PA_PTT_Control_仕様書.md)と
-[接続一覧](hardware/W5500_PA_PTT_Control/docs/MCU1_J1_W5500_接続一覧.md)を参照(どちらも日英併記。Word版・PDF版も同じフォルダにある)。
-回路図: [`w5500-esp32.pdf`](hardware/W5500_PA_PTT_Control/kicad/w5500-esp32.pdf)、
-実装図: [`w5500-esp32_実装図_部品番号.pdf`](hardware/W5500_PA_PTT_Control/fabrication/assembly/w5500-esp32_実装図_部品番号.pdf)。
-
-> [!NOTE]
-> ESP32への書き込みと起動は確認済み。12 V電源・PTTの駆動回路と無線機をつないだ実地試験はまだ行っていない。
-
-<!-- English -->
-
-An optional control board that uses an ESP32 and a W5500 (wired LAN) to switch the 12 V power for the PA etc.
-and the PTT ON/OFF over the LAN. Shonan_Lite works without it (PTT alone can be switched with the Pi 4 GPIO21 below).
-The firmware is [`hardware/W5500_PA_PTT_Control/W5500_PA_PTT_Control.ino`](hardware/W5500_PA_PTT_Control/W5500_PA_PTT_Control.ino)
-and the board is in [`hardware/W5500_PA_PTT_Control/kicad/`](hardware/W5500_PA_PTT_Control/kicad/) (KiCad, Rev.1.0). The board and firmware are shared with the
-Shonan_Lite-RasPI5 edition.
-
-How to use it with Shonan_Lite:
-
-- On the Settings screen, turn on "Use ESP32 W5500" under "PA_Power/PTT Controller (ESP32)" and enter the ESP32's IP address.
-- The 12 V power (including the Pluto) is switched ON/OFF with app start/exit, and the PTT with TX start/stop (PTT also follows TX in Langstone V2Modify).
-- The "Pluto Power" card on the Home screen power-cycles the 12 V line manually (OFF → wait 3 s → ON).
-
-For details, see the [specification](hardware/W5500_PA_PTT_Control/docs/W5500_PA_PTT_Control_仕様書.md) and the
-[connection list](hardware/W5500_PA_PTT_Control/docs/MCU1_J1_W5500_接続一覧.md) (both in Japanese and English;
-Word and PDF versions are in the same folder).
-Schematic: [`w5500-esp32.pdf`](hardware/W5500_PA_PTT_Control/kicad/w5500-esp32.pdf);
-assembly drawing: [`w5500-esp32_実装図_部品番号.pdf`](hardware/W5500_PA_PTT_Control/fabrication/assembly/w5500-esp32_実装図_部品番号.pdf).
-
-> [!NOTE]
-> Flashing and booting the ESP32 have been confirmed. A field test with the 12 V power/PTT drive circuits
-> connected to a radio has not been done yet.
-
-## PA/LNAの送受信切替(ESP32 W5500なしでも可) / PA/LNA TX/RX switching (possible without ESP32 W5500)
-
-ESP32 W5500(PA_Power/PTTコントローラ、[`hardware/W5500_PA_PTT_Control`](hardware/W5500_PA_PTT_Control))は
-使わなくても、RasPI4からのPTT ON信号でPA・LNAの送受信切替を制御できる。
+RasPI4からのPTT ON信号でPA・LNAの送受信切替を制御できる。
 
 | 項目<br>Item | 内容<br>Details |
 | --- | --- |
@@ -274,22 +213,15 @@ ESP32 W5500(PA_Power/PTTコントローラ、[`hardware/W5500_PA_PTT_Control`](h
   PA・LNA(同軸リレー等)を駆動すること。
 - Shonan_Liteは送信開始時(映像送出の前)にHIGH、送信停止時とアプリ起動時にLOWにする
   ([`pi4/gui/backend.py`](pi4/gui/backend.py)の`_set_pi_tx_gpio()`、`pinctrl`で出力)。
-- ESP32 W5500を併用する場合は、送信の開始/停止に連動してESP32のPTT出力(J6)も同時に切り替わる
-  (`/tx?state=on|off`)。12 V電源のON/OFFとホーム画面の「Pluto電源」カードはESP32 W5500が必要。
-  ESP32を使うかどうかは設定画面の「ESP32 W5500を使用する」で選ぶ(OFFにしてもIPアドレスは保持される)。
 
 <!-- English -->
 
-The PA and LNA can be switched between TX and RX by the PTT ON signal from the RasPI4, even without the
-ESP32 W5500 (PA_Power/PTT controller, [`hardware/W5500_PA_PTT_Control`](hardware/W5500_PA_PTT_Control)).
+The PA and LNA can be switched between TX and RX by the PTT ON signal from the RasPI4.
 
 - GPIO21 is a 3.3 V logic output that cannot supply current. Buffer it with a transistor, relay driver or
   similar before driving the PA and LNA (coax relays, etc.).
 - Shonan_Lite sets it HIGH when TX starts (before the video is sent) and LOW when TX stops and at app startup
   (`_set_pi_tx_gpio()` in [`pi4/gui/backend.py`](pi4/gui/backend.py), driven with `pinctrl`).
-- When the ESP32 W5500 is also used, its PTT output (J6) switches together with TX start/stop (`/tx?state=on|off`).
-  Switching the 12 V power ON/OFF and the "Pluto Power" card on the Home screen require the ESP32 W5500. Whether to use
-  the ESP32 is selected with "Use ESP32 W5500" on the Settings screen (the IP address is kept even when OFF).
 
 ## Langstone V2Modify(SDRトランシーバー)への切替 / Switching to Langstone V2Modify (SDR transceiver)
 
@@ -383,7 +315,7 @@ This assumes an LNB (local oscillator 9750 MHz) on the antenna side that convert
   のこのバンドを上の値に設定し直してから開く([`pi4/gui/langstone_config.py`](pi4/gui/langstone_config.py))。
 - 486.5 MHzはアマチュアバンド外のため、このバンドは**受信専用**
   (設定ファイルの`bandRxOnly23 1`、Langstone側の改造)。画面のPTT・ハードウェアPTT・
-  CWキー・ビーコンのいずれでも送信せず、PA_Power/PTTコントローラも送信に切り替えない。
+  CWキー・ビーコンのいずれでも送信せず。
   PTTボタンは灰色の「RX ONLY」表示になり、Plutoの送信LOも停止させる。
 - 普通の「Langstone」カードで開いたときは、衛星から開く前に使っていたバンドに戻して開く
   (Langstone上で別のバンドに切り替えていた場合は、そのバンドのまま)。
@@ -400,7 +332,7 @@ This assumes an LNB (local oscillator 9750 MHz) on the antenna side that convert
   above before opening ([`pi4/gui/langstone_config.py`](pi4/gui/langstone_config.py)).
 - Because 486.5 MHz is outside the amateur bands, this band is **receive only** (`bandRxOnly23 1` in the configuration
   file, a modification on the Langstone side). It does not transmit from the on-screen PTT, hardware PTT, CW key or
-  beacon, and does not switch the PA_Power/PTT controller to transmit. The PTT button is shown grayed out as "RX ONLY",
+  beacon. The PTT button is shown grayed out as "RX ONLY",
   and the Pluto's TX LO is also stopped.
 - When opened from the normal "Langstone" card, it returns to the band that was in use before opening from the
   satellite (if you switched to another band in Langstone, it stays on that band).
@@ -415,10 +347,6 @@ This assumes an LNB (local oscillator 9750 MHz) on the antenna side that convert
 - [`pi4/docs/qtvirtualkeyboard_ja_build.md`](pi4/docs/qtvirtualkeyboard_ja_build.md) — 日本語オンスクリーンキーボードのビルド手順・ハマりどころ / Build steps and pitfalls for the Japanese on-screen keyboard
 - [`pi4/docs/shonan_pi4_operation_manual.docx`](pi4/docs/shonan_pi4_operation_manual.docx) / [`pi4/gui/manual_content.py`](pi4/gui/manual_content.py) — GUIの操作説明書(アプリ内Helpと同内容。英語のHelpは`pi4/gui/screens/manual.py`) / Operation manual for the GUI (same content as the in-app Help; the English Help is in `pi4/gui/screens/manual.py`)
 - [`pi4/docs/build_operation_manual.py`](pi4/docs/build_operation_manual.py) — 操作説明書(DOCX)の生成スクリプト(`python pi4/docs/build_operation_manual.py`、python-docxが必要) / Script that generates the operation manual (DOCX) (requires python-docx)
-- [`hardware/W5500_PA_PTT_Control/docs/W5500_PA_PTT_Control_仕様書.md`](hardware/W5500_PA_PTT_Control/docs/W5500_PA_PTT_Control_仕様書.md) — ESP32 W5500(PA_Power/PTTコントローラ)の仕様書 / Specification of the ESP32 W5500 (PA_Power/PTT controller)(日英併記 / Japanese and English)
-  - 仕様書・接続一覧のWord版・PDF版は[`hardware/W5500_PA_PTT_Control/docs/tools/build_docs.py`](hardware/W5500_PA_PTT_Control/docs/tools/build_docs.py)でMarkdownから作る(macOSで実行) / The Word and PDF versions of the specification and connection list are generated from Markdown with this script (run on macOS)
-- [`hardware/W5500_PA_PTT_Control/docs/MCU1_J1_W5500_接続一覧.md`](hardware/W5500_PA_PTT_Control/docs/MCU1_J1_W5500_接続一覧.md) — ESP32・W5500の接続一覧 / Connection list of the ESP32 and W5500(日英併記 / Japanese and English)
-- [`hardware/W5500_PA_PTT_Control/kicad/`](hardware/W5500_PA_PTT_Control/kicad/) — ESP32 W5500制御基板のKiCad回路図・基板 / KiCad schematic and PCB of the ESP32 W5500 control board
 - [`pi4/third_party/rpi-dvbs2-receiver-gui/`](pi4/third_party/rpi-dvbs2-receiver-gui/) — GNU Radio/gr-dvbs2rx受信フローグラフの参考実装(kazushinjo/rpi-dvbs2-receiver-guiより取り込み) / Reference implementation of the GNU Radio/gr-dvbs2rx receive flowgraph (imported from kazushinjo/rpi-dvbs2-receiver-gui)
 
 ## 免責事項 / Disclaimer
@@ -430,8 +358,8 @@ This assumes an LNB (local oscillator 9750 MHz) on the antenna side that convert
    本ソフトウェアは、アマチュア無線のDATV(デジタルATV)実験のための送受信ソフトウェアです。電波を送信するには、運用する国・地域の法令に基づく免許が必要です(日本国内ではアマチュア局の免許)。周波数、空中線電力、電波の型式、運用できる範囲などの法令(日本国内では電波法および関係規則)を守ってください。免許のない送信や、免許の範囲を超えた送信は、法令違反となることがあります。本ソフトウェアは、設定された周波数・出力・変調方式が法令に適合していることを確認も保証もしません。送信の内容と結果は、すべて使用者の責任です。  
    This software is for amateur-radio DATV (digital ATV) experiments. Transmitting requires a license under the laws of the country or region where you operate (in Japan, an amateur station license). Observe the applicable laws on frequency, transmitter power, emission type and permitted operation (in Japan, the Radio Act and related regulations). Transmitting without a license, or beyond the scope of your license, may violate the law. This software neither checks nor guarantees that the configured frequency, power and modulation comply with the law. You are solely responsible for what you transmit and for the results.
 3. **機器の取り扱い / Handling of equipment**  
-   PlutoのTXとRXの接続、外部アンプ(PA)・アッテネータ・アンテナの接続、送信出力の設定、GPIO21やPA_Power/PTTコントローラ(ESP32 W5500)の12 V電源・PTTの配線を誤ると、機器を破損したり、他の無線局へ障害を与えたりするおそれがあります。機器の仕様を確認し、使用者の責任で行ってください。特に、TXをRXへ直接接続せず、40 dB以上の減衰器を介してください。  
-   Wrong connections between the Pluto's TX and RX, wrong external amplifier (PA), attenuator or antenna connections, wrong transmit power settings, or wrong wiring of GPIO21 or of the 12 V power/PTT of the PA_Power/PTT controller (ESP32 W5500) may damage equipment or interfere with other stations. Check the specifications of your equipment and do this at your own responsibility. In particular, never connect TX directly to RX; use an attenuator of 40 dB or more.
+   PlutoのTXとRXの接続、外部アンプ(PA)・アッテネータ・アンテナの接続、送信出力の設定、GPIO21の配線を誤ると、機器を破損したり、他の無線局へ障害を与えたりするおそれがあります。機器の仕様を確認し、使用者の責任で行ってください。特に、TXをRXへ直接接続せず、40 dB以上の減衰器を介してください。  
+   Wrong connections between the Pluto's TX and RX, wrong external amplifier (PA), attenuator or antenna connections, wrong transmit power settings, or wrong wiring of GPIO21 may damage equipment or interfere with other stations. Check the specifications of your equipment and do this at your own responsibility. In particular, never connect TX directly to RX; use an attenuator of 40 dB or more.
 4. **第三者ソフトウェアとライセンス / Third-party software and license**  
    本ソフトウェアは、GNU Radio、gr-dvbs2rx、libiio、FFmpeg、Qt(PyQt5・Qt Virtual Keyboard)、Langstone V2(Langstone-V2Modify)などの第三者ソフトウェアを利用・同梱します。それぞれのライセンスに従います。本ソフトウェア自体は GNU General Public License v3.0(GPLv3)の下で提供されます(下記「License」参照)。  
    This software uses and bundles third-party software such as GNU Radio, gr-dvbs2rx, libiio, FFmpeg, Qt (PyQt5, Qt Virtual Keyboard) and Langstone V2 (Langstone-V2Modify), each under its own license. This software itself is provided under the GNU General Public License v3.0 (GPLv3); see "License" below.

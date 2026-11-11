@@ -45,12 +45,6 @@ int iio_device_debug_attr_write(struct iio_device *dev, const char *name,
 char plutoip[30];
 int V2Display = 0;
 
-// ★Shonan_lite-PI4統合版パッチ: PA_Power/PTTコントローラ(ESP32+W5500、
-// hardware/W5500_PA_PTT_Control)のIPアドレス。run_pluto起動スクリプトが
-// 環境変数PTT_CONTROLLER_HOSTとして設定画面のptt_controller_hostを渡す。
-// 空文字なら連携しない(未接続環境でもハードウェアPTTの動作に影響しない)。
-char pttControllerHost[64] = "";
-
 const char *i2cNode1 = "/dev/i2c-1";        //linux i2c node for the Hyperpixel display on Pi 4
 const char *i2cNode2 = "/dev/i2c-11";       //linux i2c node for the Hyperpixel display on Pi 4
 int  mcp23017_addr = 0x20;	               //MCP23017 I2C Address
@@ -400,16 +394,6 @@ int main(int argc, char* argv[])
   strcat(plutoip,penv);
 
   printf("plutoip = %s\n",plutoip);
-
-  // ★Shonan_lite-PI4統合版パッチ: PA_Power/PTTコントローラのIPアドレス
-  // (run_pluto起動スクリプトがsettings.jsonのptt_controller_hostを環境変数
-  // 経由で渡す)。未設定/空文字なら連携しない。
-  char * pttEnv = getenv("PTT_CONTROLLER_HOST");
-  if(pttEnv!=NULL)
-    {
-      strncpy(pttControllerHost,pttEnv,sizeof(pttControllerHost)-1);
-      pttControllerHost[sizeof(pttControllerHost)-1]='\0';
-    }
 
   // Pi5版と同じく、GNU RadioはGUIプロセスから起動する。
   startGNURadio();
@@ -1357,21 +1341,6 @@ void initGPIO(void)
   lastKey=1;
 }
 
-// ★Shonan_lite-PI4統合版パッチ: ハードウェアPTTスイッチのON/OFFをPA_Power/PTT
-// コントローラ(ESP32+W5500)へ中継する。GUIのメインループから呼ばれるため、
-// ESP32が未接続/無応答でもGUIが固まらないようcurlをバックグラウンド起動する
-// (`GET /tx?state=on|off`、Python版backend.pyの_send_ptt_request()と同じ経路)。
-void notifyEspPtt(int state)
-{
-  char cmd[160];
-  if(pttControllerHost[0]=='\0') return;
-  if(state && bandRxOnly[band]) return;   // 受信専用バンドではPA/リレーを送信に切り替えない
-  snprintf(cmd,sizeof(cmd),
-    "curl -s -m 1 \"http://%s/tx?state=%s\" >/dev/null 2>&1 &",
-    pttControllerHost, state ? "on" : "off");
-  system(cmd);
-}
-
 void processGPIO(void)
 {
 int p1=1;
@@ -1399,7 +1368,6 @@ if(MCP23017Present==1)                //MCP23017 extender chip can be used with 
               ptt=1;
               if(ptts==1) setPtts(0);                       //turn off the touchscreen PTT.
               setTx(ptt|ptts);
-              notifyEspPtt(1);
             }
         }
      else
@@ -1408,7 +1376,6 @@ if(MCP23017Present==1)                //MCP23017 extender chip can be used with 
             {
               ptt=0;
               setTx(ptt|ptts);
-              notifyEspPtt(0);
             }
         }
 
@@ -2275,8 +2242,7 @@ if(buttonTouched(funcButtonsX+buttonSpaceX*5,funcButtonsY))    //Button 6 = BEAC
          clearScreen();
          writeConfig();
          // ★Shonan_lite-PI4統合版パッチ(切替時間の短縮、Pi5版から移植): 以前はここで
-         // Pluto+をrebootし、PA_Power/PTTコントローラの12V電源(Pluto+を含む)も
-         // OFFにしていたが、切替のたびに数十秒かかるためやめた。Pluto+を再起動
+         // Pluto+をrebootしていたが、切替のたびに数十秒かかるためやめた。Pluto+を再起動
          // しなくてもDATV側は正常に動作する。ただしLangstoneは受信中に送信LO
          // (altvoltage1)をpowerdownしたまま終了し、そのままではDATV送信の電波が
          // 出ないため、送信LOだけを元に戻してから切り替える(Shonan_Lite側main.pyも
@@ -2458,9 +2424,6 @@ void setPtts(int p)
  // ★Shonan_lite-PI4統合版パッチ(Pi5版から移植): 受信専用バンドでは画面のPTTを
  // 受け付けない(PTTボタンは「RX ONLY」表示。displayMenu参照)。
  if((p==1) && bandRxOnly[band]) return;
- // ★Shonan_lite-PI4統合版パッチ: 画面上のソフトウェアPTTボタンも、ハードウェア
- // PTTスイッチ(processGPIO側)と同様にESP32 PTTコントローラへ中継する。
- notifyEspPtt(p);
  if(p==1)
  {
   ptts=1;

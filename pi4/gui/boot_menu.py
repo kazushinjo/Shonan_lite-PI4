@@ -1,11 +1,9 @@
 """Boot-time application selector for the Raspberry Pi 4 touch display."""
 from __future__ import annotations
 
-import http.client
 import os
 import subprocess
 import sys
-import urllib.error
 from pathlib import Path
 
 def _configure_touch() -> None:
@@ -31,7 +29,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from PyQt5 import QtCore, QtWidgets
 
 import settings_store
-from backend import PTT_CHANNEL_POWER, _send_ptt_channel_state
 from widgets import _run_as_overlay
 
 
@@ -182,16 +179,6 @@ class BootMenu(QtWidgets.QWidget):
             return
         self._selected = True
         if langstone:
-            # ★Langstone V2自身は12V電源(GPIO26)に触れないため、起動メニューから
-            # 直接Langstoneを選んだ場合もHome画面の「Langstone V2Modify」ボタンと
-            # 同様にここで明示的にONを送っておく(PA電源が入っていない状態で
-            # Langstone側の送信が行われる事態を避ける)。
-            host = settings_store.load().active_ptt_controller_host()
-            if host:
-                try:
-                    _send_ptt_channel_state(host, PTT_CHANNEL_POWER, "on")
-                except (OSError, urllib.error.URLError, http.client.HTTPException) as exc:
-                    print(f"[MCU1] GPIO26 ON通知に失敗しました(起動メニューLangstone選択): {exc}", flush=True)
             MARKER.touch()
             unit = "langstone.service"
         else:

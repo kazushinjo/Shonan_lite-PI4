@@ -9,7 +9,6 @@ QStackedWidgetで再現する。
 """
 from __future__ import annotations
 
-import http.client
 import os
 import signal
 import socket
@@ -17,7 +16,6 @@ import subprocess
 import sys
 import threading
 import time
-import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -49,16 +47,11 @@ from PyQt5 import QtCore, QtNetwork, QtQuickWidgets, QtWidgets
 
 import settings_store
 from backend import (
-    PI_TX_GPIO, PTT_CHANNEL_POWER, RxController, TxController, _push_pluto_settings,
-    _send_ptt_channel_state, _set_pi_tx_gpio,
+    PI_TX_GPIO, RxController, TxController, _push_pluto_settings, _set_pi_tx_gpio,
 )
 from i18n import apply_language, is_english, set_language, tr
 from widgets import error_dialog
 
-# 電源投入(アプリ起動)からMCU1(ESP32)のGPIO26(12V電源チャンネル)をONにするまでの遅延。
-MCU1_GPIO26_ON_DELAY_MS = 5_000
-# プログラム終了時、MCU1のGPIO26をOFFにしてから実際に終了するまでの遅延。
-MCU1_GPIO26_OFF_DELAY_SEC = 3
 # ロータリーエンコーダ(マウスホイール)1クリックあたりの音量変化(%)。
 VOLUME_KNOB_STEP_PERCENT = 2
 
@@ -118,9 +111,6 @@ class MainWindow(QtWidgets.QMainWindow):
         # 送信開始時は毎回Plutoへ設定を書き込むため、起動時の設定再適用も不要。
         # ホーム画面の「アプリ再起動」では従来どおりPlutoを再起動する。
         QtCore.QTimer.singleShot(0, self._show_home_at_startup)
-        # 電源投入(アプリ起動)からMCU1_GPIO26_ON_DELAY_MS後にMCU1(ESP32)のGPIO26
-        # (12V電源チャンネル)をONにする。Pi4本体のGPIOは使用しない。
-        QtCore.QTimer.singleShot(MCU1_GPIO26_ON_DELAY_MS, self._power_on_mcu1_gpio26)
 
         self._build_keyboard_panel()
         self._setup_volume_knob()
@@ -196,15 +186,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.volume_overlay.raise_()
         self.volume_overlay.show()
         self._volume_overlay_timer.start()
-
-    def _power_on_mcu1_gpio26(self) -> None:
-        host = self.settings.active_ptt_controller_host()
-        if not host:
-            return
-        try:
-            _send_ptt_channel_state(host, PTT_CHANNEL_POWER, "on")
-        except (OSError, urllib.error.URLError, http.client.HTTPException) as exc:
-            print(f"[MCU1] GPIO26 ON通知に失敗しました: {exc}", flush=True)
 
     def rebuild_language(self) -> None:
         """設定画面の言語変更後、全画面を再生成して切替を即時反映する。"""
@@ -812,16 +793,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def closeEvent(self, event) -> None:
         self.tx_controller.stop()
         self.rx_controller.stop()
-        # 先にMCU1(ESP32)のGPIO26をOFFにしてから、実際の終了(super().closeEvent)を
-        # MCU1_GPIO26_OFF_DELAY_SEC秒待つ(電源系統が安全に落ちきるのを待つ猶予)。
-        # Pi4本体のGPIOは使用しない。
-        host = self.settings.active_ptt_controller_host()
-        if host:
-            try:
-                _send_ptt_channel_state(host, PTT_CHANNEL_POWER, "off")
-            except (OSError, urllib.error.URLError, http.client.HTTPException) as exc:
-                print(f"[MCU1] GPIO26 OFF通知に失敗しました: {exc}", flush=True)
-            time.sleep(MCU1_GPIO26_OFF_DELAY_SEC)
         super().closeEvent(event)
 
 
