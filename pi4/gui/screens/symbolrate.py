@@ -126,6 +126,8 @@ class SymbolRateScreen(SettingsSubScreen):
 
     def _select(self, msps: float) -> None:
         self.main_window.settings.symbol_rate_msps = msps
+        # FEC自動のときは、新しいシンボルレートで映像を送れる範囲の最も強いFECへ合わせる。
+        self.main_window.settings.apply_auto_fec()
         self.main_window.save_settings()
         self._refresh(msps)
 

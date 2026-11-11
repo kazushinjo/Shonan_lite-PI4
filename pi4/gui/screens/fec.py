@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from PyQt5 import QtCore, QtWidgets
 
-from settings_store import supported_fec_rates
+from settings_store import supported_fec_rates, dvbs2_ts_capacity_bps, REQUIRED_TS_BITRATE_BPS
 from widgets import MemoNote, SettingsSubScreen
 from i18n import tr
 
@@ -23,6 +23,9 @@ _CHIP_STYLE = (
     " min-height: 20px; }"
     "QPushButton:checked { background-color: #1677ff; }"
     "QPushButton:pressed { background-color: #102a5c; }"
+    # FEC自動のとき手動のボタンは押せない。文字を薄くして分かるようにする。
+    "QPushButton:disabled { color: #6b7075; }"
+    "QPushButton:checked:disabled { background-color: #1e4e8f; color: #d0d8e8; }"
 )
 
 
@@ -66,6 +69,16 @@ class FecScreen(SettingsSubScreen):
         mode_title.setStyleSheet("font-size: 13px; font-weight: bold; color: #cccccc;")
         mode_outer.addWidget(mode_title)
 
+        # FEC自動: ONのときはシンボルレート・変調方式に合わせて、映像を送れる範囲で
+        # いちばん誤りに強いFECを自動で選ぶ(手動のボタンは押せなくする)。
+        self.auto_button = QtWidgets.QPushButton(tr("自動", "Auto"))
+        self.auto_button.setCheckable(True)
+        self.auto_button.setMinimumHeight(30)
+        self.auto_button.setStyleSheet(_CHIP_STYLE)
+        self.auto_button.setChecked(main_window.settings.fec_auto)
+        self.auto_button.toggled.connect(self._set_auto)
+        mode_outer.addWidget(self.auto_button)
+
         mode_grid = QtWidgets.QGridLayout()
         mode_grid.setHorizontalSpacing(8)
         mode_grid.setVerticalSpacing(4)
@@ -76,6 +89,9 @@ class FecScreen(SettingsSubScreen):
             # 未対応になっている場合はここで対応済みの値へ補正して保存する。
             main_window.settings.fec_rate = rates[0]
             main_window.save_settings()
+        if main_window.settings.apply_auto_fec():
+            main_window.save_settings()
+        self._chips = {}
         rows_per_col = (len(rates) + 1) // 2
         for index, rate in enumerate(rates):
             chip = QtWidgets.QPushButton(rate)
@@ -84,6 +100,8 @@ class FecScreen(SettingsSubScreen):
             chip.setStyleSheet(_CHIP_STYLE)
             chip.setChecked(main_window.settings.fec_rate == rate)
             chip.toggled.connect(lambda checked, r=rate: self._select(r) if checked else None)
+            chip.setEnabled(not main_window.settings.fec_auto)
+            self._chips[rate] = chip
             self._group.addButton(chip)
             mode_grid.addWidget(chip, index % rows_per_col, index // rows_per_col)
         mode_outer.addLayout(mode_grid)
@@ -193,9 +211,25 @@ class FecScreen(SettingsSubScreen):
         self.main_window.save_settings()
         self._update_info(rate)
 
+    def _set_auto(self, checked: bool) -> None:
+        settings = self.main_window.settings
+        settings.fec_auto = checked
+        settings.apply_auto_fec()
+        self.main_window.save_settings()
+        for rate, chip in self._chips.items():
+            chip.setEnabled(not checked)
+            chip.setChecked(rate == settings.fec_rate)
+        self._update_info(settings.fec_rate)
+
     def _update_info(self, rate: str) -> None:
         overhead = _overhead_percent(rate)
-        self.current_label.setText(tr(f"現在の設定: {rate}", f"Current setting: {rate}"))
+        settings = self.main_window.settings
+        capacity_kbps = dvbs2_ts_capacity_bps(settings.symbol_rate_hz(), settings.modulation_scheme, rate) / 1000
+        need_kbps = REQUIRED_TS_BITRATE_BPS / 1000
+        mode = tr("自動", "Auto") if settings.fec_auto else tr("手動", "Manual")
+        self.current_label.setText(tr(
+            f"現在の設定: {rate}（{mode}）\n送れる量 {capacity_kbps:.0f} kbps / 映像・音声に必要 {need_kbps:.0f} kbps",
+            f"Current setting: {rate} ({mode})\ncapacity {capacity_kbps:.0f} kbps / needed for video+audio {need_kbps:.0f} kbps"))
         self.description_label.setText(_describe(rate))
         self.overhead_label.setText(tr(f"オーバーヘッド: {overhead:.0f}%", f"Overhead: {overhead:.0f}%"))
         fec_stretch = max(1, round(overhead))

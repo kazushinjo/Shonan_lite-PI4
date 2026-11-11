@@ -81,6 +81,45 @@ TX_AUDIO_BITRATE_BPS = 16_000
 TX_AUDIO_INPUTS = ("camera", "usb")
 
 
+# DVB-S2ノーマルフレームのBCH情報ビット数Kbch(EN 302 307-1 表5a)。TS容量の計算に使う。
+_KBCH_NORMAL = {
+    "1/4": 16008, "1/3": 21408, "2/5": 25728, "1/2": 32208, "3/5": 38688, "2/3": 43040,
+    "3/4": 48408, "4/5": 51648, "5/6": 53840, "8/9": 57472, "9/10": 58192,
+}
+_BITS_PER_SYMBOL = {"QPSK": 2, "8PSK": 3, "16APSK": 4, "32APSK": 5}
+
+# FEC自動選択で確保する送信TSのビットレート。映像・音声の符号化レートに、TS/PES化と
+# PAT/PMT/SDT/PCR等の分の余裕25%を見込む。
+REQUIRED_TS_BITRATE_BPS = round((TX_VIDEO_BITRATE_BPS + TX_AUDIO_BITRATE_BPS) * 1.25)
+
+
+def dvbs2_ts_capacity_bps(symbol_rate_hz: float, modulation: str, fec_rate: str,
+                          pilots: bool = True) -> float:
+    """DVB-S2(ノーマルフレーム)で送れるTSのビットレート。
+
+    1 PLFRAME = PLHEADER(90) + データ(64800/ビット数 シンボル) + パイロット(16スロットごとに36)。
+    そこにKbch-80(BBHEADER)ビットのTSが入る。
+    """
+    bits = _BITS_PER_SYMBOL[modulation]
+    slots = 64800 // (bits * 90)
+    plframe = 90 + slots * 90 + ((slots - 1) // 16 * 36 if pilots else 0)
+    return symbol_rate_hz * (_KBCH_NORMAL[fec_rate] - 80) / plframe
+
+
+def auto_fec_rate(symbol_rate_hz: float, modulation: str,
+                  required_bps: float = REQUIRED_TS_BITRATE_BPS) -> str:
+    """映像・音声に必要なTSビットレートを送れる範囲で、いちばん誤りに強いFECを返す。
+
+    選択肢は誤りに強い順(符号化率の小さい順)に並んでいるので、最初に容量が足りるものを選ぶ。
+    どれでも足りない場合は、いちばん多く送れるFEC(最後)を返す。
+    """
+    rates = supported_fec_rates(modulation)
+    for rate in rates:
+        if dvbs2_ts_capacity_bps(symbol_rate_hz, modulation, rate) >= required_bps:
+            return rate
+    return rates[-1]
+
+
 def normalize_pluto_host(value: str) -> str:
     """Pluto接続先を正規化し、空白や制御文字を拒否する。"""
     host = str(value).strip()
@@ -188,6 +227,8 @@ class AppSettings:
     use_on_device_demod: bool = False
     # RSSI測定: True=「検索停止」が押されるまで繰り返す(連続)、False=範囲の終わりまで1回で自動停止
     rssi_repeat_scan: bool = True
+    # True=シンボルレート・変調方式に合わせてFECを自動で選ぶ(auto_fec_rate)。False=手動。
+    fec_auto: bool = True
 
     # RFループバック自己申告フラグ(Android版のRF loopback警告と同じ、インターロックなし)
     rf_loopback_enabled: bool = False
@@ -252,6 +293,16 @@ class AppSettings:
     def symbol_rate_hz(self) -> int:
         return round(self.symbol_rate_msps * 1_000_000)
 
+    def apply_auto_fec(self) -> bool:
+        """FEC自動のとき、今のシンボルレート・変調方式に合うFECへ合わせる。変えたらTrue。"""
+        if not self.fec_auto:
+            return False
+        rate = auto_fec_rate(self.symbol_rate_hz(), self.modulation_scheme)
+        if rate == self.fec_rate:
+            return False
+        self.fec_rate = rate
+        return True
+
     def tx_mod_cod_supported(self) -> bool:
         return self.mod_cod() in TX_SUPPORTED_MODCODS
 
@@ -287,7 +338,9 @@ def load() -> AppSettings:
             defaults["modulation_scheme"] = AppSettings.modulation_scheme
             if defaults.get("fec_rate") not in supported_fec_rates(defaults["modulation_scheme"]):
                 defaults["fec_rate"] = AppSettings.fec_rate
-        return AppSettings(**defaults)
+        settings = AppSettings(**defaults)
+        settings.apply_auto_fec()
+        return settings
     except (json.JSONDecodeError, OSError, TypeError):
         return AppSettings()
 

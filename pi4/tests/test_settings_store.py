@@ -83,3 +83,29 @@ class SettingsStoreTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class AutoFecTest(unittest.TestCase):
+    def test_capacity_matches_dvbs2_frame_structure(self):
+        # QPSK 3/5 パイロットあり: 1フレーム 33282 シンボルに 38688-80 ビット
+        self.assertAlmostEqual(settings_store.dvbs2_ts_capacity_bps(500_000, "QPSK", "3/5"),
+                               500_000 * (38688 - 80) / 33282)
+        # 32APSK: 144スロット+8パイロットブロック = 13338 シンボル
+        self.assertAlmostEqual(settings_store.dvbs2_ts_capacity_bps(1_000_000, "32APSK", "3/4"),
+                               1_000_000 * (48408 - 80) / 13338)
+
+    def test_auto_fec_picks_most_robust_rate_with_enough_capacity(self):
+        self.assertEqual(settings_store.auto_fec_rate(500_000, "QPSK"), "3/5")
+        self.assertEqual(settings_store.auto_fec_rate(1_000_000, "QPSK"), "1/3")
+        self.assertEqual(settings_store.auto_fec_rate(2_000_000, "QPSK"), "1/4")
+        self.assertEqual(settings_store.auto_fec_rate(1_000_000, "8PSK"), "3/5")
+        # どれでも足りなければ、いちばん多く送れるFEC
+        self.assertEqual(settings_store.auto_fec_rate(100_000, "QPSK"), "9/10")
+
+    def test_apply_auto_fec_respects_manual_mode(self):
+        s = settings_store.AppSettings(symbol_rate_msps=1.0, fec_rate="8/9", fec_auto=False)
+        self.assertFalse(s.apply_auto_fec())
+        self.assertEqual(s.fec_rate, "8/9")
+        s.fec_auto = True
+        self.assertTrue(s.apply_auto_fec())
+        self.assertEqual(s.fec_rate, "1/3")

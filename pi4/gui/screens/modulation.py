@@ -150,7 +150,9 @@ class ModulationScreen(SettingsSubScreen):
         settings = self.main_window.settings
         settings.modulation_scheme = scheme
         rates = supported_fec_rates(scheme)
-        if settings.fec_rate not in rates:
+        if settings.fec_auto:
+            settings.apply_auto_fec()
+        elif settings.fec_rate not in rates:
             # その変調方式に無いFECのままだと送受信開始時に拒否されるため、
             # 最も誤りに強い(先頭の)符号化率へ合わせる。
             settings.fec_rate = rates[0]
