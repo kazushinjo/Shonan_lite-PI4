@@ -123,7 +123,12 @@ def read_version(pluto_uri: str, english: bool = False) -> list[tuple[str, str]]
 
 def read_ad9361(pluto_uri: str, english: bool = False) -> list[tuple[str, str]]:
     dev_attrs = parse_device_attrs(_run_iio_attr(["-u", pluto_uri, "-d", "ad9361-phy"]))
-    chan_attrs = parse_channel_attrs(_run_iio_attr(["-u", pluto_uri, "-c", "ad9361-phy"]))
+    # ★チャンネル名を付けずに `-c ad9361-phy` とするとチャンネルの一覧しか出ないため
+    # (実機で確認)、使うチャンネルごとに読む(入力/出力の両方が出る)。
+    chan_attrs: dict[tuple[str, bool, str], str] = {}
+    for channel in sorted({target[0] for _ja, _en, target, _a, _f in AD9361_ENTRIES if target}):
+        chan_attrs.update(parse_channel_attrs(
+            _run_iio_attr(["-u", pluto_uri, "-c", "ad9361-phy", channel])))
     if not dev_attrs and not chan_attrs:
         raise PlutoInfoError("ad9361-phyが見つかりません")
     rows = []

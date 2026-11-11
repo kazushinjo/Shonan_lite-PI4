@@ -49,9 +49,17 @@ class PlutoInfoParseTest(unittest.TestCase):
         self.assertEqual(attrs[("voltage0", True, "hardwaregain")], "-10.000000 dB")
 
     def test_read_ad9361_formats_rows(self):
-        outputs = {"-d": DEVICE_OUTPUT, "-c": CHANNEL_OUTPUT}
+        calls = []
+
+        def fake(args):
+            calls.append(args)
+            if args[2] == "-d":
+                return DEVICE_OUTPUT
+            # チャンネル名を付けて読んだときは、そのチャンネルの行だけが出る
+            return "\n".join(l for l in CHANNEL_OUTPUT.splitlines() if f"channel '{args[4]}'" in l)
+
         original = pluto_info._run_iio_attr
-        pluto_info._run_iio_attr = lambda args: outputs[args[2]]
+        pluto_info._run_iio_attr = fake
         try:
             rows = dict(pluto_info.read_ad9361("ip:192.168.0.51"))
         finally:
@@ -62,6 +70,7 @@ class PlutoInfoParseTest(unittest.TestCase):
         self.assertEqual(rows["RXサンプルレート"], "2.000 MHz")
         self.assertEqual(rows["TX減衰"], "-10.000000 dB")
         self.assertEqual(rows["RX RSSI"], "-")
+        self.assertTrue(all(len(a) == 5 for a in calls if a[2] == "-c"), calls)
 
     def test_settings_txt(self):
         rows = pluto_info.parse_settings_txt("callsign JA1XXX\nfreq 1273.0\n\nh265box \n")
