@@ -392,7 +392,7 @@ itself does not inherit `sudo`'s privileges).
 | `shonan-boot-menu.service` | Full-screen menu at boot for choosing "Shonan_Lite / Langstone" (`pi4/gui/boot_menu.py`). Starts the chosen service with `systemctl start` | Enabled |
 | `shonan-gui.service` | Shonan_Lite itself (`pi4/gui/main.py`). Restarted after 3 seconds if it exits abnormally | Disabled (started from the boot menu) |
 | `langstone.service` | Langstone V2Modify (`~/Langstone/run_pluto`). Not created with `SKIP_LANGSTONE_BUILD=1` | Disabled (started from the boot menu or by switching) |
-| `shonan-display-off.service` | Turns off the DSI display and backlight at shutdown (the DSI LCD keeps showing the last frame after the OS stops) | Enabled |
+| `shonan-display-off.service` | Reliably turns the DSI display and backlight on at boot (`scripts/lcd_wake.sh` writes "off" then "on"), and turns them off only at power-off (`scripts/lcd_off.sh`; the DSI LCD keeps showing the last frame after the OS stops). They are not turned off on reboot, because the firmware then fails to detect the LCD and the screen stays dark | Enabled |
 
 - `shonan-gui.service` and `shonan-boot-menu.service` run with `QT_QPA_PLATFORM=linuxfb:fb=/dev/fb0:nocursor` (direct
   drawing to `/dev/fb0`). With eglfs (KMS/DRM), panel initialization on the DFR0550 DSI panel could conflict depending on
@@ -419,6 +419,46 @@ It shows the state of `shonan-boot-menu.service` and then the following notes.
 2. **Default language for Japanese input**: the on-screen keyboard starts with the English layout, and can be switched to
    Japanese (romaji input) by tapping the globe icon (it does not switch automatically; known behavior).
 3. **avoid_warnings**: if it was newly added in 8/9, `sudo reboot` is needed for it to take effect.
+
+## When the LCD Stays Dark (OSOYOO 5-inch DSI LCD, recorded 2026-11-12)
+
+On the device (192.168.0.146, OSOYOO 5-inch DSI LCD, booting from a USB drive, kernel 6.18.50,
+firmware legacy display) the LCD repeatedly stayed dark. There were two causes.
+
+1. **After a reboot the LCD stays off** (fixed in software)
+   - `shonan-display-off.service` turned off the backlight (`bl_power=4`) and the display
+     (`fb0/blank=4`) at shutdown. On a reboot without a power cut, the LCD enters the next boot
+     still off.
+   - Right after boot the kernel believes it is on (0), so writing `0` is ignored as the same value
+     and the power-on command never reaches the hardware. `/dev/fb0` has the picture, but it is dark.
+   - Fix: at boot `scripts/lcd_wake.sh` writes "off" and then "on" (run by the boot menu, GUI and
+     display-off services and by Langstone's `run_pluto`). At shutdown `scripts/lcd_off.sh` turns the
+     display off only at power-off, never on reboot.
+2. **The firmware does not detect the LCD** (hardware side, cured by a full power cut)
+   - Neither `/dev/fb0` nor a backlight is created and the boot menu keeps failing with
+     `no screens available`. `vcgencmd display_power` is 0 and `dmesg` shows
+     `bcm2708_fb ... Unable to determine number of FBs`.
+   - `sudo vclog -m` (firmware log) shows the LCD controller holding the control line right after
+     power-on, past the DSI detection at 5.6 s:
+     ```
+     4.7 s  I2C bus 0 stalled - SCL stuck?
+     5.6 s  gpioman: pin DISPLAY_DSI_PORT not defined   <- detection failed
+     7.3 s  I2C bus 0 stall cleard
+     ```
+   - A software reboot or re-plugging only one power cable did not help (the LCD controller was
+     not reset).
+   - Cure: shut down with `sudo poweroff`, **unplug every power cable, wait 10 seconds**, and plug
+     back in. In a good boot `vclog` shows no `stalled` and `/sys/class/backlight/rpi_backlight` exists.
+   - The device boots from a USB drive (EEPROM `BOOT_ORDER=0xf14`, no SD card), so the bootloader's
+     USB boot screen appears first after power-on. Just wait.
+
+Notes:
+- KMS (`dtoverlay=vc4-kms-v3d` + `vc4-kms-dsi-7inch`) was tried, but turning on the backlight failed
+  with `failed to enable backlight: -110` (and the 8/16 record shows touch also stops working under
+  KMS). OSOYOO's instructions also say to remove `vc4-kms-v3d` on a Pi 4, so keep `config.txt` on the
+  legacy display (`vc4-kms-dsi-7inch` is OSOYOO's Pi 5 setting).
+- OSOYOO says its old version (V1.1) does not support Linux kernel 6.6 or later, although this device
+  has displayed fine on 6.18 so far.
 
 ## Related Documents
 

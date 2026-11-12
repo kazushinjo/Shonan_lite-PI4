@@ -9,7 +9,7 @@ User=pi
 WorkingDirectory=/home/pi/Shonan_Lite-pi4/pi4/gui
 Environment=QT_QPA_PLATFORM=eglfs
 Environment=QT_QPA_EGLFS_HIDECURSOR=1
-ExecStartPre=+/bin/sh -c 'if [ -e /sys/class/graphics/fb0/blank ]; then echo 0 > /sys/class/graphics/fb0/blank; fi'
+ExecStartPre=+/bin/sh /home/pi/Shonan_Lite-pi4/pi4/scripts/lcd_wake.sh
 ExecStart=/usr/bin/python3 /home/pi/Shonan_Lite-pi4/pi4/gui/boot_menu.py
 Restart=on-failure
 RestartSec=3

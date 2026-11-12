@@ -42,9 +42,19 @@ fi
 
 # Raspberry Pi console blanking can leave the physical LCD powered down even
 # though the framebuffer still contains the GUI image.
+# Writing the value the kernel already holds is ignored, so after a reboot
+# (shonan-display-off blanked the panel at shutdown) write "off" first and
+# then "on" so the power-on command really reaches the LCD.
 if [ -e /sys/class/graphics/fb0/blank ]; then
+   echo 1 | sudo tee /sys/class/graphics/fb0/blank >/dev/null
    echo 0 | sudo tee /sys/class/graphics/fb0/blank >/dev/null
 fi
+for bl in /sys/class/backlight/*; do
+   [ -e "$bl/bl_power" ] || continue
+   echo 4 | sudo tee "$bl/bl_power" >/dev/null
+   echo 0 | sudo tee "$bl/bl_power" >/dev/null
+   cat "$bl/max_brightness" | sudo tee "$bl/brightness" >/dev/null
+done
 
 #Test to see if the flowgraph is already running
 if !(ps -ax |grep -v grep| grep -q Lang_TRX_Pluto.py) then

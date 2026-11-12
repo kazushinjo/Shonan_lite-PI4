@@ -299,7 +299,7 @@ WorkingDirectory=${GUI_DIR}
 # config.txt変更(KMS無効化)と無関係に安定動作するようにする。
 Environment=QT_QPA_PLATFORM=linuxfb:fb=/dev/fb0:nocursor
 Environment=QT_QPA_FB_HIDECURSOR=1
-ExecStartPre=+/bin/sh -c 'if [ -e /sys/class/graphics/fb0/blank ]; then echo 0 > /sys/class/graphics/fb0/blank; fi'
+ExecStartPre=+/bin/sh ${INSTALL_DIR}/pi4/scripts/lcd_wake.sh
 ExecStart=/usr/bin/python3 ${GUI_DIR}/main.py
 Restart=on-failure
 RestartSec=3
@@ -321,7 +321,7 @@ User=${USER}
 WorkingDirectory=${GUI_DIR}
 Environment=QT_QPA_PLATFORM=linuxfb:fb=/dev/fb0:nocursor
 Environment=QT_QPA_FB_HIDECURSOR=1
-ExecStartPre=+/bin/sh -c 'if [ -e /sys/class/graphics/fb0/blank ]; then echo 0 > /sys/class/graphics/fb0/blank; fi'
+ExecStartPre=+/bin/sh ${INSTALL_DIR}/pi4/scripts/lcd_wake.sh
 ExecStart=/usr/bin/python3 ${GUI_DIR}/boot_menu.py
 Restart=on-failure
 RestartSec=3
@@ -330,10 +330,10 @@ RestartSec=3
 WantedBy=multi-user.target
 EOF
 
-# DSI液晶はOS停止後も最後のフレームを保持するため、shutdown時に画面と
+# DSI液晶はOS停止後も最後のフレームを保持するため、電源オフ時(再起動時は除く)に画面と
 # バックライトを明示的に消灯する。
 DISPLAY_OFF_SERVICE_FILE="/etc/systemd/system/shonan-display-off.service"
-sudo tee "$DISPLAY_OFF_SERVICE_FILE" > /dev/null <<'EOF'
+sudo tee "$DISPLAY_OFF_SERVICE_FILE" > /dev/null <<EOF
 [Unit]
 Description=Blank Shonan DSI display during shutdown
 After=multi-user.target
@@ -341,8 +341,8 @@ After=multi-user.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/bin/sh -c 'for p in /sys/class/backlight/*/bl_power; do if [ -e "$p" ]; then echo 0 > "$p"; fi; done; for b in /sys/class/backlight/*/brightness; do if [ -e "$b" ]; then echo 255 > "$b"; fi; done; if [ -e /sys/class/graphics/fb0/blank ]; then echo 0 > /sys/class/graphics/fb0/blank; fi'
-ExecStop=/bin/sh -c 'if [ -e /sys/class/graphics/fb0/blank ]; then echo 4 > /sys/class/graphics/fb0/blank; fi; for p in /sys/class/backlight/*/bl_power; do if [ -e "$p" ]; then echo 4 > "$p"; fi; done'
+ExecStart=/bin/sh ${INSTALL_DIR}/pi4/scripts/lcd_wake.sh
+ExecStop=/bin/sh ${INSTALL_DIR}/pi4/scripts/lcd_off.sh
 TimeoutStopSec=5
 
 [Install]

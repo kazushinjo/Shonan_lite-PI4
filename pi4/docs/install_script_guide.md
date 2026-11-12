@@ -427,7 +427,7 @@ fi
 | `shonan-boot-menu.service` | 起動時に「Shonan_Lite / Langstone」を選ぶ全画面メニュー(`pi4/gui/boot_menu.py`)。選んだ側のサービスを`systemctl start`で起動する | 有効 |
 | `shonan-gui.service` | Shonan_Lite本体(`pi4/gui/main.py`)。異常終了時は3秒後に再起動 | 無効(起動メニューから起動) |
 | `langstone.service` | Langstone V2Modify(`~/Langstone/run_pluto`)。`SKIP_LANGSTONE_BUILD=1`なら作らない | 無効(起動メニュー・切替から起動) |
-| `shonan-display-off.service` | シャットダウン時にDSI画面とバックライトを消灯する(DSI液晶はOS停止後も最後のフレームを保持するため) | 有効 |
+| `shonan-display-off.service` | 起動時にDSI画面とバックライトを確実に点灯し(`scripts/lcd_wake.sh`、一度消灯を書いてから点灯)、電源オフ時だけ消灯する(`scripts/lcd_off.sh`、DSI液晶はOS停止後も最後のフレームを保持するため)。再起動時に消灯するとファームウェアがLCDを検出できず画面が暗いままになるので、再起動時は消灯しない | 有効 |
 
 - `shonan-gui.service`と`shonan-boot-menu.service`は、`QT_QPA_PLATFORM=linuxfb:fb=/dev/fb0:nocursor`
   (`/dev/fb0`への直接描画)で動かす。eglfs(KMS/DRM)ではDFR0550のDSIパネルでLangstone
@@ -456,6 +456,45 @@ fi
    globeアイコンをタップすることで日本語(ローマ字入力)へ切り替えられる
    (自動では切り替わらない、既知の仕様)。
 3. **avoid_warnings**: 8/9で新規に追記した場合、反映には`sudo reboot`が必要。
+
+## LCDが暗いままのとき(OSOYOO 5インチDSI液晶、2026-11-12の記録)
+
+実機(192.168.0.146、OSOYOO 5インチDSI液晶、USBドライブ起動、カーネル6.18.50、
+ファームウェアのレガシー表示)で、LCDが暗いままになる現象が繰り返し起きた。原因は2つあった。
+
+1. **再起動でLCDが消灯したまま戻らない**(ソフト側で修正済み)
+   - `shonan-display-off.service`が終了時にバックライト(`bl_power=4`)と画面(`fb0/blank=4`)を
+     消していた。電源を切らない再起動ではLCD側が消えたまま次の起動に入る。
+   - 起動直後のカーネルは「点灯中(0)」と思っているため、起動時に`0`を書いても同じ値として
+     無視され、点灯命令がハードに届かない。`/dev/fb0`に画面は描かれているのに暗い。
+   - 対策: 起動時は`scripts/lcd_wake.sh`で一度「消灯」を書いてから「点灯」を書く
+     (起動メニュー・GUI・display-offの各サービスとLangstoneの`run_pluto`で実行)。
+     終了時の消灯は`scripts/lcd_off.sh`で電源オフのときだけ行い、再起動時は消さない。
+2. **ファームウェアがLCDを検出できない**(ハード側、電源を完全に切ると直る)
+   - `/dev/fb0`もバックライトも作られず、起動メニューが`no screens available`で起動を繰り返す。
+     `vcgencmd display_power`は0、`dmesg`に`bcm2708_fb ... Unable to determine number of FBs`。
+   - `sudo vclog -m`(ファームウェアのログ)に次が出る。LCDの制御回路が起動直後に制御線を
+     ふさぎ、5.6秒のDSI検出に間に合っていない。
+     ```
+     4.7秒  I2C bus 0 stalled - SCL stuck?
+     5.6秒  gpioman: pin DISPLAY_DSI_PORT not defined   ← 検出失敗
+     7.3秒  I2C bus 0 stall cleard
+     ```
+   - ソフトの再起動や、片方の電源ケーブルの差し直しでは直らなかった(LCDの制御回路が
+     リセットされない)。
+   - 直し方: `sudo poweroff`でシャットダウンし、**電源ケーブルをすべて抜いて10秒待ち**、
+     差し直す。直った起動では`vclog`に`stalled`が出ず、`/sys/class/backlight/rpi_backlight`が
+     作られる。
+   - USBドライブ起動(EEPROM `BOOT_ORDER=0xf14`、SDカードなし)のため、電源投入直後は
+     ブートローダのUSBブート画面が出る。そのまま待てば起動する。
+
+注意:
+- KMS方式(`dtoverlay=vc4-kms-v3d`+`vc4-kms-dsi-7inch`)は試したが、バックライト点灯が
+  `failed to enable backlight: -110`で失敗し、改善しなかった(8/16の記録ではKMSでタッチも
+  効かなくなっている)。OSOYOOの説明でもPi4は`vc4-kms-v3d`を削除して使う指定なので、
+  `config.txt`はレガシー表示のままにする(`vc4-kms-dsi-7inch`はOSOYOOではPi5用)。
+- OSOYOOの旧版(V1.1)は「Linuxカーネル6.6以降は非対応」とされている。ただしこの実機では
+  6.18でもこれまで表示できている。
 
 ## 関連ドキュメント
 
