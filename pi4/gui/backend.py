@@ -508,6 +508,20 @@ def _uses_software_loopback(settings: AppSettings) -> bool:
     return settings.is_loopback() and not settings.rf_loopback_enabled
 
 
+def _pluto_callsign(settings: AppSettings) -> str:
+    """Plutoのsettings.txtへ書くコールサイン(送信TSのSDTサービス名になる)。
+
+    映像オーバーレイ用のコールサインを使う。udpts.shはsettings.txtの値を空白で区切り
+    引用符なしでtsp/ffmpegの引数に渡すため、英数字と「/」「-」が残る最初の語を
+    大文字で使う(最大20文字)。無ければNOCALL(空だとtspが即終了し送信されない)。
+    """
+    for word in (settings.overlay_callsign or "").split():
+        call = re.sub(r"[^A-Z0-9/-]", "", word.upper())[:20]
+        if call:
+            return call
+    return "NOCALL"
+
+
 def _push_pluto_settings(settings: AppSettings, lo_hz: float) -> None:
     """SSHでPluto+の`/www/settings.txt`へDVB-S2パラメータを書き込む。
 
@@ -525,7 +539,7 @@ def _push_pluto_settings(settings: AppSettings, lo_hz: float) -> None:
     fec_field = settings.fec_rate.replace("/", "")
     power = str(int(settings.tx_power_db))
     settings_text = "".join((
-        f"callsign NOCALL\n",
+        f"callsign {_pluto_callsign(settings)}\n",
         f"freq {freq_mhz}\n",
         "channel Custom\n",
         "mode DVBS2\n",
