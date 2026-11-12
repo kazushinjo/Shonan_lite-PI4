@@ -78,24 +78,39 @@ official DSI touch display). Ports to other platforms (Android/iOS) are maintain
 
 ## スクリーンショット / Screenshots
 
-実機(DFR0550、800x480)の画面(2026-09-25撮影)。映像はすべてテストパターンで撮影している。
-送信画面は送信中、RSSI測定はオンデバイス復調ONで「1回」実行した結果(自局のテストパターン信号)。
+実機(800x480)の画面(2026-11-12撮影、Pluto+はFPGA版ファーム`plutoplus-udp-fpga-firm`を接続)。
+映像はテストパターン。送受信は止めた状態で撮っている。アプリの制御ソケット
+(`/tmp/shonan-pi4-gui.sock`の`navigate:<画面>`・`screenshot`)で画面を切り替えて撮影し、
+Langstoneの画面はフレームバッファ(`/dev/fb0`)から取り込んだ。
 
-Screens on the device (DFR0550, 800x480, taken on 2026-09-25). All video was taken with the test pattern.
-The TX screen is shown while transmitting, and RSSI measurement shows the result of a "Once" run with on-device
-demodulation ON (the station's own test-pattern signal).
+Screens on the device (800x480, taken on 2026-11-12 with a Pluto+ running the FPGA firmware
+`plutoplus-udp-fpga-firm`). The video is the test pattern; TX and RX were stopped. The screens were switched
+and captured through the app's control socket (`navigate:<screen>` and `screenshot` on
+`/tmp/shonan-pi4-gui.sock`); the Langstone screen was read from the frame buffer (`/dev/fb0`).
 
-| Home画面 / Home | 送信画面 / TX | 受信画面 / RX | RSSI測定 / RSSI |
-| --- | --- | --- | --- |
-| ![Home画面](pi4/docs/images/screenshot_home.png) | ![送信画面](pi4/docs/images/screenshot_tx.png) | ![受信画面](pi4/docs/images/screenshot_rx.png) | ![RSSI測定](pi4/docs/images/screenshot_rssi.png) |
+| Home画面 / Home | 送信画面 / TX | 受信画面 / RX |
+| --- | --- | --- |
+| ![Home画面](pi4/docs/images/screenshot_home.png) | ![送信画面](pi4/docs/images/screenshot_tx.png) | ![受信画面](pi4/docs/images/screenshot_rx.png) |
 
-| 映像ソース / Video Source | 変調方式 / Modulation | 出力設定 / Stream Output | プリセット / Presets |
-| --- | --- | --- | --- |
-| ![映像ソース](pi4/docs/images/screenshot_videosource.png) | ![変調方式](pi4/docs/images/screenshot_modulation.png) | ![出力設定](pi4/docs/images/screenshot_streamoutput.png) | ![プリセット](pi4/docs/images/screenshot_presets.png) |
+| 周波数 / Frequency | RSSI測定 / RSSI | シンボルレート / Symbol Rate |
+| --- | --- | --- |
+| ![周波数](pi4/docs/images/screenshot_frequency.png) | ![RSSI測定](pi4/docs/images/screenshot_rssi.png) | ![シンボルレート](pi4/docs/images/screenshot_symbolrate.png) |
 
-| 機器試験 / Diagnostic | 設定 / Config | 周波数 / Frequency | 電源オフ / Power Off |
-| --- | --- | --- | --- |
-| ![機器試験](pi4/docs/images/screenshot_diagnostic.png) | ![設定](pi4/docs/images/screenshot_settings.png) | ![周波数](pi4/docs/images/screenshot_frequency.png) | ![電源オフ](pi4/docs/images/screenshot_poweroff.png) |
+| 誤り訂正 / FEC | 変調方式 / Modulation | 映像ソース / Video Source |
+| --- | --- | --- |
+| ![誤り訂正](pi4/docs/images/screenshot_fec.png) | ![変調方式](pi4/docs/images/screenshot_modulation.png) | ![映像ソース](pi4/docs/images/screenshot_videosource.png) |
+
+| 出力設定 / Stream Output | RXゲイン / RX Gain | TX出力 / TX Power |
+| --- | --- | --- |
+| ![出力設定](pi4/docs/images/screenshot_streamoutput.png) | ![RXゲイン](pi4/docs/images/screenshot_rxgain.png) | ![TX出力](pi4/docs/images/screenshot_txpower.png) |
+
+| 設定 / Config | 機器試験 / Diagnostic | プリセット / Presets |
+| --- | --- | --- |
+| ![設定](pi4/docs/images/screenshot_settings.png) | ![機器試験](pi4/docs/images/screenshot_diagnostic.png) | ![プリセット](pi4/docs/images/screenshot_presets.png) |
+
+| ヘルプ / Help | 電源オフ / Power Off | Langstone(10GHz受信用バンド) / Langstone (10 GHz RX band) |
+| --- | --- | --- |
+| ![ヘルプ](pi4/docs/images/screenshot_help.png) | ![電源オフ](pi4/docs/images/screenshot_poweroff.png) | ![Langstone](pi4/docs/images/screenshot_langstone.png) |
 
 各画面の操作方法は、アプリ内の「ヘルプ」または操作説明書
 [`pi4/docs/shonan_pi4_operation_manual.docx`](pi4/docs/shonan_pi4_operation_manual.docx)を参照。
