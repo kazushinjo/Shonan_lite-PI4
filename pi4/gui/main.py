@@ -488,13 +488,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self._begin_pluto_restart("アプリ再起動", "アプリを再起動しています…")
 
     def _show_home_at_startup(self) -> None:
-        if LANGSTONE_SWITCH_MARKER.exists():
-            # ★Langstoneは送信LOをpowerdownしたまま終了することがあり、そのままでは
-            # DATV送信の電波が出ないため、Langstoneからの切替では送信LOを必ず元に戻す
-            # (Langstone側も終了時に戻すが、念のためこちらでも行う)。
-            print("[pluto-startup] switched from Langstone; restoring TX LO", flush=True)
-            LANGSTONE_SWITCH_MARKER.unlink(missing_ok=True)
-            threading.Thread(target=self._restore_pluto_tx_lo, daemon=True).start()
+        # ★起動直後は送信していないので、Plutoの送信LOを止めておく。Pluto+のFPGA版などは
+        # 送信を止めてもPlutoの中のpluto_dvbが送信し続けるため、送信中にアプリが落ちて
+        # 再起動したときに電波が出たまま残っていた(2026-11-18、SDR版の実機で確認)。
+        # 送信LOは送信開始のたびに入れ直す(backend.TxController.start)ので、Langstoneが
+        # 送信LOを止めたまま終わっていても送信はできる(以前はここで入れ直していた)。
+        LANGSTONE_SWITCH_MARKER.unlink(missing_ok=True)
+        threading.Thread(target=self._powerdown_pluto_tx_lo, daemon=True).start()
         # ★起動直後(showFullScreen()直後)はウィンドウがまだ実際の画面サイズになっておらず、
         # そのままホーム画面を出すと左上に小さく描かれる(Langstoneからの切替で実機確認)。
         # 表示前にウィンドウを画面の大きさへ合わせ、レイアウトを確定させてから出す。
@@ -507,6 +507,17 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.layout() is not None:
             self.layout().activate()
         self.rx_controller.run_iio_preflight(self.settings)
+
+    def _powerdown_pluto_tx_lo(self) -> None:
+        """Plutoの送信LO(altvoltage1)を止める(起動時。電波が残らないように)。"""
+        try:
+            result = subprocess.run(
+                ["iio_attr", "-u", self.settings.pluto_uri, "-c", "ad9361-phy",
+                 "altvoltage1", "powerdown", "1"],
+                capture_output=True, text=True, timeout=10)
+            print(f"[pluto-startup] TX LO powered down rc={result.returncode}", flush=True)
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            print(f"[pluto-startup] TX LO powerdown failed: {exc}", flush=True)
 
     def _restore_pluto_tx_lo(self) -> None:
         """Plutoの送信LO(altvoltage1)のpowerdownを解除する。"""

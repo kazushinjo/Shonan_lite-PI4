@@ -82,7 +82,7 @@ MANUAL_SECTIONS = [
         ("送信中の確認",
          "送信画面で映像プレビューと、周波数・シンボルレート・変調方式・FEC・出力減衰(dB)を確認します。「パケット数」はPlutoへ送ったUDPパケットの累計、「フレーム数」は符号化した映像フレーム数で、送信中は増え続けます(送信停止で0に戻ります)。「接続」が「接続中」ならPlutoへ送出できています。送信開始を押しても受信は自動開始しません。"),
         ("送信停止",
-         "送信終了時は「送信停止」を押します。停止表示を確認してから設定や配線を変更します。"),
+         "送信終了時は「送信停止」を押します。送信停止ではPlutoの送信LOも止めるので、電波はすぐ止まります(Pluto+のFPGA版などはPlutoの中の送信プログラムが動き続けるため。次の「送信開始」で入れ直します)。停止表示を確認してから設定や配線を変更します。"),
     ]),
     ("6. 受信", [
         ("受信開始",
@@ -197,7 +197,7 @@ MANUAL_SECTIONS_EN = [
     ("5. Transmit", [
         ("Start", "Open Transmit, check the preview and parameters, and press Start Transmit. Opening the screen does not start transmission."),
         ("While transmitting", "Check the preview, frequency, symbol rate, modulation, FEC, and TX attenuation (dB). Packets is the total number of UDP packets sent to the Pluto and Frames is the number of encoded video frames; both keep increasing while transmitting and return to 0 when stopped. Connection shows Connected while the stream is being sent to the Pluto."),
-        ("Stop", "Press Stop Transmit before changing settings or wiring."),
+        ("Stop", "Press Stop Transmit before changing settings or wiring. Stopping TX also powers down the Pluto's TX LO, so the RF stops at once (on the Pluto+ FPGA firmware and others the transmit program inside the Pluto keeps running; the next Start Transmit powers the LO up again)."),
     ]),
     ("6. Receive", [
         ("Start", "Match frequency, symbol rate, modulation, FEC, and Pilot with the transmitting station, then press Start Receive."),

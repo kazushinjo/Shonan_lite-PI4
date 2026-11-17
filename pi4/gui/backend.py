@@ -22,6 +22,7 @@ import shlex
 import signal
 import socket
 import subprocess
+import threading
 import urllib.request
 from pathlib import Path
 from typing import Optional
@@ -508,6 +509,25 @@ def _uses_software_loopback(settings: AppSettings) -> bool:
     return settings.is_loopback() and not settings.rf_loopback_enabled
 
 
+def _set_pluto_tx_lo_powerdown(settings: AppSettings, down: bool) -> Optional[str]:
+    """Plutoの送信LO(altvoltage1)を止める(down=True)/入れる(down=False)。失敗したら理由を返す。
+
+    ★Pluto+ FPGA版などは、送信(ffmpeg)を止めてもPlutoのpluto_dvbが動き続け、電波が
+    出たままになる(2026-11-18、SDR版の実機で確認)。送信停止で送信LOを止め、送信開始で入れ直す。
+    """
+    try:
+        result = subprocess.run(
+            ["iio_attr", "-u", settings.pluto_uri, "-c", "ad9361-phy",
+             "altvoltage1", "powerdown", "1" if down else "0"],
+            capture_output=True, text=True, timeout=5,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return str(exc)
+    if result.returncode != 0:
+        return (result.stderr or result.stdout or f"rc={result.returncode}").strip()
+    return None
+
+
 def _pluto_callsign(settings: AppSettings) -> str:
     """Plutoのsettings.txtへ書くコールサイン(送信TSのSDTサービス名になる)。
 
@@ -757,6 +777,10 @@ class TxController(QtCore.QObject):
                 self.error.emit(f"Pluto+設定送信に失敗しました: {exc}")
                 return
             output_url = _build_udp_ts_url(settings)
+            # 送信停止で止めた送信LOを入れ直す(止めたままだと電波が出ない)
+            lo_error = _set_pluto_tx_lo_powerdown(settings, False)
+            if lo_error:
+                self.log_line.emit(f"[TX] 送信LOを入れられませんでした: {lo_error}")
         if settings.use_on_device_demod:
             # ★オンデバイス復調はアッテネータ経由の自己受信試験でPAを使わない。PTT ONで
             # オーディオアンプの電源が切れ、受信音を聞けなくなるため、PTTはOFFのまま送信する
@@ -810,6 +834,14 @@ class TxController(QtCore.QObject):
         # ffmpegを直接起動している(setsid/bash -cのパイプ構成をやめた)ため、QProcessの
         # terminate()/kill()がそのままffmpeg本体に届く。
         self._process.terminate()
+        # ★Plutoの中のpluto_dvbは送信を止めても動き続けるので、送信LOを止めて電波を止める
+        # (GUIを止めないよう別スレッドで。次の送信開始で入れ直す)。
+        last = getattr(self, "_last_settings", None)
+        if last is not None and not last.is_loopback():
+            def _powerdown(settings=last):
+                error = _set_pluto_tx_lo_powerdown(settings, True)
+                print(f"[TX] Pluto TX LO powerdown: {'OK' if not error else error}", flush=True)
+            threading.Thread(target=_powerdown, daemon=True).start()
         QtCore.QTimer.singleShot(5000, self._force_kill_if_still_running)
 
     def _force_kill_if_still_running(self) -> None:
