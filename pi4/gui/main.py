@@ -482,6 +482,19 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         self.tx_controller.stop()
         self.rx_controller.stop()
+        # オンデバイス復調はテスト用なので、アプリ再起動でも起動時と同じく必ずOFFにする
+        # (ONのままだと送信開始時に受信も自動で始まる)。
+        self.settings.use_on_device_demod = False
+        self.settings.simultaneous_tx_rx_test = False
+        tx_screen = self._screens.get("tx") if hasattr(self, "_screens") else None
+        if tx_screen is not None and hasattr(tx_screen, "update_navigation_buttons"):
+            tx_screen.update_navigation_buttons()
+        settings_screen = self._screens.get("settings") if hasattr(self, "_screens") else None
+        checkbox = getattr(settings_screen, "on_device_checkbox", None)
+        if checkbox is not None:
+            checkbox.blockSignals(True)
+            checkbox.setChecked(False)
+            checkbox.blockSignals(False)
         self.save_settings()
         self._startup_restart_pending = True
         self.stack.hide()
